@@ -1,0 +1,242 @@
+/* ===== Task View (Volunteer Detail) ===== */
+.task-view-page {
+  padding: var(--space-4);
+  padding-bottom: calc(var(--space-16) + var(--touch-target));
+}
+
+/* Header */
+.task-view-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.task-view-back,
+.task-view-share {
+  width: var(--touch-target);
+  height: var(--touch-target);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-container);
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--on-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.task-view-back:active,
+.task-view-share:active {
+  background: var(--surface-container-high);
+  transform: scale(0.92);
+}
+
+/* Hero */
+.task-view-hero {
+  margin-bottom: var(--space-5);
+}
+
+.task-view-badges {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.task-view-hero h1 {
+  margin-bottom: var(--space-3);
+}
+
+.task-view-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.task-view-meta span {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Match Score */
+.task-view-match {
+  background: var(--surface-container);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.task-view-match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.task-view-match-bar {
+  height: 8px;
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-4);
+}
+
+.task-view-match-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-container), var(--primary));
+  border-radius: var(--radius-full);
+  transition: width 0.8s ease-out;
+}
+
+.task-view-match-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.match-detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Sections */
+.task-view-section {
+  background: var(--surface-container-low);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.task-view-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.task-view-section > .title-md {
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+/* Observations */
+.task-view-observations {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.task-view-observations li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-container);
+  border-radius: var(--radius-md);
+}
+
+.task-view-observations li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Media Grid */
+.task-view-media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.task-view-media-thumb {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.task-view-media-thumb.audio { background: rgba(149, 211, 186, 0.08); }
+.task-view-media-thumb.video { background: rgba(255, 180, 169, 0.08); }
+
+.task-view-media-thumb:active {
+  transform: scale(0.95);
+}
+
+/* Map */
+.task-view-map-placeholder {
+  aspect-ratio: 16/9;
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background-image: radial-gradient(circle at 50% 50%, rgba(6, 78, 59, 0.2) 0%, transparent 60%);
+}
+
+/* Skills */
+.task-view-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Apply Area */
+.task-view-apply-area {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+  left: 0;
+  right: 0;
+  padding: var(--space-3) var(--space-4);
+  background: linear-gradient(0deg, var(--surface) 60%, transparent);
+  z-index: 50;
+}
+
+.task-view-apply-btn {
+  box-shadow: 0 -4px 24px rgba(6, 78, 59, 0.4);
+}
+
+.task-view-applied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--primary-container);
+  border-radius: var(--radius-xl);
+  color: var(--on-primary-container);
+  text-align: center;
+}
+
+/* Apply Bottom Sheet */
+.apply-sheet-task-info {
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.apply-sheet-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.apply-sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
