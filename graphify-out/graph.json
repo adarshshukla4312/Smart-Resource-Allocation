@@ -1,0 +1,1129 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "mobile\\vite.config.js",
+      "source_location": "L1",
+      "id": "mobile_vite_config_js",
+      "community": 16,
+      "norm_label": "vite.config.js"
+    },
+    {
+      "label": "App.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\App.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_app_jsx",
+      "community": 7,
+      "norm_label": "app.jsx"
+    },
+    {
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "web\\src\\App.jsx",
+      "source_location": "L11",
+      "id": "app_app",
+      "community": 7,
+      "norm_label": "app()"
+    },
+    {
+      "label": "firebase.js",
+      "file_type": "code",
+      "source_file": "mobile\\src\\firebase.js",
+      "source_location": "L1",
+      "id": "mobile_src_firebase_js",
+      "community": 17,
+      "norm_label": "firebase.js"
+    },
+    {
+      "label": "main.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\main.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_main_jsx",
+      "community": 18,
+      "norm_label": "main.jsx"
+    },
+    {
+      "label": "mockData.js",
+      "file_type": "code",
+      "source_file": "mobile\\src\\data\\mockData.js",
+      "source_location": "L1",
+      "id": "mobile_src_data_mockdata_js",
+      "community": 19,
+      "norm_label": "mockdata.js"
+    },
+    {
+      "label": "MobileLayout.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\layouts\\MobileLayout.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_layouts_mobilelayout_jsx",
+      "community": 10,
+      "norm_label": "mobilelayout.jsx"
+    },
+    {
+      "label": "MobileLayout()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\layouts\\MobileLayout.jsx",
+      "source_location": "L9",
+      "id": "mobilelayout_mobilelayout",
+      "community": 10,
+      "norm_label": "mobilelayout()"
+    },
+    {
+      "label": "LoginPage.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\LoginPage.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_loginpage_jsx",
+      "community": 8,
+      "norm_label": "loginpage.jsx"
+    },
+    {
+      "label": "LoginPage()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\LoginPage.jsx",
+      "source_location": "L5",
+      "id": "loginpage_loginpage",
+      "community": 8,
+      "norm_label": "loginpage()"
+    },
+    {
+      "label": "AdminDashboard.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\admin\\AdminDashboard.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_admin_admindashboard_jsx",
+      "community": 11,
+      "norm_label": "admindashboard.jsx"
+    },
+    {
+      "label": "AdminDashboard()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\admin\\AdminDashboard.jsx",
+      "source_location": "L6",
+      "id": "admindashboard_admindashboard",
+      "community": 11,
+      "norm_label": "admindashboard()"
+    },
+    {
+      "label": "CreateReport.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\CreateReport.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_employee_createreport_jsx",
+      "community": 12,
+      "norm_label": "createreport.jsx"
+    },
+    {
+      "label": "CreateReport()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\CreateReport.jsx",
+      "source_location": "L12",
+      "id": "createreport_createreport",
+      "community": 12,
+      "norm_label": "createreport()"
+    },
+    {
+      "label": "MyReports.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_employee_myreports_jsx",
+      "community": 1,
+      "norm_label": "myreports.jsx"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L6",
+      "id": "myreports_severitybadge",
+      "community": 1,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "StatusBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L10",
+      "id": "myreports_statusbadge",
+      "community": 1,
+      "norm_label": "statusbadge()"
+    },
+    {
+      "label": "timeAgo()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L15",
+      "id": "myreports_timeago",
+      "community": 1,
+      "norm_label": "timeago()"
+    },
+    {
+      "label": "MyReports()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L23",
+      "id": "myreports_myreports",
+      "community": 1,
+      "norm_label": "myreports()"
+    },
+    {
+      "label": "MyApplications.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_volunteer_myapplications_jsx",
+      "community": 2,
+      "norm_label": "myapplications.jsx"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L9",
+      "id": "myapplications_severitybadge",
+      "community": 2,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "AppStatusBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L13",
+      "id": "myapplications_appstatusbadge",
+      "community": 2,
+      "norm_label": "appstatusbadge()"
+    },
+    {
+      "label": "timeAgo()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L30",
+      "id": "myapplications_timeago",
+      "community": 2,
+      "norm_label": "timeago()"
+    },
+    {
+      "label": "MyApplications()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L39",
+      "id": "myapplications_myapplications",
+      "community": 2,
+      "norm_label": "myapplications()"
+    },
+    {
+      "label": "Profile.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\Profile.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_volunteer_profile_jsx",
+      "community": 13,
+      "norm_label": "profile.jsx"
+    },
+    {
+      "label": "Profile()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\Profile.jsx",
+      "source_location": "L9",
+      "id": "profile_profile",
+      "community": 13,
+      "norm_label": "profile()"
+    },
+    {
+      "label": "SubmitProof.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\SubmitProof.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_volunteer_submitproof_jsx",
+      "community": 14,
+      "norm_label": "submitproof.jsx"
+    },
+    {
+      "label": "SubmitProof()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\SubmitProof.jsx",
+      "source_location": "L8",
+      "id": "submitproof_submitproof",
+      "community": 14,
+      "norm_label": "submitproof()"
+    },
+    {
+      "label": "TaskFeed.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "community": 3,
+      "norm_label": "taskfeed.jsx"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L10",
+      "id": "taskfeed_severitybadge",
+      "community": 3,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "CategoryBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L14",
+      "id": "taskfeed_categorybadge",
+      "community": 3,
+      "norm_label": "categorybadge()"
+    },
+    {
+      "label": "timeAgo()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L18",
+      "id": "taskfeed_timeago",
+      "community": 3,
+      "norm_label": "timeago()"
+    },
+    {
+      "label": "TaskFeed()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L26",
+      "id": "taskfeed_taskfeed",
+      "community": 3,
+      "norm_label": "taskfeed()"
+    },
+    {
+      "label": "TaskView.jsx",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskView.jsx",
+      "source_location": "L1",
+      "id": "mobile_src_pages_volunteer_taskview_jsx",
+      "community": 9,
+      "norm_label": "taskview.jsx"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskView.jsx",
+      "source_location": "L10",
+      "id": "taskview_severitybadge",
+      "community": 9,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "TaskView()",
+      "file_type": "code",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskView.jsx",
+      "source_location": "L14",
+      "id": "taskview_taskview",
+      "community": 9,
+      "norm_label": "taskview()"
+    },
+    {
+      "label": "vite.config.js",
+      "file_type": "code",
+      "source_file": "web\\vite.config.js",
+      "source_location": "L1",
+      "id": "web_vite_config_js",
+      "community": 20,
+      "norm_label": "vite.config.js"
+    },
+    {
+      "label": "App.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\App.jsx",
+      "source_location": "L1",
+      "id": "web_src_app_jsx",
+      "community": 7,
+      "norm_label": "app.jsx"
+    },
+    {
+      "label": "firebase.js",
+      "file_type": "code",
+      "source_file": "web\\src\\firebase.js",
+      "source_location": "L1",
+      "id": "web_src_firebase_js",
+      "community": 21,
+      "norm_label": "firebase.js"
+    },
+    {
+      "label": "main.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\main.jsx",
+      "source_location": "L1",
+      "id": "web_src_main_jsx",
+      "community": 22,
+      "norm_label": "main.jsx"
+    },
+    {
+      "label": "mockData.js",
+      "file_type": "code",
+      "source_file": "web\\src\\data\\mockData.js",
+      "source_location": "L1",
+      "id": "web_src_data_mockdata_js",
+      "community": 23,
+      "norm_label": "mockdata.js"
+    },
+    {
+      "label": "DashboardLayout.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\layouts\\DashboardLayout.jsx",
+      "source_location": "L1",
+      "id": "web_src_layouts_dashboardlayout_jsx",
+      "community": 15,
+      "norm_label": "dashboardlayout.jsx"
+    },
+    {
+      "label": "DashboardLayout()",
+      "file_type": "code",
+      "source_file": "web\\src\\layouts\\DashboardLayout.jsx",
+      "source_location": "L19",
+      "id": "dashboardlayout_dashboardlayout",
+      "community": 15,
+      "norm_label": "dashboardlayout()"
+    },
+    {
+      "label": "DashboardOverview.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L1",
+      "id": "web_src_pages_dashboardoverview_jsx",
+      "community": 0,
+      "norm_label": "dashboardoverview.jsx"
+    },
+    {
+      "label": "StatCard()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L9",
+      "id": "dashboardoverview_statcard",
+      "community": 0,
+      "norm_label": "statcard()"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L28",
+      "id": "dashboardoverview_severitybadge",
+      "community": 0,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "StatusBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L33",
+      "id": "dashboardoverview_statusbadge",
+      "community": 0,
+      "norm_label": "statusbadge()"
+    },
+    {
+      "label": "timeAgo()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L41",
+      "id": "dashboardoverview_timeago",
+      "community": 0,
+      "norm_label": "timeago()"
+    },
+    {
+      "label": "VolunteerRing()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L50",
+      "id": "dashboardoverview_volunteerring",
+      "community": 0,
+      "norm_label": "volunteerring()"
+    },
+    {
+      "label": "MediaIcons()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L72",
+      "id": "dashboardoverview_mediaicons",
+      "community": 0,
+      "norm_label": "mediaicons()"
+    },
+    {
+      "label": "severityColor()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L86",
+      "id": "dashboardoverview_severitycolor",
+      "community": 0,
+      "norm_label": "severitycolor()"
+    },
+    {
+      "label": "DashboardOverview()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L91",
+      "id": "dashboardoverview_dashboardoverview",
+      "community": 0,
+      "norm_label": "dashboardoverview()"
+    },
+    {
+      "label": "LoginPage.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\LoginPage.jsx",
+      "source_location": "L1",
+      "id": "web_src_pages_loginpage_jsx",
+      "community": 8,
+      "norm_label": "loginpage.jsx"
+    },
+    {
+      "label": "TaskDetail.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L1",
+      "id": "web_src_pages_taskdetail_jsx",
+      "community": 6,
+      "norm_label": "taskdetail.jsx"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L10",
+      "id": "taskdetail_severitybadge",
+      "community": 6,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "StatusBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L14",
+      "id": "taskdetail_statusbadge",
+      "community": 6,
+      "norm_label": "statusbadge()"
+    },
+    {
+      "label": "TaskDetail()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L22",
+      "id": "taskdetail_taskdetail",
+      "community": 6,
+      "norm_label": "taskdetail()"
+    },
+    {
+      "label": "TaskQueue.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L1",
+      "id": "web_src_pages_taskqueue_jsx",
+      "community": 4,
+      "norm_label": "taskqueue.jsx"
+    },
+    {
+      "label": "SeverityBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L7",
+      "id": "taskqueue_severitybadge",
+      "community": 4,
+      "norm_label": "severitybadge()"
+    },
+    {
+      "label": "StatusBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L11",
+      "id": "taskqueue_statusbadge",
+      "community": 4,
+      "norm_label": "statusbadge()"
+    },
+    {
+      "label": "timeAgo()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L19",
+      "id": "taskqueue_timeago",
+      "community": 4,
+      "norm_label": "timeago()"
+    },
+    {
+      "label": "TaskQueue()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L27",
+      "id": "taskqueue_taskqueue",
+      "community": 4,
+      "norm_label": "taskqueue()"
+    },
+    {
+      "label": "VolunteerManagement.jsx",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L1",
+      "id": "web_src_pages_volunteermanagement_jsx",
+      "community": 5,
+      "norm_label": "volunteermanagement.jsx"
+    },
+    {
+      "label": "MatchScoreBar()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L10",
+      "id": "volunteermanagement_matchscorebar",
+      "community": 5,
+      "norm_label": "matchscorebar()"
+    },
+    {
+      "label": "ScoreBreakdown()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L28",
+      "id": "volunteermanagement_scorebreakdown",
+      "community": 5,
+      "norm_label": "scorebreakdown()"
+    },
+    {
+      "label": "AppStatusBadge()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L55",
+      "id": "volunteermanagement_appstatusbadge",
+      "community": 5,
+      "norm_label": "appstatusbadge()"
+    },
+    {
+      "label": "VolunteerManagement()",
+      "file_type": "code",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L67",
+      "id": "volunteermanagement_volunteermanagement",
+      "community": 5,
+      "norm_label": "volunteermanagement()"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\App.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "mobile_src_app_jsx",
+      "_tgt": "app_app",
+      "source": "mobile_src_app_jsx",
+      "target": "app_app",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\App.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "web_src_app_jsx",
+      "_tgt": "app_app",
+      "source": "app_app",
+      "target": "web_src_app_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\layouts\\MobileLayout.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "mobile_src_layouts_mobilelayout_jsx",
+      "_tgt": "mobilelayout_mobilelayout",
+      "source": "mobile_src_layouts_mobilelayout_jsx",
+      "target": "mobilelayout_mobilelayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\LoginPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_loginpage_jsx",
+      "_tgt": "loginpage_loginpage",
+      "source": "mobile_src_pages_loginpage_jsx",
+      "target": "loginpage_loginpage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\LoginPage.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_src": "web_src_pages_loginpage_jsx",
+      "_tgt": "loginpage_loginpage",
+      "source": "loginpage_loginpage",
+      "target": "web_src_pages_loginpage_jsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\admin\\AdminDashboard.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_admin_admindashboard_jsx",
+      "_tgt": "admindashboard_admindashboard",
+      "source": "mobile_src_pages_admin_admindashboard_jsx",
+      "target": "admindashboard_admindashboard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\employee\\CreateReport.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_employee_createreport_jsx",
+      "_tgt": "createreport_createreport",
+      "source": "mobile_src_pages_employee_createreport_jsx",
+      "target": "createreport_createreport",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_employee_myreports_jsx",
+      "_tgt": "myreports_severitybadge",
+      "source": "mobile_src_pages_employee_myreports_jsx",
+      "target": "myreports_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_employee_myreports_jsx",
+      "_tgt": "myreports_statusbadge",
+      "source": "mobile_src_pages_employee_myreports_jsx",
+      "target": "myreports_statusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_employee_myreports_jsx",
+      "_tgt": "myreports_timeago",
+      "source": "mobile_src_pages_employee_myreports_jsx",
+      "target": "myreports_timeago",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\employee\\MyReports.jsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_employee_myreports_jsx",
+      "_tgt": "myreports_myreports",
+      "source": "mobile_src_pages_employee_myreports_jsx",
+      "target": "myreports_myreports",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_myapplications_jsx",
+      "_tgt": "myapplications_severitybadge",
+      "source": "mobile_src_pages_volunteer_myapplications_jsx",
+      "target": "myapplications_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_myapplications_jsx",
+      "_tgt": "myapplications_appstatusbadge",
+      "source": "mobile_src_pages_volunteer_myapplications_jsx",
+      "target": "myapplications_appstatusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_myapplications_jsx",
+      "_tgt": "myapplications_timeago",
+      "source": "mobile_src_pages_volunteer_myapplications_jsx",
+      "target": "myapplications_timeago",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\MyApplications.jsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_myapplications_jsx",
+      "_tgt": "myapplications_myapplications",
+      "source": "mobile_src_pages_volunteer_myapplications_jsx",
+      "target": "myapplications_myapplications",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\Profile.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_profile_jsx",
+      "_tgt": "profile_profile",
+      "source": "mobile_src_pages_volunteer_profile_jsx",
+      "target": "profile_profile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\SubmitProof.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_submitproof_jsx",
+      "_tgt": "submitproof_submitproof",
+      "source": "mobile_src_pages_volunteer_submitproof_jsx",
+      "target": "submitproof_submitproof",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "_tgt": "taskfeed_severitybadge",
+      "source": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "target": "taskfeed_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "_tgt": "taskfeed_categorybadge",
+      "source": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "target": "taskfeed_categorybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "_tgt": "taskfeed_timeago",
+      "source": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "target": "taskfeed_timeago",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskFeed.jsx",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "_tgt": "taskfeed_taskfeed",
+      "source": "mobile_src_pages_volunteer_taskfeed_jsx",
+      "target": "taskfeed_taskfeed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskView.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_taskview_jsx",
+      "_tgt": "taskview_severitybadge",
+      "source": "mobile_src_pages_volunteer_taskview_jsx",
+      "target": "taskview_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "mobile\\src\\pages\\volunteer\\TaskView.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "mobile_src_pages_volunteer_taskview_jsx",
+      "_tgt": "taskview_taskview",
+      "source": "mobile_src_pages_volunteer_taskview_jsx",
+      "target": "taskview_taskview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\layouts\\DashboardLayout.jsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_src": "web_src_layouts_dashboardlayout_jsx",
+      "_tgt": "dashboardlayout_dashboardlayout",
+      "source": "web_src_layouts_dashboardlayout_jsx",
+      "target": "dashboardlayout_dashboardlayout",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_statcard",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_statcard",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_severitybadge",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_statusbadge",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_statusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_timeago",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_timeago",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_volunteerring",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_volunteerring",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_mediaicons",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_mediaicons",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L86",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_severitycolor",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_severitycolor",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\DashboardOverview.jsx",
+      "source_location": "L91",
+      "weight": 1.0,
+      "_src": "web_src_pages_dashboardoverview_jsx",
+      "_tgt": "dashboardoverview_dashboardoverview",
+      "source": "web_src_pages_dashboardoverview_jsx",
+      "target": "dashboardoverview_dashboardoverview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskdetail_jsx",
+      "_tgt": "taskdetail_severitybadge",
+      "source": "web_src_pages_taskdetail_jsx",
+      "target": "taskdetail_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskdetail_jsx",
+      "_tgt": "taskdetail_statusbadge",
+      "source": "web_src_pages_taskdetail_jsx",
+      "target": "taskdetail_statusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskDetail.jsx",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskdetail_jsx",
+      "_tgt": "taskdetail_taskdetail",
+      "source": "web_src_pages_taskdetail_jsx",
+      "target": "taskdetail_taskdetail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskqueue_jsx",
+      "_tgt": "taskqueue_severitybadge",
+      "source": "web_src_pages_taskqueue_jsx",
+      "target": "taskqueue_severitybadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskqueue_jsx",
+      "_tgt": "taskqueue_statusbadge",
+      "source": "web_src_pages_taskqueue_jsx",
+      "target": "taskqueue_statusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskqueue_jsx",
+      "_tgt": "taskqueue_timeago",
+      "source": "web_src_pages_taskqueue_jsx",
+      "target": "taskqueue_timeago",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\TaskQueue.jsx",
+      "source_location": "L27",
+      "weight": 1.0,
+      "_src": "web_src_pages_taskqueue_jsx",
+      "_tgt": "taskqueue_taskqueue",
+      "source": "web_src_pages_taskqueue_jsx",
+      "target": "taskqueue_taskqueue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_src": "web_src_pages_volunteermanagement_jsx",
+      "_tgt": "volunteermanagement_matchscorebar",
+      "source": "web_src_pages_volunteermanagement_jsx",
+      "target": "volunteermanagement_matchscorebar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_src": "web_src_pages_volunteermanagement_jsx",
+      "_tgt": "volunteermanagement_scorebreakdown",
+      "source": "web_src_pages_volunteermanagement_jsx",
+      "target": "volunteermanagement_scorebreakdown",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_src": "web_src_pages_volunteermanagement_jsx",
+      "_tgt": "volunteermanagement_appstatusbadge",
+      "source": "web_src_pages_volunteermanagement_jsx",
+      "target": "volunteermanagement_appstatusbadge",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "web\\src\\pages\\VolunteerManagement.jsx",
+      "source_location": "L67",
+      "weight": 1.0,
+      "_src": "web_src_pages_volunteermanagement_jsx",
+      "_tgt": "volunteermanagement_volunteermanagement",
+      "source": "web_src_pages_volunteermanagement_jsx",
+      "target": "volunteermanagement_volunteermanagement",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": []
+}
