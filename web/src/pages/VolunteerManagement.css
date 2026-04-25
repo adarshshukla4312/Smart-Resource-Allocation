@@ -1,0 +1,279 @@
+/* ===== Volunteer Management Page ===== */
+.volunteer-mgmt-page { max-width: 1400px; }
+
+.vol-task-header {
+  margin-bottom: var(--space-6);
+}
+
+.vol-task-header h1 { margin-bottom: var(--space-3); }
+
+.vol-task-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Vol Table */
+.vol-table-wrapper { overflow-x: auto; }
+
+.vol-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 var(--space-3);
+}
+
+.vol-table thead th {
+  text-align: left;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--on-surface-variant);
+}
+
+.vol-row td {
+  padding: var(--space-4);
+  background: var(--surface-container);
+  vertical-align: middle;
+}
+
+.vol-row td:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.vol-row td:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+
+.vol-row:hover td { background: var(--surface-container-high); }
+
+.vol-name-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.vol-name-cell > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.vol-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.vol-distance {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--on-surface-variant);
+}
+
+.vol-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.skill-tag, .interest-tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.skill-tag {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.interest-tag {
+  background: var(--secondary-container);
+  color: var(--on-secondary-container);
+}
+
+/* Match Score */
+.match-score-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.match-score-bar {
+  width: 80px;
+  height: 6px;
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.match-score-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-container), var(--primary));
+  border-radius: var(--radius-full);
+}
+
+.match-score-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 36px;
+}
+
+.great-match-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  background: rgba(255, 212, 59, 0.12);
+  color: var(--severity-medium);
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vol-score-cell { position: relative; }
+
+.score-detail-btn {
+  background: none;
+  border: none;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast);
+}
+
+.score-detail-btn:hover { color: var(--primary); }
+
+/* Score Breakdown Tooltip */
+.score-breakdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  background: var(--surface-container-highest);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  min-width: 260px;
+  box-shadow: var(--shadow-ambient);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.score-breakdown-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  color: var(--on-surface-variant);
+}
+
+.breakdown-row {
+  display: grid;
+  grid-template-columns: 80px 40px 1fr 40px;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+}
+
+.breakdown-bar {
+  height: 4px;
+  background: var(--surface-container);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.breakdown-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+/* Application Status Badges */
+.app-status-badge {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.app-applied { background: rgba(255, 169, 77, 0.12); color: var(--severity-high); }
+.app-accepted { background: rgba(105, 219, 124, 0.12); color: var(--severity-low); }
+.app-rejected { background: rgba(255, 107, 107, 0.12); color: var(--severity-critical); }
+.app-proof { background: rgba(116, 185, 255, 0.12); color: var(--status-submitted); }
+.app-completed { background: rgba(179, 136, 255, 0.12); color: var(--status-completed); }
+
+/* Actions */
+.vol-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.btn-icon-accept, .btn-icon-reject {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.btn-icon-accept { color: var(--severity-low); }
+.btn-icon-accept:hover { background: rgba(105, 219, 124, 0.12); }
+
+.btn-icon-reject { color: var(--severity-critical); }
+.btn-icon-reject:hover { background: rgba(255, 107, 107, 0.12); }
+
+/* Proof Grid */
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.proof-card {
+  background: var(--surface-container);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.proof-card:hover {
+  background: var(--surface-container-high);
+}
+
+.proof-media-placeholder {
+  aspect-ratio: 16/10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--on-surface-variant);
+  background: var(--surface-container-low);
+}
+
+.proof-info {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.proof-actions {
+  padding: 0 var(--space-5) var(--space-5);
+  display: flex;
+  gap: var(--space-2);
+}

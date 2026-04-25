@@ -1,0 +1,5 @@
+/* App-level layout styles */
+.app-wrapper {
+  min-height: 100vh;
+  background-color: var(--surface);
+}
