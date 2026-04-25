@@ -2,6 +2,10 @@
 .env
 .env.*
 
+# Firebase service account keys (never commit these)
+*-adminsdk-*.json
+serviceAccountKey.json
+
 # Dependencies
 node_modules/
 
