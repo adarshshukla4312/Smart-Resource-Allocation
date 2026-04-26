@@ -78,7 +78,7 @@ export default function TaskQueue() {
             key={task.id}
             className="task-card animate-fade-in"
             style={{ animationDelay: `${i * 60}ms` }}
-            onClick={() => navigate(`/tasks/${task.id}`)}
+            onClick={() => navigate(`/admin/tasks/${task.id}`)}
             role="button"
             tabIndex={0}
             id={`task-card-${task.id}`}

@@ -8,12 +8,12 @@ import { useState } from 'react';
 import './DashboardLayout.css';
 
 const navItems = [
-  { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/tasks', icon: ListChecks, label: 'Task Queue' },
-  { path: '/volunteers', icon: Users, label: 'Volunteers' },
-  { path: '/reports', icon: FileText, label: 'Reports' },
-  { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { path: '/settings', icon: Settings, label: 'Settings' },
+  { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/admin/tasks', icon: ListChecks, label: 'Task Queue' },
+  { path: '/admin/volunteers', icon: Users, label: 'Volunteers' },
+  { path: '/admin/reports', icon: FileText, label: 'Reports' },
+  { path: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function DashboardLayout({ user, onLogout }) {

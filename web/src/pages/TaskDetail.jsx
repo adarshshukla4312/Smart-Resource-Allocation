@@ -37,7 +37,7 @@ export default function TaskDetail() {
     return (
       <div className="empty-state">
         <p className="headline-sm text-muted">Task not found</p>
-        <button className="btn-tertiary" onClick={() => navigate('/tasks')}>Back to Task Queue</button>
+        <button className="btn-tertiary" onClick={() => navigate('/admin/tasks')}>Back to Task Queue</button>
       </div>
     );
   }
@@ -48,9 +48,9 @@ export default function TaskDetail() {
     <div className="task-detail-page">
       {/* Breadcrumbs */}
       <nav className="breadcrumbs animate-fade-in">
-        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/admin/dashboard">Dashboard</Link>
         <ChevronRight size={14} />
-        <Link to="/tasks">Task Queue</Link>
+        <Link to="/admin/tasks">Task Queue</Link>
         <ChevronRight size={14} />
         <span className="text-muted">{task.title.substring(0, 40)}...</span>
       </nav>
@@ -323,7 +323,7 @@ export default function TaskDetail() {
 
             <button 
               className="btn-secondary btn-full"
-              onClick={() => navigate(`/volunteers/${task.id}`)}
+              onClick={() => navigate(`/admin/volunteers/${task.id}`)}
               id="view-volunteers"
             >
               <Users size={18} />

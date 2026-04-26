@@ -74,9 +74,9 @@ export default function VolunteerManagement() {
     <div className="volunteer-mgmt-page">
       {/* Breadcrumbs */}
       <nav className="breadcrumbs animate-fade-in">
-        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/admin/dashboard">Dashboard</Link>
         <ChevronRight size={14} />
-        <Link to="/volunteers">Volunteers</Link>
+        <Link to="/admin/volunteers">Volunteers</Link>
         <ChevronRight size={14} />
         <span className="text-muted">{task?.title?.substring(0, 40) || 'Task'}...</span>
       </nav>

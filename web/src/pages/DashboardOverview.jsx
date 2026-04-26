@@ -117,7 +117,7 @@ export default function DashboardOverview() {
             <h2 className="headline-sm">Task Review Queue</h2>
             <span className="trq-counter">{pendingTasks.length} pending</span>
           </div>
-          <button className="btn-tertiary" onClick={() => navigate('/tasks')}>
+          <button className="btn-tertiary" onClick={() => navigate('/admin/tasks')}>
             View All <ArrowUpRight size={14} />
           </button>
         </div>
@@ -130,7 +130,7 @@ export default function DashboardOverview() {
                 key={task.id}
                 className="trq-card animate-fade-in"
                 style={{ animationDelay: `${500 + i * 70}ms` }}
-                onClick={() => navigate(`/tasks/${task.id}`)}
+                onClick={() => navigate(`/admin/tasks/${task.id}`)}
                 role="button"
                 tabIndex={0}
               >
@@ -195,7 +195,7 @@ export default function DashboardOverview() {
               <div 
                 key={task.id} 
                 className="active-task-card"
-                onClick={() => navigate(`/tasks/${task.id}`)}
+                onClick={() => navigate(`/admin/tasks/${task.id}`)}
                 role="button"
                 tabIndex={0}
               >
