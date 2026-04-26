@@ -1,8 +1,15 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signOut, onAuthStateChanged
+} from "firebase/auth";
+import {
+  getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, setDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp, increment,
+  arrayUnion
+} from "firebase/firestore";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-// Firebase config — will be populated with real credentials from GCP Secret Manager
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "PLACEHOLDER",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "PLACEHOLDER",
@@ -15,5 +22,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-export { app, auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+export {
+  app, auth, db, storage,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged,
+  collection, doc, getDoc, getDocs, addDoc, updateDoc, setDoc,
+  query, where, orderBy, limit, onSnapshot, serverTimestamp, increment, arrayUnion,
+  ref, uploadBytesResumable, getDownloadURL,
+};

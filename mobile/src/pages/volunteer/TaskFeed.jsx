@@ -149,6 +149,19 @@ export default function TaskFeed() {
         })}
       </div>
 
+      {/* Map View */}
+      <div className="feed-map-view" style={{ marginTop: '24px' }}>
+        <iframe
+          width="100%"
+          height="400px"
+          style={{ border: 0, borderRadius: '24px' }}
+          loading="lazy"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+          src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&center=28.6139,77.2090&zoom=11`}
+        ></iframe>
+      </div>
+
       {filteredTasks.length === 0 && (
         <div className="empty-state">
           <Search size={48} style={{ opacity: 0.1, marginBottom: 16 }} />

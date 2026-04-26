@@ -4,20 +4,25 @@ import {
   MapPin, Sparkles, Clock, Users, Filter,
   Award, ChevronRight, Map, List, Search
 } from 'lucide-react';
-import { mockActiveTasks, CATEGORIES, SEVERITY_LEVELS, currentVolunteerProfile, myApplications } from '../../data/mockData';
+import { useAuth } from '../../contexts/AuthContext';
+import { useAllTasks, useMyApplications } from '../../hooks/useFirestoreData';
+import { CATEGORIES, SEVERITY_LEVELS } from '../../data/mockData'; // Just for dropdowns
 import TaskDetailModal from '../../components/volunteer/TaskDetailModal';
 import './TaskFeed.css';
 
 function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
+  const cls = `severity-badge severity-${(severity || 'LOW').toLowerCase()}`;
+  return <span className={cls}>{severity || 'LOW'}</span>;
 }
 
 function CategoryBadge({ category }) {
-  return <span className="category-badge">{category}</span>;
+  return <span className="category-badge">{category || 'General'}</span>;
 }
 
 function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
+  if (!dateStr) return '';
+  const date = dateStr.toDate ? dateStr.toDate() : new Date(dateStr);
+  const diff = Date.now() - date.getTime();
   const hours = Math.floor(diff / 3600000);
   if (hours < 1) return 'Just now';
   if (hours < 24) return `${hours}h ago`;
@@ -26,10 +31,14 @@ function timeAgo(dateStr) {
 
 export default function TaskFeed() {
   const navigate = useNavigate();
+  const { userProfile } = useAuth();
+  const { data: allActiveTasks, loading: tLoading } = useAllTasks('ACTIVE');
+  const { data: myApps, loading: aLoading } = useMyApplications(userProfile?.uid);
   
   // Volunteer Level Logic
-  const completedTasksCount = myApplications.filter(app => app.status === 'ACCEPTED').length + 9; // mock completed tasks base = 9 + accepted apps
-  const totalHours = completedTasksCount * 3.5; // dummy hours
+  const acceptedApps = (myApps || []).filter(app => app.status === 'ACCEPTED').length;
+  const completedTasksCount = acceptedApps; 
+  const totalHours = completedTasksCount * 3.5; // Estimated hours per task
   let level = 'Newcomer';
   let nextLevelThreshold = 6;
   let progress = 0;
@@ -58,6 +67,12 @@ export default function TaskFeed() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
+  if (tLoading || aLoading) {
+    return <div className="loading-screen">Loading tasks...</div>;
+  }
+
+  const tasks = allActiveTasks || [];
+
   const handleTaskClick = (taskId) => {
     if (window.innerWidth > 768) {
       setSelectedTaskId(taskId);
@@ -66,16 +81,24 @@ export default function TaskFeed() {
     }
   };
 
-  const filteredTasks = mockActiveTasks
+  const filteredTasks = tasks
     .filter(task => {
-      const cat = task.managementOverride?.category || task.aiAnalysis.category;
-      const sev = task.managementOverride?.severity || task.aiAnalysis.severity;
+      const cat = task.managementOverride?.category || task.aiAnalysis?.category;
+      const sev = task.managementOverride?.severity || task.aiAnalysis?.severity;
       if (filterCategory !== 'ALL' && cat !== filterCategory) return false;
       if (filterSeverity !== 'ALL' && sev !== filterSeverity) return false;
-      if (searchTerm && !task.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+      if (searchTerm && !task.title?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
       return true;
     })
-    .sort((a, b) => b.matchScore - a.matchScore);
+    // In MVP, we sort by matchScore if computed from backend, else fallback to creation date
+    .sort((a, b) => {
+       const scoreA = a.matchScore || 0;
+       const scoreB = b.matchScore || 0;
+       if (scoreA !== scoreB) return scoreB - scoreA;
+       const timeA = a.createdAt?.seconds || 0;
+       const timeB = b.createdAt?.seconds || 0;
+       return timeB - timeA;
+    });
 
   return (
     <div className="task-feed-page">
@@ -89,10 +112,10 @@ export default function TaskFeed() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
           <div className="profile-avatar" style={{ width: '56px', height: '56px', fontSize: '24px' }}>
-            {currentVolunteerProfile?.displayName?.charAt(0) || 'V'}
+            {userProfile?.displayName?.charAt(0) || 'V'}
           </div>
           <div>
-            <h2 className="title-lg">{currentVolunteerProfile?.displayName || 'Volunteer'}</h2>
+            <h2 className="title-lg">{userProfile?.displayName || 'Volunteer'}</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)' }}>
               <Award size={14} />
               <span className="label-md">{level}</span>
@@ -202,10 +225,11 @@ export default function TaskFeed() {
         /* Task Cards */
         <div className="feed-task-list">
           {filteredTasks.map((task, i) => {
-            const sev = task.managementOverride?.severity || task.aiAnalysis.severity;
-            const cat = task.managementOverride?.category || task.aiAnalysis.category;
-            const isGreatMatch = task.matchScore > 0.7;
-            const slotsLeft = task.maxVolunteers ? task.maxVolunteers - task.acceptedCount : null;
+            const sev = task.managementOverride?.severity || task.aiAnalysis?.severity;
+            const cat = task.managementOverride?.category || task.aiAnalysis?.category;
+            const matchScore = task.matchScore || 0;
+            const isGreatMatch = matchScore > 0.7;
+            const slotsLeft = task.maxVolunteers ? task.maxVolunteers - (task.acceptedCount || 0) : null;
 
             return (
               <div
@@ -237,7 +261,7 @@ export default function TaskFeed() {
                 <div className="feed-ai-snippet">
                   <Sparkles size={12} className="feed-ai-icon" />
                   <p className="body-sm text-muted">
-                    {task.aiAnalysis.situationSummary.substring(0, 120)}…
+                    {task.aiAnalysis?.situationSummary ? task.aiAnalysis.situationSummary.substring(0, 120) + '...' : 'Processing...'}
                   </p>
                 </div>
 
@@ -245,7 +269,7 @@ export default function TaskFeed() {
                 <div className="feed-card-meta">
                   <div className="feed-meta-item">
                     <MapPin size={13} />
-                    <span className="body-sm">{task.distance} km</span>
+                    <span className="body-sm">{task.distance || '?'} km</span>
                   </div>
                   <SeverityBadge severity={sev} />
                   <div className="feed-meta-item">
@@ -255,7 +279,7 @@ export default function TaskFeed() {
                     </span>
                   </div>
                   <div className="feed-meta-item feed-meta-affected">
-                    <span className="body-sm">{task.aiAnalysis.estimatedAffected} affected</span>
+                    <span className="body-sm">{task.aiAnalysis?.estimatedAffected || '?'} affected</span>
                   </div>
                 </div>
 
@@ -265,10 +289,10 @@ export default function TaskFeed() {
                   <div className="feed-match-bar">
                     <div
                       className="feed-match-fill"
-                      style={{ width: `${Math.round(task.matchScore * 100)}%` }}
+                      style={{ width: `${Math.round(matchScore * 100)}%` }}
                     ></div>
                   </div>
-                  <span className="label-lg text-primary">{Math.round(task.matchScore * 100)}%</span>
+                  <span className="label-lg text-primary">{Math.round(matchScore * 100)}%</span>
                   <ChevronRight size={16} className="feed-card-arrow" />
                 </div>
               </div>
@@ -292,7 +316,7 @@ export default function TaskFeed() {
               >
                 <MapPin size={24} />
                 <span className="feed-map-pin-label label-sm">
-                  {task.title.split('—')[0].trim()}
+                  {task.title?.split('—')[0].trim() || 'Task'}
                 </span>
               </div>
             ))}

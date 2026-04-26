@@ -89,6 +89,7 @@ export default function CreateReport() {
         </div>
       </div>
 
+
       <div className="report-content-scroll">
         {step === 0 && (
           <div className="report-step-view">
@@ -106,6 +107,7 @@ export default function CreateReport() {
                     </div>
                     <span className="label-lg">{type.replace('_', ' ')}</span>
                   </button>
+
                 ))}
               </div>
             </div>
@@ -162,11 +164,16 @@ export default function CreateReport() {
                 <span className="label-lg">LAT: 28.6304 / LNG: 77.2177</span>
               </div>
             </div>
-            <div className="location-visual-map">
-              <div className="map-overlay-center">
-                <div className="map-pulse"></div>
-                <MapPin size={32} />
-              </div>
+            <div className="report-map-container" style={{ height: '250px', borderRadius: '16px', overflow: 'hidden', marginTop: '16px' }}>
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=28.6304,77.2177`}
+              ></iframe>
             </div>
           </div>
         )}

@@ -1,58 +1,59 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Shield, ArrowRight, User, Building2, Briefcase } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import './LoginPage.css';
 
-export default function LoginPage({ onLogin }) {
+export default function LoginPage() {
+  const { login, register, error: authError } = useAuth();
   const [selectedRole, setSelectedRole] = useState('NGO');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const roles = [
-    { id: 'VOLUNTEER', label: 'Volunteer', icon: <User size={20} /> },
-    { id: 'NGO', label: 'NGO', icon: <Building2 size={20} /> },
-    { id: 'EMPLOYEE', label: 'NGO Employee', icon: <Briefcase size={20} /> },
+    { id: 'VOLUNTEER', label: 'Volunteer', icon: <User size={20} />, role: 'VOLUNTEER' },
+    { id: 'NGO', label: 'NGO', icon: <Building2 size={20} />, role: 'NGO_MANAGEMENT' },
+    { id: 'EMPLOYEE', label: 'NGO Employee', icon: <Briefcase size={20} />, role: 'NGO_EMPLOYEE' },
   ];
+
+  const getRoleValue = () => roles.find(r => r.id === selectedRole)?.role || 'VOLUNTEER';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!username.trim() || !password.trim()) {
-      setError('Please enter both username and password.');
+      setError('Please enter both email and password.');
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate auth — updated demo logic
-    setTimeout(() => {
-      if (selectedRole === 'NGO' && username === 'ngo' && password === 'demo') {
-        onLogin({ 
-          displayName: 'Admin Sarah', 
-          role: 'NGO_MANAGEMENT',
-          uid: 'mgr-001'
-        });
-      } else if (selectedRole === 'VOLUNTEER' && username === 'volunteer' && password === 'demo') {
-        onLogin({ 
-          displayName: 'Volunteer Alex', 
-          role: 'VOLUNTEER',
-          uid: 'vol-001'
-        });
-      } else if (selectedRole === 'EMPLOYEE' && username === 'employee' && password === 'demo') {
-        onLogin({ 
-          displayName: 'Field Rep Raj', 
-          role: 'FIELD_EMPLOYEE',
-          uid: 'emp-001'
+    try {
+      if (isRegistering) {
+        const firebaseUser = await register(username.trim(), password.trim());
+        // Create profile in Firestore directly to bypass the unconfigured API
+        const { setDoc, doc, db } = await import('../firebase.js');
+        await setDoc(doc(db, 'users', firebaseUser.uid), {
+          displayName: username.split('@')[0],
+          role: getRoleValue(),
+          phone: '',
+          homeLocation: { lat: 0, lng: 0, address: '' },
+          interests: [],
+          skills: [],
+          availability: [],
+          createdAt: new Date().toISOString()
         });
       } else {
-        const expectedUser = selectedRole === 'NGO' ? 'ngo' : selectedRole === 'VOLUNTEER' ? 'volunteer' : 'employee';
-        setError(`Invalid credentials for ${selectedRole}. Try ${expectedUser}/demo.`);
+        await login(username.trim(), password.trim());
       }
+    } catch (err) {
+      setError(err.message || 'Authentication failed');
+    } finally {
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   return (
@@ -99,7 +100,7 @@ export default function LoginPage({ onLogin }) {
         <div className="login-form-container">
           <div className="login-form-header">
             <div className="login-logo-mark">SRA</div>
-            <h2 className="headline-md">Management Console</h2>
+            <h2 className="headline-md">{isRegistering ? 'Create Account' : 'Management Console'}</h2>
           </div>
 
           <div className="role-selection-container">
@@ -123,21 +124,21 @@ export default function LoginPage({ onLogin }) {
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>
-            {error && (
+            {(error || authError) && (
               <div className="login-error animate-fade-in">
-                <span>{error}</span>
+                <span>{error || authError}</span>
               </div>
             )}
 
             <div className="login-field">
-              <label className="label-md" htmlFor="login-username">Username</label>
+              <label className="label-md" htmlFor="login-username">Email</label>
               <input
                 id="login-username"
-                type="text"
+                type="email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder={`Enter ${selectedRole.toLowerCase()} username`}
-                autoComplete="username"
+                placeholder="Enter your email"
+                autoComplete="email"
                 autoFocus
               />
             </div>
@@ -174,10 +175,19 @@ export default function LoginPage({ onLogin }) {
                 <span className="login-spinner"></span>
               ) : (
                 <>
-                  <span>Sign In</span>
+                  <span>{isRegistering ? 'Create Account' : 'Sign In'}</span>
                   <ArrowRight size={18} />
                 </>
               )}
+            </button>
+
+            <button
+              type="button"
+              className="login-toggle-mode"
+              onClick={() => { setIsRegistering(!isRegistering); setError(''); }}
+              style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: '8px', fontSize: '14px', marginTop: '8px', textAlign: 'center', width: '100%' }}
+            >
+              {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Register"}
             </button>
           </form>
 

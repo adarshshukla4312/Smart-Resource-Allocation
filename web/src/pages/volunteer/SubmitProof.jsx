@@ -3,6 +3,7 @@ import { useState } from 'react';
 import {
   ArrowLeft, Camera, Video, Upload, CheckCircle2, Info
 } from 'lucide-react';
+import { tasksApi } from '../../api';
 import './SubmitProof.css';
 
 export default function SubmitProof() {
@@ -10,9 +11,44 @@ export default function SubmitProof() {
   const { taskId } = useParams();
   const [files, setFiles] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // In MVP, we just send a mock structure to the API
+      // Real implementation would upload files to Storage first and pass URLs
+      const proofMedia = files.map(f => ({
+        type: f.type.toUpperCase(),
+        url: `https://mock.storage/proof-${f.id}.jpg`
+      }));
+      
+      const { collection, query, where, getDocs, updateDoc, serverTimestamp, db, auth } = await import('../../firebase.js');
+      
+      const q = query(
+        collection(db, 'applications'),
+        where('taskId', '==', taskId),
+        where('volunteerId', '==', auth.currentUser?.uid)
+      );
+      const snapshot = await getDocs(q);
+      
+      if (!snapshot.empty) {
+        const appDoc = snapshot.docs[0];
+        await updateDoc(appDoc.ref, {
+          status: 'PROOF_SUBMITTED',
+          proofMedia: proofMedia,
+          proofSubmittedAt: serverTimestamp()
+        });
+      } else {
+        throw new Error('Could not find your application for this task.');
+      }
+      
+      setSubmitted(true);
+    } catch (err) {
+      alert('Failed to submit proof: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -106,12 +142,16 @@ export default function SubmitProof() {
       <div className="proof-submit-area">
         <button
           className="btn-primary"
-          disabled={files.length === 0}
+          disabled={files.length === 0 || isSubmitting}
           onClick={handleSubmit}
           id="submit-proof"
         >
-          <Upload size={18} />
-          Submit Proof of Participation
+          {isSubmitting ? 'Submitting...' : (
+            <>
+              <Upload size={18} />
+              Submit Proof of Participation
+            </>
+          )}
         </button>
       </div>
     </div>

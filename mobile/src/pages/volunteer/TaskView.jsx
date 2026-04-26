@@ -114,6 +114,7 @@ export default function TaskView() {
               <span className="body-md">{obs}</span>
             </div>
           ))}
+
         </div>
       </div>
 
@@ -137,6 +138,17 @@ export default function TaskView() {
             <span className="label-lg">{task.location.address}</span>
             <span className="body-sm opacity-50">{task.location.lat.toFixed(4)}, {task.location.lng.toFixed(4)}</span>
           </div>
+        </div>
+        <div className="location-visual-map" style={{ marginTop: '16px', height: '200px', borderRadius: '12px', overflow: 'hidden' }}>
+          <iframe
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${task.location.lat},${task.location.lng}`}
+          ></iframe>
         </div>
       </div>
 

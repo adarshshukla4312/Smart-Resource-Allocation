@@ -15,10 +15,21 @@
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "^12.1.0",
-    "firebase-functions": "^5.0.0"
+    "firebase-functions": "^5.0.0",
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "ngeohash": "^0.6.3",
+    "@google-cloud/storage": "^7.7.0",
+    "@google-cloud/speech": "^6.7.0",
+    "@google-cloud/video-intelligence": "^5.4.0",
+    "@google-cloud/vision": "^4.3.0",
+    "@google-cloud/aiplatform": "^3.25.0",
+    "@google-cloud/tasks": "^5.4.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17"
   },
   "private": true
 }
