@@ -2,9 +2,9 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ListChecks, Users, FileText, 
   BarChart3, Settings, Bell, Search, LogOut, ChevronDown,
-  Shield
+  Shield, Menu, Sun, Moon
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './DashboardLayout.css';
 
 const navItems = [
@@ -20,10 +20,26 @@ export default function DashboardLayout({ user, onLogout }) {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(!isDark);
 
   return (
     <div className="dashboard-layout">
-      <aside className="sidebar">
+      <div 
+        className={`sidebar-overlay ${sidebarOpen ? 'open' : ''}`} 
+        onClick={() => setSidebarOpen(false)}
+      />
+      
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">
             <div className="sidebar-logo-mark">SRA</div>
@@ -39,6 +55,7 @@ export default function DashboardLayout({ user, onLogout }) {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
                 `sidebar-nav-item ${isActive || location.pathname.startsWith(item.path) ? 'active' : ''}`
               }
@@ -64,6 +81,14 @@ export default function DashboardLayout({ user, onLogout }) {
 
       <div className="main-area">
         <header className="topbar">
+          <button 
+            className="topbar-menu-btn" 
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu size={20} />
+          </button>
+
           <div className="topbar-search">
             <Search size={18} className="topbar-search-icon" />
             <input
@@ -76,6 +101,15 @@ export default function DashboardLayout({ user, onLogout }) {
           </div>
 
           <div className="topbar-actions">
+            <button 
+              className="topbar-action-btn theme-toggle" 
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              id="theme-toggle-btn"
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+
             <button className="topbar-notification-btn" id="notifications-btn" aria-label="Notifications">
               <Bell size={20} />
               <span className="topbar-notification-badge">3</span>
@@ -111,7 +145,9 @@ export default function DashboardLayout({ user, onLogout }) {
         </header>
 
         <main className="main-content">
-          <Outlet />
+          <div className="page-container">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

@@ -66,11 +66,11 @@ export default function LoginPage({ onLogin }) {
           </div>
           
           <h1 className="login-hero-title">
-            Smart<br/>Resource<br/>Allocation
+            The Flow of<br/>Resource
           </h1>
           
-          <p className="login-hero-tagline">
-            Data-Driven Volunteer Coordination for Social Impact
+          <p className="login-hero-tagline body-lg">
+            An editorial approach to resource allocation and impact management.
           </p>
 
           <div className="login-hero-stats">

@@ -62,7 +62,7 @@ export default function TaskDetail() {
             <StatusBadge status={task.status} />
             <span className="type-badge">{task.reportType.replace('_', ' ')}</span>
           </div>
-          <h1 className="headline-lg">{task.title}</h1>
+          <h1 className="display-lg">{task.title}</h1>
           <div className="task-detail-meta">
             <span className="body-sm text-muted">
               <MapPin size={14} /> {task.location.address}

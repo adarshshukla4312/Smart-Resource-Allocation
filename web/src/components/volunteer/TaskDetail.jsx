@@ -62,7 +62,7 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
           <span className="category-badge">{cat}</span>
           <SeverityBadge severity={sev} />
         </div>
-        <h1 className="headline-lg">{task.title}</h1>
+        <h1 className="display-md">{task.title}</h1>
         <div className="task-view-meta">
           <span className="body-sm text-muted"><MapPin size={13} /> {task.location.address}</span>
           <span className="body-sm text-muted"><Clock size={13} /> {urg.replace('_', ' ')}</span>
