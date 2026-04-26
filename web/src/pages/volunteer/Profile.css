@@ -105,3 +105,60 @@
 .profile-logout {
   margin-top: var(--space-4);
 }
+
+.btn-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  border: none;
+  background: rgba(255, 82, 82, 0.1);
+  color: #ff5252;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: rgba(255, 82, 82, 0.2);
+}
+
+@media (min-width: 768px) {
+  .profile-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-10) var(--space-6);
+  }
+
+  .profile-header {
+    flex-direction: row;
+    text-align: left;
+    gap: var(--space-8);
+    padding: var(--space-8) var(--space-6);
+    background: var(--surface-container);
+    border-radius: var(--radius-2xl);
+    align-items: center;
+  }
+
+  .profile-header-info {
+    flex: 1;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    font-size: 3rem;
+    margin-bottom: 0;
+  }
+
+  .profile-stats {
+    gap: var(--space-4);
+  }
+
+  .profile-stat {
+    padding: var(--space-6);
+  }
+}

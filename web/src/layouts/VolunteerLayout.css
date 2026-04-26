@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--bg-default);
+  background-color: var(--background);
 }
 
 .volunteer-topbar {
@@ -11,8 +11,8 @@
   justify-content: space-between;
   height: 64px;
   padding: 0 24px;
-  background-color: var(--surface-default);
-  border-bottom: 1px solid var(--border-default);
+  background-color: var(--surface-container);
+  border-bottom: 1px solid var(--outline-variant);
   position: relative;
   z-index: 10;
 }
@@ -43,13 +43,13 @@
 }
 
 .vol-nav-item:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--surface-container-highest);
   color: var(--text-default);
 }
 
 .vol-nav-item.active {
-  background-color: var(--primary-alpha);
-  color: var(--primary-default);
+  background-color: var(--primary-container);
+  color: var(--primary);
 }
 
 .volunteer-user-menu {
@@ -69,17 +69,18 @@
   padding: 4px;
   border-radius: var(--radius-full);
   transition: background-color 0.2s;
+  color: var(--text-default);
 }
 
 .vol-user-btn:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--surface-container-highest);
 }
 
 .vol-avatar {
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
-  background-color: var(--primary-default);
+  background-color: var(--primary);
   color: white;
   display: flex;
   align-items: center;
@@ -100,7 +101,7 @@
   flex-direction: column;
   gap: 4px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--outline-variant);
 }
 
 .vol-dropdown-item {
@@ -121,7 +122,7 @@
 }
 
 .vol-dropdown-item:hover {
-  background-color: var(--surface-hover);
+  background-color: var(--surface-container-highest);
 }
 
 .volunteer-main {
@@ -139,8 +140,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--surface-default);
-    border-top: 1px solid var(--border-default);
+    background-color: var(--surface-container);
+    border-top: 1px solid var(--outline-variant);
     justify-content: space-around;
     padding: 8px;
     z-index: 100;

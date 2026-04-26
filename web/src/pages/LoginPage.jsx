@@ -1,13 +1,20 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Shield, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Shield, ArrowRight, User, Building2, Briefcase } from 'lucide-react';
 import './LoginPage.css';
 
 export default function LoginPage({ onLogin }) {
+  const [selectedRole, setSelectedRole] = useState('NGO');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const roles = [
+    { id: 'VOLUNTEER', label: 'Volunteer', icon: <User size={20} /> },
+    { id: 'NGO', label: 'NGO', icon: <Building2 size={20} /> },
+    { id: 'EMPLOYEE', label: 'NGO Employee', icon: <Briefcase size={20} /> },
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,28 +27,29 @@ export default function LoginPage({ onLogin }) {
 
     setIsLoading(true);
     
-    // Simulate auth — in production this connects to Firebase Auth
+    // Simulate auth — updated demo logic
     setTimeout(() => {
-      if (username === 'admin' && password === 'admin') {
+      if (selectedRole === 'NGO' && username === 'ngo' && password === 'demo') {
         onLogin({ 
           displayName: 'Admin Sarah', 
           role: 'NGO_MANAGEMENT',
           uid: 'mgr-001'
         });
-      } else if (username === 'volunteer' && password === 'volunteer') {
+      } else if (selectedRole === 'VOLUNTEER' && username === 'volunteer' && password === 'demo') {
         onLogin({ 
           displayName: 'Volunteer Alex', 
           role: 'VOLUNTEER',
           uid: 'vol-001'
         });
-      } else if (username === 'employee' && password === 'employee') {
+      } else if (selectedRole === 'EMPLOYEE' && username === 'employee' && password === 'demo') {
         onLogin({ 
           displayName: 'Field Rep Raj', 
           role: 'FIELD_EMPLOYEE',
           uid: 'emp-001'
         });
       } else {
-        setError('Invalid credentials. Try admin/admin, volunteer/volunteer, or employee/employee.');
+        const expectedUser = selectedRole === 'NGO' ? 'ngo' : selectedRole === 'VOLUNTEER' ? 'volunteer' : 'employee';
+        setError(`Invalid credentials for ${selectedRole}. Try ${expectedUser}/demo.`);
       }
       setIsLoading(false);
     }, 800);
@@ -92,7 +100,26 @@ export default function LoginPage({ onLogin }) {
           <div className="login-form-header">
             <div className="login-logo-mark">SRA</div>
             <h2 className="headline-md">Management Console</h2>
-            <p className="body-md text-muted">Sign in to access the NGO dashboard</p>
+          </div>
+
+          <div className="role-selection-container">
+            <p className="label-md role-selection-title">Who are you joining as?</p>
+            <div className="role-options">
+              {roles.map((role) => (
+                <button
+                  key={role.id}
+                  type="button"
+                  className={`role-option ${selectedRole === role.id ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedRole(role.id);
+                    setError('');
+                  }}
+                >
+                  <div className="role-icon">{role.icon}</div>
+                  <span className="role-label">{role.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <form className="login-form" onSubmit={handleSubmit}>
@@ -109,7 +136,7 @@ export default function LoginPage({ onLogin }) {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder={`Enter ${selectedRole.toLowerCase()} username`}
                 autoComplete="username"
                 autoFocus
               />
