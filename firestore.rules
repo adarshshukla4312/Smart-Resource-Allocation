@@ -2,7 +2,103 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // By default, deny all access. We will open this up properly in the next steps.
+
+    // ─── Helper Functions ───
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isManagement() {
+      return isAuthenticated() && getUserRole() == 'NGO_MANAGEMENT';
+    }
+
+    function isEmployee() {
+      return isAuthenticated() && getUserRole() == 'NGO_EMPLOYEE';
+    }
+
+    function isVolunteer() {
+      return isAuthenticated() && getUserRole() == 'VOLUNTEER';
+    }
+
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // ─── Users Collection ───
+    match /users/{userId} {
+      // Anyone authenticated can read their own profile
+      // Management can read any profile
+      allow read: if isOwner(userId) || isManagement();
+
+      // Users can create their own profile
+      allow create: if isOwner(userId);
+
+      // Users can update their own profile; management can update any
+      allow update: if isOwner(userId) || isManagement();
+
+      // Only management can delete profiles
+      allow delete: if isManagement();
+    }
+
+    // ─── Tasks Collection ───
+    match /tasks/{taskId} {
+      // Volunteers: read only ACTIVE tasks
+      // Employees: read own tasks
+      // Management: read all
+      allow read: if isManagement()
+        || (isEmployee() && resource.data.employeeId == request.auth.uid)
+        || (isVolunteer() && resource.data.status == 'ACTIVE');
+
+      // Employees can create tasks (SUBMITTED status)
+      allow create: if isEmployee()
+        && request.resource.data.employeeId == request.auth.uid
+        && request.resource.data.status in ['DRAFT', 'SUBMITTED'];
+
+      // Employees can update own DRAFTs only
+      // Management can update any task
+      allow update: if isManagement()
+        || (isEmployee()
+            && resource.data.employeeId == request.auth.uid
+            && resource.data.status == 'DRAFT');
+
+      // Only management can delete tasks
+      allow delete: if isManagement();
+
+      // ─── Media Subcollection ───
+      match /media/{mediaId} {
+        allow read: if isManagement()
+          || (isEmployee() && get(/databases/$(database)/documents/tasks/$(taskId)).data.employeeId == request.auth.uid);
+
+        allow create, update: if isAuthenticated();
+        allow delete: if isManagement();
+      }
+    }
+
+    // ─── Applications Collection ───
+    match /applications/{appId} {
+      // Volunteers can read their own applications
+      // Management can read all applications
+      allow read: if isManagement()
+        || (isVolunteer() && resource.data.volunteerId == request.auth.uid);
+
+      // Volunteers can create applications
+      allow create: if isVolunteer()
+        && request.resource.data.volunteerId == request.auth.uid;
+
+      // Volunteers can update own (proof submission)
+      // Management can update any (accept/reject)
+      allow update: if isManagement()
+        || (isVolunteer() && resource.data.volunteerId == request.auth.uid);
+
+      // Only management can delete
+      allow delete: if isManagement();
+    }
+
+    // ─── Default deny ───
     match /{document=**} {
       allow read, write: if false;
     }

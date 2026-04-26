@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useAuth } from './contexts/AuthContext';
 import LoginPage from './pages/LoginPage';
 
 // Layouts
@@ -26,38 +26,41 @@ import MyReports from './pages/employee/MyReports';
 
 import './App.css';
 
-// Protected Route Component
-function ProtectedRoute({ isAuthenticated, user, allowedRoles, children }) {
+// Protected Route Component — now uses AuthContext
+function ProtectedRoute({ allowedRoles, children }) {
+  const { isAuthenticated, userProfile, loading } = useAuth();
+
+  if (loading) return <div className="loading-screen">Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    // Redirect based on role if unauthorized
-    if (user?.role === 'VOLUNTEER') return <Navigate to="/volunteer" replace />;
-    if (user?.role === 'FIELD_EMPLOYEE') return <Navigate to="/employee" replace />;
-    return <Navigate to="/admin" replace />;
+  if (allowedRoles && !allowedRoles.includes(userProfile?.role)) {
+    if (userProfile?.role === 'VOLUNTEER') return <Navigate to="/volunteer" replace />;
+    if (userProfile?.role === 'NGO_EMPLOYEE') return <Navigate to="/employee" replace />;
+    if (userProfile?.role === 'NGO_MANAGEMENT') return <Navigate to="/admin" replace />;
+    return <div className="loading-screen">Setting up profile...</div>;
   }
   return children;
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
-
-  const handleLogin = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-  };
+  const { isAuthenticated, userProfile, loading, logout } = useAuth();
 
   const getHomeRoute = () => {
     if (!isAuthenticated) return "/login";
-    if (user?.role === 'VOLUNTEER') return "/volunteer";
-    if (user?.role === 'FIELD_EMPLOYEE') return "/employee";
+    if (userProfile?.role === 'VOLUNTEER') return "/volunteer";
+    if (userProfile?.role === 'NGO_EMPLOYEE') return "/employee";
     return "/admin";
   };
+
+  if (loading) {
+    return <div className="loading-screen">Loading...</div>;
+  }
+
+  // Build user object for layouts (backward compatible with existing layout props)
+  const user = userProfile ? {
+    displayName: userProfile.displayName,
+    role: userProfile.role,
+    uid: userProfile.uid,
+  } : null;
 
   return (
     <Router>
@@ -67,7 +70,7 @@ function App() {
           element={
             isAuthenticated 
               ? <Navigate to={getHomeRoute()} replace /> 
-              : <LoginPage onLogin={handleLogin} />
+              : <LoginPage />
           } 
         />
         
@@ -78,8 +81,8 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated} user={user} allowedRoles={['NGO_MANAGEMENT']}>
-              <DashboardLayout user={user} onLogout={handleLogout} />
+            <ProtectedRoute allowedRoles={['NGO_MANAGEMENT']}>
+              <DashboardLayout user={user} onLogout={logout} />
             </ProtectedRoute>
           }
         >
@@ -95,8 +98,8 @@ function App() {
         <Route
           path="/volunteer"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated} user={user} allowedRoles={['VOLUNTEER']}>
-              <VolunteerLayout user={user} onLogout={handleLogout} />
+            <ProtectedRoute allowedRoles={['VOLUNTEER']}>
+              <VolunteerLayout user={user} onLogout={logout} />
             </ProtectedRoute>
           }
         >
@@ -112,8 +115,8 @@ function App() {
         <Route
           path="/employee"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated} user={user} allowedRoles={['FIELD_EMPLOYEE']}>
-              <EmployeeLayout user={user} onLogout={handleLogout} />
+            <ProtectedRoute allowedRoles={['NGO_EMPLOYEE']}>
+              <EmployeeLayout user={user} onLogout={logout} />
             </ProtectedRoute>
           }
         >

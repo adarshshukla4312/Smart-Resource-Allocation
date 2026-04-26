@@ -4,6 +4,7 @@ import {
   ArrowLeft, ArrowRight, MapPin, Mic, Image, Video,
   CheckCircle2, AlertTriangle, Clock, FileText, Tag
 } from 'lucide-react';
+import { tasksApi } from '../../api';
 import { REPORT_TYPES, SEVERITY_LEVELS, URGENCY_LEVELS, DOCUMENT_TAGS } from '../../data/mockData';
 import './CreateReport.css';
 
@@ -13,6 +14,7 @@ export default function CreateReport() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
   const [reportType, setReportType] = useState('');
@@ -40,8 +42,51 @@ export default function CreateReport() {
     return true;
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const taskData = {
+        title: title.trim(),
+        description: description.trim(),
+        reportType,
+        location: {
+          lat: 28.6304,
+          lng: 77.2177,
+          address: 'Connaught Place, New Delhi',
+        },
+        employeeAssessment: {
+          severity,
+          urgency,
+        },
+      };
+
+      const { collection, addDoc, serverTimestamp, db, auth } = await import('../../firebase.js');
+      
+      const fullTaskData = {
+        ...taskData,
+        status: 'SUBMITTED',
+        employeeId: auth.currentUser?.uid,
+        employeeName: auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || 'Unknown',
+        tags: selectedTags,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        mediaCount: { images: 0, audio: 0, shortVideos: 0, longVideos: 0 },
+        maxVolunteers: 0,
+        acceptedCount: 0
+      };
+
+      await addDoc(collection(db, 'tasks'), fullTaskData);
+      
+      // In a full implementation, we'd loop through attachedMedia
+      // and upload them to Firebase Storage using the taskId returned from create.
+      // We skip media upload in MVP scaffolding unless fully implemented.
+      
+      setSubmitted(true);
+    } catch (err) {
+      alert('Failed to submit report: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -59,7 +104,7 @@ export default function CreateReport() {
             <span className="label-md text-muted">Status</span>
             <span className="status-badge status-submitted">Submitted</span>
           </div>
-          <button className="btn-primary" onClick={() => navigate('/reports')} style={{ marginTop: '24px' }}>
+          <button className="btn-primary" onClick={() => navigate('/employee/reports')} style={{ marginTop: '24px' }}>
             View My Reports
           </button>
         </div>
@@ -71,7 +116,7 @@ export default function CreateReport() {
     <div className="create-report-page">
       {/* Header */}
       <div className="report-header">
-        <button className="report-back-btn" onClick={() => step > 0 ? setStep(step - 1) : navigate('/reports')}>
+        <button className="report-back-btn" onClick={() => step > 0 ? setStep(step - 1) : navigate('/employee/reports')}>
           <ArrowLeft size={20} />
         </button>
         <span className="title-md">{STEPS[step]}</span>
@@ -327,9 +372,15 @@ export default function CreateReport() {
             <ArrowRight size={18} />
           </button>
         ) : (
-          <button className="btn-primary" onClick={handleSubmit} id="submit-report">
-            <CheckCircle2 size={18} />
-            <span>Submit Report</span>
+          <button className="btn-primary" onClick={handleSubmit} id="submit-report" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <span>Submitting...</span>
+            ) : (
+              <>
+                <CheckCircle2 size={18} />
+                <span>Submit Report</span>
+              </>
+            )}
           </button>
         )}
       </div>

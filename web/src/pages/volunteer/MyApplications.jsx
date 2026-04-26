@@ -3,13 +3,15 @@ import {
   MapPin, Clock, CheckCircle2, XCircle, HourglassIcon,
   Camera, ChevronRight, ClipboardList
 } from 'lucide-react';
-import { myApplications } from '../../data/mockData';
+import { useAuth } from '../../contexts/AuthContext';
+import { useMyApplications } from '../../hooks/useFirestoreData';
 import TaskDetailModal from '../../components/volunteer/TaskDetailModal';
 import { useState } from 'react';
 import './MyApplications.css';
 
 function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
+  const cls = `severity-badge severity-${(severity || 'LOW').toLowerCase()}`;
+  return <span className={cls}>{severity || 'LOW'}</span>;
 }
 
 function AppStatusBadge({ status }) {
@@ -20,7 +22,7 @@ function AppStatusBadge({ status }) {
     PROOF_SUBMITTED: { cls: 'proof_submitted', label: 'Proof Sent', icon: Camera },
     COMPLETED: { cls: 'completed', label: 'Completed', icon: CheckCircle2 },
   };
-  const s = map[status] || { cls: 'applied', label: status, icon: HourglassIcon };
+  const s = map[status] || { cls: 'applied', label: status || 'Unknown', icon: HourglassIcon };
   const Icon = s.icon;
   return (
     <span className={`status-badge status-${s.cls}`}>
@@ -31,7 +33,8 @@ function AppStatusBadge({ status }) {
 
 function timeAgo(dateStr) {
   if (!dateStr) return '';
-  const diff = Date.now() - new Date(dateStr).getTime();
+  const date = dateStr.toDate ? dateStr.toDate() : new Date(dateStr);
+  const diff = Date.now() - date.getTime();
   const hours = Math.floor(diff / 3600000);
   if (hours < 1) return 'Just now';
   if (hours < 24) return `${hours}h ago`;
@@ -40,7 +43,15 @@ function timeAgo(dateStr) {
 
 export default function MyApplications() {
   const navigate = useNavigate();
+  const { userProfile } = useAuth();
+  const { data: myAppsData, loading } = useMyApplications(userProfile?.uid);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+  if (loading) {
+    return <div className="loading-screen">Loading applications...</div>;
+  }
+
+  const myApplications = myAppsData || [];
 
   const handleTaskClick = (app) => {
     if (window.innerWidth > 768) {
@@ -67,16 +78,16 @@ export default function MyApplications() {
         <AppStatusBadge status={app.status} />
         <span className="label-md text-muted">Applied {timeAgo(app.appliedAt)}</span>
       </div>
-      <h3 className="title-md">{app.taskTitle}</h3>
+      <h3 className="title-md">{app.taskTitle || 'Task Application'}</h3>
       <div className="app-card-meta">
-        <span className="body-sm text-muted"><MapPin size={12} /> {app.distance} km</span>
+        <span className="body-sm text-muted"><MapPin size={12} /> {app.distance || '?'} km</span>
         <SeverityBadge severity={app.taskSeverity} />
-        <span className="category-badge">{app.taskCategory}</span>
+        {app.taskCategory && <span className="category-badge">{app.taskCategory}</span>}
       </div>
       <div className="app-card-bottom">
         <div className="app-card-match">
           <span className="label-md text-muted">Match</span>
-          <span className="label-lg text-primary">{Math.round(app.matchScore * 100)}%</span>
+          <span className="label-lg text-primary">{Math.round((app.matchScore || 0) * 100)}%</span>
         </div>
         {app.status === 'ACCEPTED' && (
           <div className="app-card-proof-cta" onClick={(e) => { e.stopPropagation(); navigate(`/volunteer/proof/${app.taskId}`); }}>

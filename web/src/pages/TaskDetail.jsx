@@ -1,14 +1,17 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ChevronRight, MapPin, AlertTriangle, Clock, Users,
   Shield, Eye, MessageSquare, CheckCircle2, XCircle, Image, Mic, Video
 } from 'lucide-react';
-import { mockTasks, SEVERITY_LEVELS, URGENCY_LEVELS, CATEGORIES } from '../data/mockData';
+import { useDocument } from '../hooks/useFirestoreData';
+import { adminApi } from '../api';
+import { SEVERITY_LEVELS, URGENCY_LEVELS, CATEGORIES } from '../data/mockData'; // For dropdowns
 import './TaskDetail.css';
 
 function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
+  const cls = `severity-badge severity-${(severity || 'LOW').toLowerCase()}`;
+  return <span className={cls}>{severity || 'LOW'}</span>;
 }
 
 function StatusBadge({ status }) {
@@ -16,22 +19,37 @@ function StatusBadge({ status }) {
     DRAFT: 'Draft', SUBMITTED: 'Submitted', UNDER_REVIEW: 'Under Review',
     ACTIVE: 'Active', CLOSED: 'Closed', COMPLETED: 'Completed', REJECTED: 'Rejected'
   };
-  return <span className={`status-badge status-${status.toLowerCase()}`}>{labels[status] || status}</span>;
+  return <span className={`status-badge status-${(status || '').toLowerCase()}`}>{labels[status] || status}</span>;
 }
 
 export default function TaskDetail() {
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const task = mockTasks.find(t => t.id === taskId);
+  const { data: task, loading } = useDocument('tasks', taskId);
   
-  const [overrideCategory, setOverrideCategory] = useState(task?.managementOverride?.category || '');
-  const [overrideSeverity, setOverrideSeverity] = useState(task?.managementOverride?.severity || '');
-  const [overrideUrgency, setOverrideUrgency] = useState(task?.managementOverride?.urgency || '');
+  const [overrideCategory, setOverrideCategory] = useState('');
+  const [overrideSeverity, setOverrideSeverity] = useState('');
+  const [overrideUrgency, setOverrideUrgency] = useState('');
   const [newComment, setNewComment] = useState('');
-  const [requiredSkills, setRequiredSkills] = useState(task?.requiredSkills?.join(', ') || '');
-  const [maxVol, setMaxVol] = useState(task?.maxVolunteers || '');
+  const [requiredSkills, setRequiredSkills] = useState('');
+  const [maxVol, setMaxVol] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (task) {
+      setOverrideCategory(task.managementOverride?.category || '');
+      setOverrideSeverity(task.managementOverride?.severity || '');
+      setOverrideUrgency(task.managementOverride?.urgency || '');
+      setRequiredSkills(task.requiredSkills?.join(', ') || '');
+      setMaxVol(task.maxVolunteers || '');
+    }
+  }, [task]);
+
+  if (loading) {
+    return <div className="loading-screen">Loading task details...</div>;
+  }
 
   if (!task) {
     return (
@@ -42,7 +60,83 @@ export default function TaskDetail() {
     );
   }
 
-  const ai = task.aiAnalysis;
+  const handleApprove = async () => {
+    setIsSubmitting(true);
+    try {
+      const { doc, updateDoc, db, serverTimestamp } = await import('../firebase.js');
+      const updates = {
+        status: 'ACTIVE',
+        updatedAt: serverTimestamp()
+      };
+      
+      if (overrideCategory || overrideSeverity || overrideUrgency) {
+        updates.managementOverride = {
+          category: overrideCategory || undefined,
+          severity: overrideSeverity || undefined,
+          urgency: overrideUrgency || undefined,
+        };
+      }
+      
+      await updateDoc(doc(db, 'tasks', taskId), updates);
+      navigate('/admin/tasks');
+    } catch (err) {
+      alert('Error approving task: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setIsSubmitting(true);
+    try {
+      const { doc, updateDoc, db, serverTimestamp } = await import('../firebase.js');
+      await updateDoc(doc(db, 'tasks', taskId), {
+        status: 'REJECTED',
+        rejectionReason: rejectionReason,
+        updatedAt: serverTimestamp()
+      });
+      setShowRejectModal(false);
+      navigate('/admin/tasks');
+    } catch (err) {
+      alert('Error rejecting task: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    setIsSubmitting(true);
+    try {
+      const { doc, updateDoc, arrayUnion, db, auth } = await import('../firebase.js');
+      const commentObj = {
+        text: newComment.trim(),
+        authorId: auth.currentUser?.uid,
+        authorName: auth.currentUser?.displayName || 'Admin',
+        createdAt: new Date().toISOString()
+      };
+      await updateDoc(doc(db, 'tasks', taskId), {
+        comments: arrayUnion(commentObj)
+      });
+      setNewComment('');
+    } catch (err) {
+      alert('Error adding comment: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const ai = task.aiAnalysis || {
+    processingStatus: 'PENDING',
+    situationSummary: 'Pending analysis...',
+    category: 'Unknown',
+    severity: 'LOW',
+    urgency: 'NON_URGENT',
+    estimatedAffected: null,
+    keyObservations: []
+  };
+
+  const employeeAssessment = task.employeeAssessment || { severity: 'LOW', urgency: 'NON_URGENT' };
 
   return (
     <div className="task-detail-page">
@@ -52,7 +146,7 @@ export default function TaskDetail() {
         <ChevronRight size={14} />
         <Link to="/admin/tasks">Task Queue</Link>
         <ChevronRight size={14} />
-        <span className="text-muted">{task.title.substring(0, 40)}...</span>
+        <span className="text-muted">{task.title?.substring(0, 40) || 'Task'}...</span>
       </nav>
 
       {/* Task Header */}
@@ -60,18 +154,18 @@ export default function TaskDetail() {
         <div className="task-detail-header-left">
           <div className="task-detail-badges">
             <StatusBadge status={task.status} />
-            <span className="type-badge">{task.reportType.replace('_', ' ')}</span>
+            <span className="type-badge">{task.reportType?.replace('_', ' ') || 'Report'}</span>
           </div>
           <h1 className="headline-lg">{task.title}</h1>
           <div className="task-detail-meta">
             <span className="body-sm text-muted">
-              <MapPin size={14} /> {task.location.address}
+              <MapPin size={14} /> {task.location?.address || 'Unknown'}
             </span>
             <span className="body-sm text-muted">
-              <Clock size={14} /> Submitted {new Date(task.createdAt).toLocaleDateString()}
+              <Clock size={14} /> Submitted {task.createdAt?.toDate ? task.createdAt.toDate().toLocaleDateString() : 'Unknown'}
             </span>
             <span className="body-sm text-muted">
-              <Users size={14} /> By {task.employeeName}
+              <Users size={14} /> By {task.employeeName || task.employeeId || 'Unknown'}
             </span>
           </div>
         </div>
@@ -86,7 +180,7 @@ export default function TaskDetail() {
               <h2 className="headline-sm">
                 <Eye size={20} /> AI Situation Analysis
               </h2>
-              <span className={`ai-status ai-${ai.processingStatus.toLowerCase()}`}>
+              <span className={`ai-status ai-${ai.processingStatus?.toLowerCase() || 'pending'}`}>
                 {ai.processingStatus === 'DONE' ? '✓ Analysis Complete' : '⏳ Processing'}
               </span>
             </div>
@@ -110,7 +204,7 @@ export default function TaskDetail() {
                 <div className="comparison-row">
                   <div className="comparison-item">
                     <span className="label-md">Employee</span>
-                    <SeverityBadge severity={task.employeeAssessment.severity} />
+                    <SeverityBadge severity={employeeAssessment.severity} />
                   </div>
                   <div className="comparison-item">
                     <span className="label-md">AI</span>
@@ -131,7 +225,7 @@ export default function TaskDetail() {
                 <div className="comparison-row">
                   <div className="comparison-item">
                     <span className="label-md">Employee</span>
-                    <span className="urgency-value">{task.employeeAssessment.urgency.replace('_', ' ')}</span>
+                    <span className="urgency-value">{employeeAssessment.urgency.replace('_', ' ')}</span>
                   </div>
                   <div className="comparison-item">
                     <span className="label-md">AI</span>
@@ -146,12 +240,15 @@ export default function TaskDetail() {
           <section className="detail-section animate-fade-in" style={{ animationDelay: '400ms' }}>
             <h2 className="headline-sm">Key Observations</h2>
             <ul className="observations-list">
-              {ai.keyObservations.map((obs, i) => (
+              {(ai.keyObservations || []).map((obs, i) => (
                 <li key={i} className="body-md">
                   <AlertTriangle size={14} className="text-primary" />
                   {obs}
                 </li>
               ))}
+              {(!ai.keyObservations || ai.keyObservations.length === 0) && (
+                <li className="body-md text-muted">No specific observations available.</li>
+              )}
             </ul>
           </section>
 
@@ -192,15 +289,15 @@ export default function TaskDetail() {
               <MessageSquare size={20} /> Internal Comments
             </h2>
             <div className="comments-list">
-              {task.internalComments.length === 0 && (
+              {(!task.internalComments || task.internalComments.length === 0) && (
                 <p className="body-sm text-muted">No internal comments yet.</p>
               )}
-              {task.internalComments.map((comment, i) => (
+              {(task.internalComments || []).map((comment, i) => (
                 <div key={i} className="comment-item">
                   <div className="comment-header">
-                    <span className="label-lg">{comment.author}</span>
+                    <span className="label-lg">{comment.authorName || comment.authorId}</span>
                     <span className="label-md text-muted">
-                      {new Date(comment.timestamp).toLocaleString()}
+                      {comment.timestamp?.toDate ? comment.timestamp.toDate().toLocaleString() : new Date(comment.timestamp).toLocaleString()}
                     </span>
                   </div>
                   <p className="body-md">{comment.text}</p>
@@ -215,7 +312,13 @@ export default function TaskDetail() {
                 onChange={(e) => setNewComment(e.target.value)}
                 id="new-comment"
               />
-              <button className="btn-secondary btn-sm" disabled={!newComment.trim()}>Post</button>
+              <button 
+                className="btn-secondary btn-sm" 
+                disabled={!newComment.trim() || isSubmitting}
+                onClick={handleAddComment}
+              >
+                Post
+              </button>
             </div>
           </section>
         </div>
@@ -226,7 +329,7 @@ export default function TaskDetail() {
           <section className="detail-section animate-slide-right" style={{ animationDelay: '200ms' }}>
             <h2 className="headline-sm">Media Attachments</h2>
             <div className="media-gallery">
-              {Array.from({ length: task.mediaCount.images }).map((_, i) => (
+              {Array.from({ length: task.mediaCount?.images || 0 }).map((_, i) => (
                 <div key={`img-${i}`} className="media-thumb">
                   <div className="media-thumb-placeholder">
                     <Image size={24} />
@@ -238,7 +341,7 @@ export default function TaskDetail() {
                   </div>
                 </div>
               ))}
-              {Array.from({ length: task.mediaCount.audio }).map((_, i) => (
+              {Array.from({ length: task.mediaCount?.audio || 0 }).map((_, i) => (
                 <div key={`aud-${i}`} className="media-thumb audio">
                   <div className="media-thumb-placeholder">
                     <Mic size={24} />
@@ -246,7 +349,7 @@ export default function TaskDetail() {
                   </div>
                 </div>
               ))}
-              {Array.from({ length: task.mediaCount.shortVideos + task.mediaCount.longVideos }).map((_, i) => (
+              {Array.from({ length: (task.mediaCount?.shortVideos || 0) + (task.mediaCount?.longVideos || 0) }).map((_, i) => (
                 <div key={`vid-${i}`} className="media-thumb video">
                   <div className="media-thumb-placeholder">
                     <Video size={24} />
@@ -254,6 +357,9 @@ export default function TaskDetail() {
                   </div>
                 </div>
               ))}
+              {(!task.mediaCount || (task.mediaCount.images === 0 && task.mediaCount.audio === 0 && task.mediaCount.shortVideos === 0 && task.mediaCount.longVideos === 0)) && (
+                <p className="body-sm text-muted">No media attached.</p>
+              )}
             </div>
           </section>
 
@@ -263,7 +369,7 @@ export default function TaskDetail() {
             <div className="transcript-box">
               <p className="body-md">
                 "{task.description} — Field officer report recorded on-site. 
-                Immediate attention required for {task.aiAnalysis.category.toLowerCase()} response."
+                Immediate attention required for {ai.category.toLowerCase()} response."
               </p>
               <span className="label-sm text-primary">Cleaned by Gemini 1.5 Pro · Temp 0.1</span>
             </div>
@@ -275,9 +381,9 @@ export default function TaskDetail() {
             <div className="detail-map">
               <div className="detail-map-mock">
                 <MapPin size={28} className="text-primary" />
-                <span className="body-sm">{task.location.address}</span>
+                <span className="body-sm">{task.location?.address || 'Unknown location'}</span>
                 <span className="label-sm text-muted">
-                  {task.location.lat.toFixed(4)}, {task.location.lng.toFixed(4)}
+                  {task.location?.lat?.toFixed(4)}, {task.location?.lng?.toFixed(4)}
                 </span>
               </div>
             </div>
@@ -310,16 +416,18 @@ export default function TaskDetail() {
               </div>
             </div>
 
-            <div className="action-buttons">
-              <button className="btn-approve" id="approve-task">
-                <CheckCircle2 size={18} />
-                <span>Approve & Activate</span>
-              </button>
-              <button className="btn-reject" onClick={() => setShowRejectModal(true)} id="reject-task">
-                <XCircle size={18} />
-                <span>Reject</span>
-              </button>
-            </div>
+            {['SUBMITTED', 'UNDER_REVIEW'].includes(task.status) && (
+              <div className="action-buttons">
+                <button className="btn-approve" id="approve-task" onClick={handleApprove} disabled={isSubmitting}>
+                  <CheckCircle2 size={18} />
+                  <span>Approve & Activate</span>
+                </button>
+                <button className="btn-reject" onClick={() => setShowRejectModal(true)} id="reject-task" disabled={isSubmitting}>
+                  <XCircle size={18} />
+                  <span>Reject</span>
+                </button>
+              </div>
+            )}
 
             <button 
               className="btn-secondary btn-full"
@@ -327,7 +435,7 @@ export default function TaskDetail() {
               id="view-volunteers"
             >
               <Users size={18} />
-              <span>View Volunteer Applications ({task.acceptedCount})</span>
+              <span>View Volunteer Applications ({task.acceptedCount || 0})</span>
             </button>
           </section>
         </div>
@@ -347,8 +455,10 @@ export default function TaskDetail() {
               id="rejection-reason"
             />
             <div className="modal-actions">
-              <button className="btn-secondary" onClick={() => setShowRejectModal(false)}>Cancel</button>
-              <button className="btn-reject" disabled={!rejectionReason.trim()}>Confirm Rejection</button>
+              <button className="btn-secondary" onClick={() => setShowRejectModal(false)} disabled={isSubmitting}>Cancel</button>
+              <button className="btn-reject" disabled={!rejectionReason.trim() || isSubmitting} onClick={handleReject}>
+                Confirm Rejection
+              </button>
             </div>
           </div>
         </div>

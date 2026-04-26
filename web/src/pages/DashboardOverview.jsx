@@ -3,11 +3,11 @@ import {
   TrendingUp, TrendingDown, Clock, MapPin, AlertTriangle, Activity,
   Users, Image, Mic, Video, Sparkles, ChevronRight, ArrowUpRight
 } from 'lucide-react';
-import { mockTasks, dashboardStats } from '../data/mockData';
+import { useTaskQueue, useAllTasks, useDashboardStats } from '../hooks/useFirestoreData';
 import './DashboardOverview.css';
 
 function StatCard({ stat, icon: Icon, delay }) {
-  const isPositive = stat.trend > 0;
+  const isPositive = stat.trend >= 0;
   return (
     <div className="stat-card animate-fade-in" style={{ animationDelay: `${delay}ms` }}>
       <div className="stat-card-header">
@@ -26,8 +26,8 @@ function StatCard({ stat, icon: Icon, delay }) {
 }
 
 function SeverityBadge({ severity }) {
-  const cls = `severity-badge severity-${severity.toLowerCase()}`;
-  return <span className={cls}>{severity}</span>;
+  const cls = `severity-badge severity-${(severity || 'LOW').toLowerCase()}`;
+  return <span className={cls}>{severity || 'LOW'}</span>;
 }
 
 function StatusBadge({ status }) {
@@ -35,11 +35,13 @@ function StatusBadge({ status }) {
     DRAFT: 'Draft', SUBMITTED: 'Submitted', UNDER_REVIEW: 'Under Review',
     ACTIVE: 'Active', CLOSED: 'Closed', COMPLETED: 'Completed', REJECTED: 'Rejected'
   };
-  return <span className={`status-badge status-${status.toLowerCase()}`}>{labels[status] || status}</span>;
+  return <span className={`status-badge status-${(status || '').toLowerCase()}`}>{labels[status] || status}</span>;
 }
 
 function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
+  if (!dateStr) return '';
+  const date = dateStr.toDate ? dateStr.toDate() : new Date(dateStr);
+  const diff = Date.now() - date.getTime();
   const hours = Math.floor(diff / 3600000);
   if (hours < 1) return 'Just now';
   if (hours < 24) return `${hours}h ago`;
@@ -48,12 +50,12 @@ function timeAgo(dateStr) {
 }
 
 function VolunteerRing({ accepted, max }) {
-  const pct = max ? Math.min((accepted / max) * 100, 100) : 0;
+  const pct = max ? Math.min(((accepted || 0) / max) * 100, 100) : 0;
   const r = 18;
   const circ = 2 * Math.PI * r;
   const offset = circ - (pct / 100) * circ;
   return (
-    <div className="vol-ring-wrap" title={`${accepted}/${max || '∞'} volunteers`}>
+    <div className="vol-ring-wrap" title={`${accepted || 0}/${max || '∞'} volunteers`}>
       <svg width="44" height="44" viewBox="0 0 44 44">
         <circle cx="22" cy="22" r={r} fill="none" stroke="var(--surface-container-highest)" strokeWidth="3" />
         {max && (
@@ -64,13 +66,14 @@ function VolunteerRing({ accepted, max }) {
           />
         )}
       </svg>
-      <span className="vol-ring-label label-md">{accepted}</span>
+      <span className="vol-ring-label label-md">{accepted || 0}</span>
     </div>
   );
 }
 
 function MediaIcons({ mediaCount }) {
-  const total = mediaCount.images + mediaCount.audio + mediaCount.shortVideos + mediaCount.longVideos;
+  if (!mediaCount) return null;
+  const total = (mediaCount.images || 0) + (mediaCount.audio || 0) + (mediaCount.shortVideos || 0) + (mediaCount.longVideos || 0);
   if (total === 0) return null;
   return (
     <div className="trq-media-icons">
@@ -90,8 +93,15 @@ function severityColor(sev) {
 
 export default function DashboardOverview() {
   const navigate = useNavigate();
-  const pendingTasks = mockTasks.filter(t => ['SUBMITTED', 'UNDER_REVIEW'].includes(t.status));
-  const allActive = mockTasks.filter(t => t.status === 'ACTIVE');
+  const { tasks: pendingTasks, loading: qLoading } = useTaskQueue();
+  const { data: activeTasksData, loading: aLoading } = useAllTasks('ACTIVE');
+  const { stats, loading: sLoading } = useDashboardStats();
+
+  if (qLoading || aLoading || sLoading) {
+    return <div className="loading-screen">Loading dashboard...</div>;
+  }
+
+  const allActive = activeTasksData || [];
 
   return (
     <div className="dashboard-overview">
@@ -104,10 +114,10 @@ export default function DashboardOverview() {
 
       {/* Stat Cards */}
       <div className="stats-grid">
-        <StatCard stat={dashboardStats.activeTasks} icon={Activity} delay={0} />
-        <StatCard stat={dashboardStats.pendingReview} icon={AlertTriangle} delay={100} />
-        <StatCard stat={dashboardStats.activeVolunteers} icon={MapPin} delay={200} />
-        <StatCard stat={dashboardStats.completedMonth} icon={Clock} delay={300} />
+        <StatCard stat={{ value: stats.activeTasks, trend: 0, label: 'Active Tasks' }} icon={Activity} delay={0} />
+        <StatCard stat={{ value: stats.pendingReview, trend: 0, label: 'Pending Review' }} icon={AlertTriangle} delay={100} />
+        <StatCard stat={{ value: stats.activeVolunteers, trend: 0, label: 'Active Volunteers' }} icon={MapPin} delay={200} />
+        <StatCard stat={{ value: stats.completedTasks, trend: 0, label: 'Completed Tasks' }} icon={Clock} delay={300} />
       </div>
 
       {/* ── Task Review Queue (Premium Card-Row Design) ── */}
@@ -123,8 +133,8 @@ export default function DashboardOverview() {
         </div>
 
         <div className="trq-list">
-          {mockTasks.slice(0, 6).map((task, i) => {
-            const sev = task.managementOverride?.severity || task.aiAnalysis.severity;
+          {pendingTasks.slice(0, 6).map((task, i) => {
+            const sev = task.managementOverride?.severity || task.aiAnalysis?.severity || 'LOW';
             return (
               <div
                 key={task.id}
@@ -154,19 +164,19 @@ export default function DashboardOverview() {
                   {/* Row 3: AI one-liner */}
                   <p className="trq-ai-snippet body-sm text-muted">
                     <Sparkles size={12} className="trq-ai-icon" />
-                    {task.aiAnalysis.situationSummary.substring(0, 130)}…
+                    {task.aiAnalysis?.situationSummary?.substring(0, 130) || 'Pending AI Analysis...'}
                   </p>
 
                   {/* Row 4: Meta chips */}
                   <div className="trq-card-meta">
                     <span className="trq-meta-chip">
-                      <MapPin size={13} /> {task.location.address.split(',')[0]}
+                      <MapPin size={13} /> {task.location?.address?.split(',')[0] || 'Unknown location'}
                     </span>
                     <span className="trq-meta-chip">
-                      <Users size={13} /> {task.employeeName}
+                      <Users size={13} /> {task.employeeName || 'Unknown Employee'}
                     </span>
                     <span className="trq-meta-chip trq-meta-affected">
-                      {task.aiAnalysis.estimatedAffected?.toLocaleString() || '?'} affected
+                      {task.aiAnalysis?.estimatedAffected?.toLocaleString() || '?'} affected
                     </span>
                     <MediaIcons mediaCount={task.mediaCount} />
                   </div>
@@ -180,6 +190,11 @@ export default function DashboardOverview() {
               </div>
             );
           })}
+          {pendingTasks.length === 0 && (
+            <div className="trq-empty-state">
+              <p className="body-md text-muted">No tasks pending review.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -202,20 +217,23 @@ export default function DashboardOverview() {
                 <div className="active-task-info">
                   <span className="title-md">{task.title}</span>
                   <div className="active-task-meta">
-                    <SeverityBadge severity={task.managementOverride?.severity || task.aiAnalysis.severity} />
-                    <span className="body-sm text-muted">{task.acceptedCount}/{task.maxVolunteers || '∞'} volunteers</span>
+                    <SeverityBadge severity={task.managementOverride?.severity || task.aiAnalysis?.severity} />
+                    <span className="body-sm text-muted">{task.acceptedCount || 0}/{task.maxVolunteers || '∞'} volunteers</span>
                   </div>
                 </div>
                 <div className="active-task-progress">
                   <div className="progress-bar">
                     <div 
                       className="progress-bar-fill"
-                      style={{ width: `${task.maxVolunteers ? (task.acceptedCount / task.maxVolunteers * 100) : 30}%` }}
+                      style={{ width: `${task.maxVolunteers ? ((task.acceptedCount || 0) / task.maxVolunteers * 100) : 30}%` }}
                     ></div>
                   </div>
                 </div>
               </div>
             ))}
+            {allActive.length === 0 && (
+              <p className="body-sm text-muted" style={{ padding: '16px' }}>No active tasks at the moment.</p>
+            )}
           </div>
         </div>
 

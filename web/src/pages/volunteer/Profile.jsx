@@ -1,31 +1,80 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
   MapPin, LogOut, Edit2, Check, Award
 } from 'lucide-react';
-import { currentVolunteerProfile, currentEmployeeProfile, SKILLS, INTERESTS } from '../../data/mockData';
+import { useAuth } from '../../contexts/AuthContext';
+import { SKILLS, INTERESTS } from '../../data/mockData';
 import './Profile.css';
 
 export default function Profile() {
-  const { user, onLogout } = useOutletContext();
-  const isVolunteer = user?.role === 'VOLUNTEER';
-  const profile = isVolunteer ? currentVolunteerProfile : currentEmployeeProfile;
-  const displayName = user?.displayName || user?.name || profile?.displayName || profile?.name || 'Volunteer';
+  const { onLogout } = useOutletContext();
+  const { userProfile, updateProfile } = useAuth();
+  
+  const isVolunteer = userProfile?.role === 'VOLUNTEER';
+  const displayName = userProfile?.displayName || userProfile?.name || 'User';
 
   const [editMode, setEditMode] = useState(false);
-  const [editedName, setEditedName] = useState(displayName);
-  const [editedPhone, setEditedPhone] = useState(profile?.phone || '');
-  const [editedAddress, setEditedAddress] = useState(profile?.homeLocation?.address || '');
-  const [selectedSkills, setSelectedSkills] = useState(profile.skills || []);
-  const [selectedInterests, setSelectedInterests] = useState(profile.interests || []);
-  const [availability, setAvailability] = useState(profile.availability || []);
+  const [editedName, setEditedName] = useState('');
+  const [editedPhone, setEditedPhone] = useState('');
+  const [editedAddress, setEditedAddress] = useState('');
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [availability, setAvailability] = useState([]);
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const times = ['Morning', 'Afternoon', 'Evening'];
-  const [travelRadius, setTravelRadius] = useState(profile.travelRadius || 10);
+  const [travelRadius, setTravelRadius] = useState(10);
   const [resumeName, setResumeName] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (userProfile) {
+      setEditedName(userProfile.displayName || userProfile.name || '');
+      setEditedPhone(userProfile.phone || '');
+      setEditedAddress(userProfile.homeLocation?.address || '');
+      setSelectedSkills(userProfile.skills || []);
+      setSelectedInterests(userProfile.interests || []);
+      setAvailability(userProfile.availability || []);
+      setTravelRadius(userProfile.travelRadius || 10);
+      setResumeName(userProfile.resumeUrl ? 'resume.pdf' : '');
+    }
+  }, [userProfile]);
 
   const toggleItem = (arr, setArr, item) => {
     setArr(arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item]);
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await updateProfile({
+        displayName: editedName,
+        phone: editedPhone,
+        homeLocation: {
+          address: editedAddress,
+          lat: userProfile?.homeLocation?.lat || 0,
+          lng: userProfile?.homeLocation?.lng || 0
+        },
+        skills: selectedSkills,
+        interests: selectedInterests,
+        availability: availability,
+        travelRadius: Number(travelRadius)
+      });
+      setEditMode(false);
+    } catch (error) {
+      console.error("Error saving profile", error);
+      alert("Failed to save profile.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleEdit = () => {
+    if (editMode) {
+      handleSave();
+    } else {
+      setEditMode(true);
+    }
   };
 
   return (
@@ -33,7 +82,7 @@ export default function Profile() {
       {/* Profile Header */}
       <div className="profile-header animate-fade-in">
         <div className="profile-avatar">
-          {(editedName || 'V').charAt(0).toUpperCase()}
+          {(editedName || 'U').charAt(0).toUpperCase()}
         </div>
         <div className="profile-header-info">
           {editMode ? (
@@ -57,7 +106,7 @@ export default function Profile() {
                 onChange={e => setEditedAddress(e.target.value)} 
               />
             ) : (
-              <span className="body-sm text-muted">{editedAddress}</span>
+              <span className="body-sm text-muted">{editedAddress || 'No location set'}</span>
             )}
           </div>
         </div>
@@ -67,18 +116,18 @@ export default function Profile() {
       {isVolunteer && (
         <div className="profile-stats animate-fade-in" style={{ animationDelay: '100ms' }}>
           <div className="profile-stat">
-            <span className="display-sm text-primary">3</span>
+            <span className="display-sm text-primary">0</span>
             <span className="label-md text-muted">Active Tasks</span>
           </div>
           <div className="profile-stat">
-            <span className="display-sm text-primary">12</span>
+            <span className="display-sm text-primary">0</span>
             <span className="label-md text-muted">Completed</span>
           </div>
           <div className="profile-stat">
             <span className="display-sm" style={{ color: 'var(--on-surface)' }}>
               <Award size={18} />
             </span>
-            <span className="label-md text-muted">Top 10%</span>
+            <span className="label-md text-muted">Newcomer</span>
           </div>
         </div>
       )}
@@ -87,10 +136,11 @@ export default function Profile() {
       <div className="profile-edit-toggle animate-fade-in" style={{ animationDelay: '200ms' }}>
         <button
           className={editMode ? 'btn-primary' : 'btn-secondary'}
-          onClick={() => setEditMode(!editMode)}
+          onClick={handleToggleEdit}
+          disabled={isSaving}
           style={{ width: 'auto', padding: '8px 20px' }}
         >
-          {editMode ? <><Check size={16} /> Save Changes</> : <><Edit2 size={16} /> Edit Profile</>}
+          {isSaving ? 'Saving...' : editMode ? <><Check size={16} /> Save Changes</> : <><Edit2 size={16} /> Edit Profile</>}
         </button>
       </div>
 
@@ -240,12 +290,12 @@ export default function Profile() {
                onChange={e => setEditedPhone(e.target.value)} 
              />
           ) : (
-             <span className="body-md" style={{ color: 'var(--on-surface)' }}>{editedPhone}</span>
+             <span className="body-md" style={{ color: 'var(--on-surface)' }}>{editedPhone || 'No phone set'}</span>
           )}
         </div>
         <div className="profile-info-row">
           <span className="body-sm text-muted">Member Since</span>
-          <span className="body-md" style={{ color: 'var(--on-surface)' }}>{new Date(profile.createdAt).toLocaleDateString()}</span>
+          <span className="body-md" style={{ color: 'var(--on-surface)' }}>{userProfile?.createdAt ? new Date(userProfile.createdAt).toLocaleDateString() : 'Unknown'}</span>
         </div>
       </div>
 

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Filter, MapPin, Search } from 'lucide-react';
-import { mockTasks, SEVERITY_LEVELS, TASK_STATUSES, REPORT_TYPES } from '../data/mockData';
+import { useAllTasks } from '../hooks/useFirestoreData';
+import { SEVERITY_LEVELS, TASK_STATUSES } from '../data/mockData'; // Just for dropdown enums
 import './TaskQueue.css';
 
 function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
+  const cls = `severity-badge severity-${(severity || 'LOW').toLowerCase()}`;
+  return <span className={cls}>{severity || 'LOW'}</span>;
 }
 
 function StatusBadge({ status }) {
@@ -13,11 +15,13 @@ function StatusBadge({ status }) {
     DRAFT: 'Draft', SUBMITTED: 'Submitted', UNDER_REVIEW: 'Under Review',
     ACTIVE: 'Active', CLOSED: 'Closed', COMPLETED: 'Completed', REJECTED: 'Rejected'
   };
-  return <span className={`status-badge status-${status.toLowerCase()}`}>{labels[status] || status}</span>;
+  return <span className={`status-badge status-${(status || '').toLowerCase()}`}>{labels[status] || status}</span>;
 }
 
 function timeAgo(dateStr) {
-  const diff = Date.now() - new Date(dateStr).getTime();
+  if (!dateStr) return '';
+  const date = dateStr.toDate ? dateStr.toDate() : new Date(dateStr);
+  const diff = Date.now() - date.getTime();
   const hours = Math.floor(diff / 3600000);
   if (hours < 1) return 'Just now';
   if (hours < 24) return `${hours}h ago`;
@@ -30,10 +34,19 @@ export default function TaskQueue() {
   const [filterSeverity, setFilterSeverity] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredTasks = mockTasks.filter(task => {
+  const { data: allTasks, loading } = useAllTasks();
+
+  if (loading) {
+    return <div className="loading-screen">Loading tasks...</div>;
+  }
+
+  const tasks = allTasks || [];
+
+  const filteredTasks = tasks.filter(task => {
     if (filterStatus !== 'ALL' && task.status !== filterStatus) return false;
-    if (filterSeverity !== 'ALL' && task.aiAnalysis.severity !== filterSeverity) return false;
-    if (searchTerm && !task.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    const sev = task.managementOverride?.severity || task.aiAnalysis?.severity;
+    if (filterSeverity !== 'ALL' && sev !== filterSeverity) return false;
+    if (searchTerm && !task.title?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
 
@@ -42,7 +55,7 @@ export default function TaskQueue() {
       <div className="page-header">
         <div>
           <h1 className="headline-lg">Task Queue</h1>
-          <p className="body-md text-muted">{mockTasks.length} total tasks · {mockTasks.filter(t => t.status === 'SUBMITTED').length} awaiting review</p>
+          <p className="body-md text-muted">{tasks.length} total tasks · {tasks.filter(t => t.status === 'SUBMITTED').length} awaiting review</p>
         </div>
       </div>
 
@@ -92,24 +105,19 @@ export default function TaskQueue() {
             <div className="task-card-meta">
               <div className="task-card-location">
                 <MapPin size={14} />
-                <span className="body-sm">{task.location.address.split(',')[0]}</span>
+                <span className="body-sm">{task.location?.address?.split(',')[0] || 'Unknown'}</span>
               </div>
-              <SeverityBadge severity={task.managementOverride?.severity || task.aiAnalysis.severity} />
+              <SeverityBadge severity={task.managementOverride?.severity || task.aiAnalysis?.severity} />
             </div>
             <div className="task-card-footer">
-              <span className="label-md text-muted">By {task.employeeName}</span>
-              <div className="task-card-media-counts">
-                {task.mediaCount.images > 0 && <span className="media-count">🖼 {task.mediaCount.images}</span>}
-                {task.mediaCount.audio > 0 && <span className="media-count">🎙 {task.mediaCount.audio}</span>}
-                {(task.mediaCount.shortVideos + task.mediaCount.longVideos) > 0 && (
-                  <span className="media-count">🎬 {task.mediaCount.shortVideos + task.mediaCount.longVideos}</span>
-                )}
-              </div>
+              <span className="label-md text-muted">By {task.employeeId || 'Unknown'}</span>
             </div>
-            {task.aiAnalysis.processingStatus === 'DONE' && (
+            {task.aiAnalysis?.processingStatus === 'DONE' && (
               <div className="task-card-ai-summary">
                 <span className="label-sm text-primary">AI Summary</span>
-                <p className="body-sm text-muted">{task.aiAnalysis.situationSummary.substring(0, 120)}...</p>
+                <p className="body-sm text-muted">
+                  {task.aiAnalysis.situationSummary ? task.aiAnalysis.situationSummary.substring(0, 120) + '...' : 'No summary'}
+                </p>
               </div>
             )}
           </div>
