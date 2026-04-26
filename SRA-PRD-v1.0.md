@@ -125,7 +125,7 @@ Local NGOs and social groups operate in data-rich but insight-poor environments.
 | Layer | Google Product / Service | Purpose |
 |---|---|---|
 | Mobile App | Flutter (Dart) | Single codebase → Android + iOS native apps |
-| Web Dashboard | React + Firebase Hosting | NGO Management web interface, analytics, reporting |
+| Web Dashboard | React + Firebase Hosting | Multi-persona web interface (Management, Volunteer, Employee), analytics, reporting |
 | Offline Sync | Firebase Firestore (offline mode) | Local-first storage with automatic background sync and conflict resolution |
 | Authentication | Firebase Authentication | Simple Role-based auth: **Unique Username + Password**. Roles: Volunteer / NGO Employee / NGO Management / Admin. |
 | Media Storage | Google Cloud Storage (GCS) | Audio, image, short/long video — tiered storage with lifecycle policies |
@@ -138,16 +138,16 @@ Local NGOs and social groups operate in data-rich but insight-poor environments.
 | Task Queue | Google Cloud Tasks | Async media processing pipeline, background AI jobs |
 | Notifications | Firebase Cloud Messaging (FCM) | Task status updates, new task alerts, proof review notifications |
 | Analytics | BigQuery + Looker Studio | KPI dashboards, operational metrics, equity reports |
-| Database | Firestore + Cloud SQL (PostGIS) | Firestore for app data; PostGIS for spatial matching queries |
+| Database | Firebase Firestore | Firestore for all app data including Geohash-based spatial queries |
 
 ### 4.2 Architecture Overview
 
-The system follows an **offline-first, event-driven architecture**. Client apps write to Firestore, which syncs to Cloud Run backend services when connectivity is available. Media assets upload directly to GCS with signed URLs. A Cloud Tasks queue triggers async AI processing for each media type. The matching engine runs as a scheduled Cloud Run job recomputing volunteer scores whenever tasks go ACTIVE.
+The system follows an **offline-first, event-driven architecture**. Client apps write to Firestore, which syncs to a single monolithic Cloud Run backend service when connectivity is available. Media assets upload directly to GCS with signed URLs. A Cloud Tasks queue triggers async AI processing for each media type. The matching engine runs as a scheduled task within the Cloud Run monolith, recomputing volunteer scores whenever tasks go ACTIVE using Geohash-based spatial queries.
 
 ```
 ┌───────────────────────────────────────────────────────────────────┐
 │  CLIENT LAYER                                                     │
-│  Flutter Mobile App (Android/iOS)    React Web Dashboard (Mgmt)  │
+│  Flutter Mobile App (Android/iOS)    React Web Dashboard (All Roles) │
 └─────────────────┬───────────────────────────┬─────────────────────┘
                   │ Firebase Auth              │ Firebase Auth + 2FA
        ┌──────────▼────────────────────────────▼──────────┐
@@ -155,16 +155,16 @@ The system follows an **offline-first, event-driven architecture**. Client apps 
        │     Google Cloud Storage (Media — GCS)             │
        └──────────────────────┬───────────────────────────-┘
                               │  Sync / Events
-       ┌──────────────────────▼──────────────────────────--┐
-       │         Google Cloud Run (REST API Services)        │
-       │   Task Service | User Service | Match Service       │
-       └────┬────────────────────────┬───────────────────---┘
-            │ Cloud Tasks Queue      │ PostGIS Spatial DB
-       ┌────▼──────────────────┐     │
-       │  AI Processing Layer   │    │
-       │  Speech-to-Text v2     │    │
-       │  Cloud Vision API      │    │
-       │  Video Intelligence    ├────┘
+       ┌──────────────────────▼────────────────────────────┐
+       │         Google Cloud Run (REST API Monolith)      │
+       │   Tasks | Users | Matching | AI Pipeline          │
+       └────┬──────────────────────────────────────────────┘
+            │ Cloud Tasks Queue      
+       ┌────▼──────────────────┐     
+       │  AI Processing Layer   │    
+       │  Speech-to-Text v2     │    
+       │  Cloud Vision API      │    
+       │  Video Intelligence    │
        │  Vertex AI Gemini 1.5  │
        └───────────────────────┘
 ```
@@ -251,7 +251,7 @@ All media is saved locally first and uploaded in the background on reconnect. Pe
 
 ### 5.2 NGO Management — Review & Governance Module
 
-NGO Management access is primarily via the **React web dashboard**, with a secondary management view available on mobile. Management users have elevated permissions and exclusive access to all internal data layers.
+NGO Management access is via the **React web dashboard**, which serves as a unified multi-persona portal supporting Management, Volunteers, and Field Employees. Management users have elevated permissions and exclusive access to all internal data layers.
 
 ---
 
