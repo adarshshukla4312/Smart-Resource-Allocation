@@ -1,7 +1,8 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import {
   Compass, ClipboardList, User, Bell,
-  FileText, PlusCircle
+  FileText, PlusCircle, BarChart2, Users, Search,
+  CheckCircle2
 } from 'lucide-react';
 import { useState } from 'react';
 import './MobileLayout.css';
@@ -13,113 +14,107 @@ export default function MobileLayout({ user, onLogout }) {
   const isAdmin = user?.role === 'ADMIN';
 
   const volunteerTabs = [
-    { path: '/feed', icon: Compass, label: 'Explore' },
-    { path: '/applications', icon: ClipboardList, label: 'My Tasks' },
-    { path: '/profile', icon: User, label: 'Profile' },
+    { path: '/feed', icon: Compass, label: 'EXPLORE' },
+    { path: '/applications', icon: ClipboardList, label: 'MISSIONS' },
+    { path: '/profile', icon: User, label: 'PROFILE' },
   ];
 
   const employeeTabs = [
-    { path: '/reports', icon: FileText, label: 'Reports' },
-    { path: '/reports/new', icon: PlusCircle, label: 'New Report' },
-    { path: '/profile', icon: User, label: 'Profile' },
+    { path: '/reports', icon: FileText, label: 'REPORTS' },
+    { path: '/reports/new', icon: PlusCircle, label: 'LOG FIELD' },
+    { path: '/profile', icon: User, label: 'PROFILE' },
   ];
 
   const adminTabs = [
-    { path: '/admin', icon: Compass, label: 'Dashboard' },
-    { path: '/profile', icon: User, label: 'Profile' },
+    { path: '/admin', icon: BarChart2, label: 'CONSOLE' },
+    { path: '/feed', icon: Compass, label: 'GRID' },
+    { path: '/reports', icon: FileText, label: 'HISTORY' },
+    { path: '/profile', icon: User, label: 'IDENTITY' },
   ];
 
   const tabs = isVolunteer ? volunteerTabs : isAdmin ? adminTabs : employeeTabs;
 
-  // Determine current page title
   const getTitle = () => {
     const path = location.pathname;
-    if (path.startsWith('/feed') && path.split('/').length > 2) return 'Task Details';
-    if (path === '/feed') return 'Explore Tasks';
-    if (path === '/applications') return 'My Applications';
-    if (path.includes('/proof')) return 'Submit Proof';
-    if (path === '/profile') return 'My Profile';
-    if (path === '/reports/new') return 'New Report';
-    if (path === '/reports') return 'My Reports';
-    if (path === '/admin') return 'Admin Dashboard';
-    return 'SRA';
+    if (path.startsWith('/feed/')) return 'MISSION ANALYSIS';
+    if (path === '/feed') return 'MISSION GRID';
+    if (path === '/applications') return 'ENGAGEMENTS';
+    if (path === '/profile') return 'CONSOLE IDENTITY';
+    if (path === '/reports/new') return 'FIELD LOG';
+    if (path === '/reports') return 'REPORT ARCHIVE';
+    if (path === '/admin') return 'SYSTEM OVERVIEW';
+    return 'WISPRFLOW';
   };
 
   return (
     <div className="mobile-layout">
-      {/* Top Bar */}
-      <header className="mobile-topbar glass">
-        <div className="mobile-topbar-left">
-          <div className="mobile-topbar-logo">SRA</div>
-          <span className="mobile-topbar-title title-md">{getTitle()}</span>
+      <header className="editorial-topbar">
+        <div className="topbar-left">
+          <span className="brand-dot"></span>
+          <span className="topbar-title serif">{getTitle()}</span>
         </div>
-        <div className="mobile-topbar-right">
-          <button
-            className="mobile-topbar-btn"
-            onClick={() => setShowNotifications(!showNotifications)}
-            aria-label="Notifications"
-            id="mobile-notifications"
-          >
+        <div className="topbar-right">
+          <button className="icon-btn-minimal" onClick={() => setShowNotifications(!showNotifications)}>
             <Bell size={20} />
-            <span className="notification-dot"></span>
+            <span className="notif-pulse"></span>
           </button>
+          <div className="topbar-avatar">
+            {user?.name?.charAt(0) || 'U'}
+          </div>
         </div>
       </header>
 
-      {/* Notification dropdown */}
       {showNotifications && (
         <>
-          <div className="notif-overlay" onClick={() => setShowNotifications(false)} />
-          <div className="notif-dropdown glass animate-fade-in">
-            <div className="notif-header">
-              <span className="title-md">Notifications</span>
-              <span className="label-md text-primary">3 new</span>
+          <div className="notif-overlay-editorial" onClick={() => setShowNotifications(false)} />
+          <div className="notif-dropdown-editorial animate-fade-in">
+            <div className="notif-header-editorial">
+              <span className="label-lg">NOTIFICATIONS</span>
+              <div className="count-pill">3</div>
             </div>
-            <div className="notif-item">
-              <div className="notif-dot active"></div>
-              <div className="notif-content">
-                <span className="body-md">Your application for <strong>Flood Damage — Riverside Colony</strong> was accepted!</span>
-                <span className="label-md text-muted">2h ago</span>
+            
+            <div className="notif-list-editorial">
+              <div className="notif-item-editorial unread">
+                <div className="notif-icon-bubble"><Compass size={14} /></div>
+                <div className="notif-details">
+                  <p className="body-sm"><strong>Mission Grid</strong> updated with 2 new high-priority incidents.</p>
+                  <span className="label-sm opacity-40">2H AGO</span>
+                </div>
               </div>
-            </div>
-            <div className="notif-item">
-              <div className="notif-dot active"></div>
-              <div className="notif-content">
-                <span className="body-md">New task near you: <strong>Clean Water Distribution — Ward 8</strong></span>
-                <span className="label-md text-muted">5h ago</span>
-              </div>
-            </div>
-            <div className="notif-item">
-              <div className="notif-dot"></div>
-              <div className="notif-content">
-                <span className="body-md">Proof submission approved for <strong>Elderly Care task</strong></span>
-                <span className="label-md text-muted">1d ago</span>
+              <div className="notif-item-editorial">
+                <div className="notif-icon-bubble"><CheckCircle2 size={14} /></div>
+                <div className="notif-details">
+                  <p className="body-sm">Field Evidence for <strong>Flood Damage</strong> has been verified.</p>
+                  <span className="label-sm opacity-40">1D AGO</span>
+                </div>
               </div>
             </div>
           </div>
         </>
       )}
 
-      {/* Main Content */}
-      <main className="mobile-main">
+      <main className="mobile-main-content">
         <Outlet context={{ user, onLogout }} />
       </main>
 
-      {/* Bottom Navigation */}
-      <nav className="mobile-bottom-nav glass">
+      <nav className="editorial-bottom-nav">
         {tabs.map((tab) => (
           <NavLink
             key={tab.path}
             to={tab.path}
             className={({ isActive }) =>
-              `bottom-nav-item ${isActive || location.pathname.startsWith(tab.path) ? 'active' : ''}`
+              `editorial-nav-item ${isActive || (tab.path !== '/profile' && location.pathname.startsWith(tab.path)) ? 'active' : ''}`
             }
           >
-            <tab.icon size={22} />
-            <span>{tab.label}</span>
+            <div className="nav-icon-container">
+              <tab.icon size={20} />
+              <div className="nav-active-indicator"></div>
+            </div>
+            <span className="label-sm">{tab.label}</span>
           </NavLink>
         ))}
       </nav>
     </div>
   );
 }
+

@@ -1,107 +1,150 @@
-/* ===== Profile Page ===== */
+/* ===== Profile Redesign ===== */
 .profile-page {
-  padding: var(--space-4);
-  padding-bottom: var(--space-16);
+  padding: 24px var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-/* Header */
 .profile-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: var(--space-6) 0;
-  margin-bottom: var(--space-4);
+  gap: 20px;
 }
 
-.profile-avatar {
+.profile-avatar-circle {
   width: 72px;
   height: 72px;
+  background: var(--primary);
+  color: white;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--primary), var(--primary-container));
-  color: var(--on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: var(--space-4);
-  box-shadow: 0 8px 32px rgba(6, 78, 59, 0.3);
+  font-size: 2rem;
+  font-family: var(--font-display);
 }
 
-.profile-header h1 {
-  margin-bottom: var(--space-2);
-}
-
-.profile-location {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  margin-top: var(--space-2);
-}
-
-/* Stats */
-.profile-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
-}
-
-.profile-stat {
+.profile-identity {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+}
+
+.profile-badge-row {
+  display: flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-4);
-  background: var(--surface-container);
-  border-radius: var(--radius-xl);
+  gap: 12px;
 }
 
-/* Edit Toggle */
-.profile-edit-toggle {
+.profile-location-meta {
   display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.5;
+}
+
+.profile-stats-row {
+  display: flex;
+  gap: 12px;
+}
+
+.profile-stats-row .stat-card {
+  flex: 1;
+  background: white;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.stat-icon-bubble {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-lavender);
+  color: var(--primary);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-6);
 }
 
-/* Sections */
-.profile-section {
-  background: var(--surface-container-low);
-  border-radius: var(--radius-xl);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
+.stat-value {
+  font-size: 1.5rem;
+  color: var(--primary);
 }
 
-.profile-section > .title-md {
-  display: block;
-  margin-bottom: var(--space-3);
-}
-
-.profile-chips {
+.profile-content {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  flex-direction: column;
+  gap: 24px;
 }
 
-.profile-chips .chip:disabled {
-  opacity: 0.7;
-  cursor: default;
-}
-
-/* Info Rows */
-.profile-info-row {
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--outline-variant);
+  padding-bottom: 12px;
 }
 
-.profile-info-row + .profile-info-row {
-  border-top: 1px solid rgba(64, 73, 68, 0.1);
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Logout */
-.profile-logout {
-  margin-top: var(--space-4);
+.section-label {
+  opacity: 0.4;
+}
+
+.contact-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: white;
+  padding: 20px;
+  border-radius: var(--radius-md);
+}
+
+.contact-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout-btn-editorial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: transparent;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-md);
+  color: var(--error);
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s ease;
+}
+
+.logout-btn-editorial:active {
+  background: rgba(186, 26, 26, 0.05);
+  border-color: var(--error);
+}
+
+.text-primary {
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.text-muted {
+  opacity: 0.5;
+  cursor: pointer;
 }

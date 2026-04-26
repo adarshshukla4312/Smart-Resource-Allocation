@@ -1,5 +1,7 @@
 /* ===== Task Detail Page ===== */
-.task-detail-page { max-width: 1400px; }
+.task-detail-page {
+  width: 100%;
+}
 
 .breadcrumbs {
   display: flex;
@@ -9,8 +11,13 @@
   font-size: 0.8125rem;
 }
 
-.breadcrumbs a { color: var(--primary); }
-.breadcrumbs svg { color: var(--outline); }
+.breadcrumbs a {
+  color: var(--primary);
+}
+
+.breadcrumbs svg {
+  color: var(--outline);
+}
 
 .task-detail-header {
   margin-bottom: var(--space-8);
@@ -22,7 +29,9 @@
   margin-bottom: var(--space-3);
 }
 
-.task-detail-header h1 { margin-bottom: var(--space-3); }
+.task-detail-header h1 {
+  margin-bottom: var(--space-3);
+}
 
 .task-detail-meta {
   display: flex;
@@ -44,10 +53,17 @@
 }
 
 .detail-section {
-  background: var(--surface-container-low);
+  background: var(--surface-container-lowest);
   border-radius: var(--radius-xl);
-  padding: var(--space-6);
-  margin-bottom: var(--space-5);
+  padding: var(--space-8);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .detail-section {
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+  }
 }
 
 .detail-section-header {
@@ -64,7 +80,9 @@
   margin-bottom: var(--space-4);
 }
 
-.detail-section-header h2 { margin-bottom: 0; }
+.detail-section-header h2 {
+  margin-bottom: 0;
+}
 
 /* Assessment Grid */
 .assessment-grid {
@@ -73,10 +91,16 @@
   gap: var(--space-4);
 }
 
+@media (max-width: 640px) {
+  .assessment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .assessment-card {
-  background: var(--surface-container);
+  background: var(--surface-container-low);
   border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-6) var(--space-8);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -89,11 +113,21 @@
   padding: var(--space-4) var(--space-5);
 }
 
-.assessment-comparison .label-sm { margin-bottom: var(--space-3); display: block; }
+.assessment-comparison .label-sm {
+  margin-bottom: var(--space-3);
+  display: block;
+}
 
 .comparison-row {
   display: flex;
   gap: var(--space-5);
+}
+
+@media (max-width: 480px) {
+  .comparison-row {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
 }
 
 .comparison-item {
@@ -133,10 +167,15 @@
   border-radius: var(--radius-md);
 }
 
-.observations-list li svg { flex-shrink: 0; margin-top: 2px; }
+.observations-list li svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
 
 /* Override Section */
-.override-section { background: var(--surface-container); }
+.override-section {
+  background: var(--surface-container);
+}
 
 .override-fields {
   display: grid;
@@ -145,13 +184,20 @@
   margin-top: var(--space-4);
 }
 
+@media (max-width: 768px) {
+  .override-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .override-field {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.override-field select, .config-field input {
+.override-field select,
+.config-field input {
   background: var(--surface-container-low);
   color: var(--on-surface);
   border: none;
@@ -164,12 +210,15 @@
   transition: border-color var(--transition-fast);
 }
 
-.override-field select:focus, .config-field input:focus {
+.override-field select:focus,
+.config-field input:focus {
   border-bottom-color: var(--primary);
 }
 
 /* Comments */
-.comments-list { margin-bottom: var(--space-4); }
+.comments-list {
+  margin-bottom: var(--space-4);
+}
 
 .comment-item {
   background: var(--surface-container);
@@ -201,7 +250,9 @@
   outline: none;
 }
 
-.comment-input-wrapper input::placeholder { color: var(--outline); }
+.comment-input-wrapper input::placeholder {
+  color: var(--outline);
+}
 
 /* Media Gallery */
 .media-gallery {
@@ -233,8 +284,13 @@
   color: var(--on-surface-variant);
 }
 
-.media-thumb.audio .media-thumb-placeholder { background: rgba(149, 211, 186, 0.08); }
-.media-thumb.video .media-thumb-placeholder { background: rgba(255, 180, 169, 0.08); }
+.media-thumb.audio .media-thumb-placeholder {
+  background: rgba(149, 211, 186, 0.08);
+}
+
+.media-thumb.video .media-thumb-placeholder {
+  background: rgba(255, 180, 169, 0.08);
+}
 
 .media-ai-caption {
   padding: var(--space-2) var(--space-3);
@@ -285,7 +341,9 @@
   gap: var(--space-2);
 }
 
-.config-field input::placeholder { color: var(--outline); }
+.config-field input::placeholder {
+  color: var(--outline);
+}
 
 .action-buttons {
   display: flex;
@@ -293,7 +351,8 @@
   margin-bottom: var(--space-4);
 }
 
-.btn-approve, .btn-reject {
+.btn-approve,
+.btn-reject {
   flex: 1;
   display: flex;
   align-items: center;
@@ -310,27 +369,20 @@
 }
 
 .btn-approve {
-  background: linear-gradient(135deg, var(--primary), var(--primary-container));
-  color: var(--on-primary);
+  background: var(--secondary);
+  color: var(--on-secondary);
+  border-radius: var(--radius-lg);
 }
 
 .btn-approve:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(6, 78, 59, 0.3);
+  transform: translateY(-2px);
+  background: #04655B;
 }
 
 .btn-reject {
-  background: rgba(255, 107, 107, 0.12);
-  color: var(--severity-critical);
-}
-
-.btn-reject:hover {
-  background: rgba(255, 107, 107, 0.2);
-}
-
-.btn-reject:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background: var(--error-container);
+  color: var(--error);
+  border-radius: var(--radius-lg);
 }
 
 .btn-secondary {
@@ -350,11 +402,19 @@
   transition: all var(--transition-fast);
 }
 
-.btn-secondary:hover { background: rgba(149, 211, 186, 0.08); }
+.btn-secondary:hover {
+  background: rgba(149, 211, 186, 0.08);
+}
 
-.btn-sm { padding: var(--space-2) var(--space-3); font-size: 0.8125rem; }
+.btn-sm {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.8125rem;
+}
 
-.btn-full { width: 100%; padding: var(--space-3); }
+.btn-full {
+  width: 100%;
+  padding: var(--space-3);
+}
 
 /* Modal */
 .modal-overlay {
@@ -391,7 +451,9 @@
   outline: none;
 }
 
-.modal-content textarea::placeholder { color: var(--outline); }
+.modal-content textarea::placeholder {
+  color: var(--outline);
+}
 
 .modal-actions {
   display: flex;
@@ -399,8 +461,7 @@
   justify-content: flex-end;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .task-detail-grid { grid-template-columns: 1fr; }
-  .override-fields { grid-template-columns: 1fr; }
+/* Final polishing */
+.task-detail-header {
+  padding-right: var(--space-4);
 }

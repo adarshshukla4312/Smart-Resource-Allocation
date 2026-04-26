@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Eye, EyeOff, Shield, ArrowRight, Heart, FileText } from 'lucide-react';
+import { Eye, EyeOff, Shield, ArrowRight, Heart, FileText, UserCheck } from 'lucide-react';
 import './LoginPage.css';
 
 export default function LoginPage({ onLogin }) {
@@ -49,48 +49,40 @@ export default function LoginPage({ onLogin }) {
 
   return (
     <div className="login-mobile">
-      {/* Gradient background orbs */}
-      <div className="login-bg-orb login-orb-1"></div>
-      <div className="login-bg-orb login-orb-2"></div>
-      <div className="login-bg-orb login-orb-3"></div>
-
       <div className="login-mobile-content animate-fade-in">
-        {/* Logo & Branding */}
         <div className="login-branding">
           <div className="login-logo-mark">SRA</div>
-          <h1 className="display-sm">Smart Resource<br/>Allocation</h1>
-          <p className="body-md text-muted">Data-Driven Volunteer Coordination</p>
+          <h1 className="heading-lg">Smart Resource Allocation</h1>
+          <p className="body-standard">Data-Driven Volunteer Coordination</p>
         </div>
 
-        {/* Role Selector */}
-        <div className="login-role-selector" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="login-role-selector">
           <button
             className={`login-role-btn ${selectedRole === 'VOLUNTEER' ? 'active' : ''}`}
             onClick={() => setSelectedRole('VOLUNTEER')}
             type="button"
           >
-            <Heart size={16} />
-            <span style={{fontSize: '12px'}}>Volunteer</span>
+            <Heart size={20} />
+            <span className="label-sm">Volunteer</span>
           </button>
           <button
             className={`login-role-btn ${selectedRole === 'NGO_EMPLOYEE' ? 'active' : ''}`}
             onClick={() => setSelectedRole('NGO_EMPLOYEE')}
             type="button"
           >
-            <FileText size={16} />
-            <span style={{fontSize: '12px'}}>Field Officer</span>
+            <FileText size={20} />
+            <span className="label-sm">Field Officer</span>
           </button>
           <button
             className={`login-role-btn ${selectedRole === 'ADMIN' ? 'active' : ''}`}
             onClick={() => setSelectedRole('ADMIN')}
             type="button"
           >
-            <Shield size={16} />
-            <span style={{fontSize: '12px'}}>Admin</span>
+            <Shield size={20} />
+            <span className="label-sm">Admin</span>
           </button>
         </div>
 
-        {/* Login Form */}
         <form className="login-mobile-form" onSubmit={handleSubmit}>
           {error && (
             <div className="login-error-mobile animate-fade-in">
@@ -99,7 +91,7 @@ export default function LoginPage({ onLogin }) {
           )}
 
           <div className="login-field-mobile">
-            <label className="label-md" htmlFor="login-username">Username</label>
+            <label htmlFor="login-username">Username</label>
             <input
               id="login-username"
               type="text"
@@ -112,7 +104,7 @@ export default function LoginPage({ onLogin }) {
           </div>
 
           <div className="login-field-mobile">
-            <label className="label-md" htmlFor="login-password">Password</label>
+            <label htmlFor="login-password">Password</label>
             <div className="login-password-wrap">
               <input
                 id="login-password"
@@ -127,7 +119,6 @@ export default function LoginPage({ onLogin }) {
                 type="button"
                 className="login-pw-toggle"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -138,7 +129,6 @@ export default function LoginPage({ onLogin }) {
             type="submit"
             className="btn-primary login-submit-mobile"
             disabled={isLoading}
-            id="login-submit"
           >
             {isLoading ? (
               <span className="spinner"></span>
@@ -151,25 +141,23 @@ export default function LoginPage({ onLogin }) {
           </button>
         </form>
 
-        {/* Demo credentials hint */}
         <div className="login-demo-hint">
           <div className="login-demo-row">
             <Shield size={12} />
-            <span className="label-md text-muted">Demo: <strong className="text-primary">volunteer</strong> / <strong className="text-primary">demo</strong></span>
+            <span className="caption">Demo: <strong>volunteer</strong> / <strong>demo</strong></span>
           </div>
           <div className="login-demo-row">
             <Shield size={12} />
-            <span className="label-md text-muted">Demo: <strong className="text-primary">employee</strong> / <strong className="text-primary">demo</strong></span>
+            <span className="caption">Demo: <strong>employee</strong> / <strong>demo</strong></span>
           </div>
           <div className="login-demo-row">
             <Shield size={12} />
-            <span className="label-md text-muted">Demo: <strong className="text-primary">admin</strong> / <strong className="text-primary">admin</strong></span>
+            <span className="caption">Demo: <strong>admin</strong> / <strong>admin</strong></span>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="login-mobile-footer">
-          <p className="label-md text-muted">SRA v1.0 · Powered by Google Cloud</p>
+          <p className="caption">SRA v1.0 · Powered by Google Cloud</p>
         </div>
       </div>
     </div>

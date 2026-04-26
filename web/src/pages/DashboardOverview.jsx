@@ -107,8 +107,8 @@ export default function DashboardOverview() {
     <div className="dashboard-overview">
       <div className="page-header">
         <div>
-          <h1 className="headline-lg">Dashboard</h1>
-          <p className="body-md text-muted">Real-time overview of operations</p>
+          <h1 className="display-md">Overview</h1>
+          <p className="body-lg text-muted">A curated perspective on your global operations.</p>
         </div>
       </div>
 

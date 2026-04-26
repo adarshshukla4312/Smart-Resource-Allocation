@@ -54,8 +54,8 @@ export default function TaskQueue() {
     <div className="task-queue-page">
       <div className="page-header">
         <div>
-          <h1 className="headline-lg">Task Queue</h1>
-          <p className="body-md text-muted">{tasks.length} total tasks · {tasks.filter(t => t.status === 'SUBMITTED').length} awaiting review</p>
+          <h1 className="display-md">Resource Queue</h1>
+          <p className="body-lg text-muted">{tasks.length} total tasks · {tasks.filter(t => t.status === 'SUBMITTED').length} awaiting review</p>
         </div>
       </div>
 

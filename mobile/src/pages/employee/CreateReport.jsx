@@ -2,19 +2,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, ArrowRight, MapPin, Mic, Image, Video,
-  CheckCircle2, AlertTriangle, Clock, FileText, Tag
+  CheckCircle2, AlertTriangle, Clock, FileText, Tag, Sparkles
 } from 'lucide-react';
 import { REPORT_TYPES, SEVERITY_LEVELS, URGENCY_LEVELS, DOCUMENT_TAGS } from '../../data/mockData';
 import './CreateReport.css';
 
-const STEPS = ['Type & Info', 'Location', 'Media', 'Assessment', 'Review'];
+const STEPS = ['Configuration', 'Geo-Spatial', 'Media Deck', 'Assessment', 'Review'];
 
 export default function CreateReport() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
 
-  // Form state
   const [reportType, setReportType] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -46,21 +45,27 @@ export default function CreateReport() {
 
   if (submitted) {
     return (
-      <div className="create-report-page">
-        <div className="report-success animate-scale-in">
-          <div className="report-success-icon">
+      <div className="create-report-page success-view animate-fade-in">
+        <div className="report-success-editorial">
+          <div className="success-icon-bubble">
             <CheckCircle2 size={48} />
           </div>
-          <h2 className="headline-md">Report Submitted!</h2>
-          <p className="body-md text-muted">
-            Your report has been queued for management review. AI processing will begin when synced.
+          <h2 className="display-sm serif">Report Transmitted</h2>
+          <p className="body-md text-muted editorial-para">
+            Your field report has been encrypted and queued for management console synchronization. AI analysis will begin momentarily.
           </p>
-          <div className="report-success-info">
-            <span className="label-md text-muted">Status</span>
-            <span className="status-badge status-submitted">Submitted</span>
+          <div className="success-stats-grid">
+            <div className="success-stat">
+              <span className="label-lg">ID REFERENCE</span>
+              <span className="serif title-md">#WF-{Math.floor(Math.random() * 9000) + 1000}</span>
+            </div>
+            <div className="success-stat">
+              <span className="label-lg">STATUS</span>
+              <span className="match-tag">SYNCHRONIZED</span>
+            </div>
           </div>
-          <button className="btn-primary" onClick={() => navigate('/reports')} style={{ marginTop: '24px' }}>
-            View My Reports
+          <button className="submit-btn-editorial" onClick={() => navigate('/reports')}>
+            Return to Dispatch
           </button>
         </div>
       </div>
@@ -68,274 +73,241 @@ export default function CreateReport() {
   }
 
   return (
-    <div className="create-report-page">
-      {/* Header */}
-      <div className="report-header">
-        <button className="report-back-btn" onClick={() => step > 0 ? setStep(step - 1) : navigate('/reports')}>
+    <div className="create-report-page animate-fade-in">
+      <div className="report-header-editorial">
+        <button className="icon-btn-minimal" onClick={() => step > 0 ? setStep(step - 1) : navigate('/reports')}>
           <ArrowLeft size={20} />
         </button>
-        <span className="title-md">{STEPS[step]}</span>
-        <span className="label-md text-muted">{step + 1}/{STEPS.length}</span>
-      </div>
-
-      {/* Progress Bar */}
-      <div className="report-progress">
-        {STEPS.map((_, i) => (
-          <div key={i} className={`report-progress-dot ${i <= step ? 'active' : ''} ${i === step ? 'current' : ''}`} />
-        ))}
-        <div className="report-progress-line">
-          <div className="report-progress-fill" style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }}></div>
+        <div className="header-title-block">
+          <span className="label-lg section-label">STEP {step + 1} OF {STEPS.length}</span>
+          <h1 className="title-md serif">{STEPS[step]}</h1>
+        </div>
+        <div className="step-dots">
+          {STEPS.map((_, i) => (
+            <div key={i} className={`step-dot ${i === step ? 'active' : ''} ${i < step ? 'completed' : ''}`} />
+          ))}
         </div>
       </div>
 
-      {/* Step 0: Type & Info */}
-      {step === 0 && (
-        <div className="report-step animate-fade-in">
-          <div className="report-field">
-            <label className="label-lg">Report Type *</label>
-            <div className="report-type-grid">
-              {REPORT_TYPES.map(type => (
-                <button
-                  key={type}
-                  className={`report-type-btn ${reportType === type ? 'active' : ''}`}
-                  onClick={() => setReportType(type)}
-                >
-                  <FileText size={18} />
-                  <span className="label-md">{type.replace('_', ' ')}</span>
-                </button>
-              ))}
-            </div>
-          </div>
 
-          <div className="report-field">
-            <label className="label-lg" htmlFor="report-title">Title *</label>
-            <input
-              id="report-title"
-              className="mobile-input"
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Short descriptive title (max 120 chars)"
-              maxLength={120}
-            />
-            <span className="label-sm text-muted">{title.length}/120</span>
-          </div>
+      <div className="report-content-scroll">
+        {step === 0 && (
+          <div className="report-step-view">
+            <div className="report-field">
+              <label className="label-lg field-label">SELECT REPORT CATEGORY</label>
+              <div className="report-type-grid">
+                {REPORT_TYPES.map(type => (
+                  <button
+                    key={type}
+                    className={`type-selection-card ${reportType === type ? 'active' : ''}`}
+                    onClick={() => setReportType(type)}
+                  >
+                    <div className="type-icon-box">
+                      <FileText size={20} />
+                    </div>
+                    <span className="label-lg">{type.replace('_', ' ')}</span>
+                  </button>
 
-          <div className="report-field">
-            <label className="label-lg" htmlFor="report-desc">Description *</label>
-            <textarea
-              id="report-desc"
-              className="mobile-textarea"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Detailed description of the situation (min 30 chars)"
-            />
-            <span className={`label-sm ${description.length < 30 ? 'text-error' : 'text-muted'}`}>
-              {description.length}/30 min characters
-            </span>
-          </div>
-
-          <div className="report-field">
-            <label className="label-lg">
-              <Tag size={14} /> Document Tags
-            </label>
-            <div className="profile-chips">
-              {DOCUMENT_TAGS.map(tag => (
-                <button
-                  key={tag}
-                  className={`chip ${selectedTags.includes(tag) ? 'active' : ''}`}
-                  onClick={() => toggleTag(tag)}
-                >{tag}</button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Step 1: Location */}
-      {step === 1 && (
-        <div className="report-step animate-fade-in">
-          <div className="report-field">
-            <label className="label-lg">Location *</label>
-            <button className="report-location-btn">
-              <MapPin size={20} />
-              <div>
-                <span className="title-md">Record Current Location</span>
-                <span className="body-sm text-muted">GPS auto-detection</span>
-              </div>
-            </button>
-            <div className="report-location-result">
-              <MapPin size={14} className="text-primary" />
-              <span className="body-sm">Connaught Place, New Delhi — 28.6304, 77.2177</span>
-            </div>
-          </div>
-          <div className="report-map-container" style={{ height: '250px', borderRadius: '16px', overflow: 'hidden', marginTop: '16px' }}>
-            <iframe
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=28.6304,77.2177`}
-            ></iframe>
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Media */}
-      {step === 2 && (
-        <div className="report-step animate-fade-in">
-          <div className="report-field">
-            <label className="label-lg">Media Attachments</label>
-            <p className="body-sm text-muted" style={{ marginBottom: '12px' }}>
-              Up to 10 images, 3 short videos (≤45s), and 2 long videos.
-            </p>
-
-            <div className="report-media-btns">
-              <button className="report-media-btn" onClick={() => addMedia('audio')}>
-                <Mic size={24} />
-                <span className="label-md">Record Audio</span>
-                <span className="label-sm text-muted">Interview / observation</span>
-              </button>
-              <button className="report-media-btn" onClick={() => addMedia('image')}>
-                <Image size={24} />
-                <span className="label-md">Add Photos</span>
-                <span className="label-sm text-muted">Max 10, 20MB each</span>
-              </button>
-              <button className="report-media-btn" onClick={() => addMedia('video')}>
-                <Video size={24} />
-                <span className="label-md">Record Video</span>
-                <span className="label-sm text-muted">Short ≤45s or long</span>
-              </button>
-            </div>
-          </div>
-
-          {attachedMedia.length > 0 && (
-            <div className="report-attached">
-              <span className="label-lg">{attachedMedia.length} file{attachedMedia.length > 1 ? 's' : ''} attached</span>
-              <div className="report-attached-grid">
-                {attachedMedia.map(m => (
-                  <div key={m.id} className="report-attached-item">
-                    {m.type === 'audio' && <Mic size={18} />}
-                    {m.type === 'image' && <Image size={18} />}
-                    {m.type === 'video' && <Video size={18} />}
-                    <span className="label-sm">{m.type}</span>
-                  </div>
                 ))}
               </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Step 3: Assessment */}
-      {step === 3 && (
-        <div className="report-step animate-fade-in">
-          <div className="report-field">
-            <label className="label-lg">
-              <AlertTriangle size={14} /> Severity Assessment *
-            </label>
-            <p className="body-sm text-muted" style={{ marginBottom: '12px' }}>
-              Your ground-level assessment. This is shown alongside AI prediction to management.
-            </p>
-            <div className="report-severity-grid">
-              {SEVERITY_LEVELS.map(s => (
-                <button
-                  key={s}
-                  className={`report-severity-btn severity-opt-${s.toLowerCase()} ${severity === s ? 'active' : ''}`}
-                  onClick={() => setSeverity(s)}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="report-field">
+              <label className="label-lg field-label">REPORT TITLE</label>
+              <input
+                className="editorial-input"
+                type="text"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                placeholder="Mission identifier or incident summary"
+              />
             </div>
-          </div>
 
-          <div className="report-field">
-            <label className="label-lg">
-              <Clock size={14} /> Urgency Assessment *
-            </label>
-            <div className="report-urgency-list">
-              {URGENCY_LEVELS.map(u => (
-                <button
-                  key={u}
-                  className={`report-urgency-btn ${urgency === u ? 'active' : ''}`}
-                  onClick={() => setUrgency(u)}
-                >
-                  <span className="title-md">{u.replace(/_/g, ' ')}</span>
-                  <span className="body-sm text-muted">
-                    {u === 'IMMEDIATE' && '< 6 hours'}
-                    {u === 'SAME_DAY' && 'Within today'}
-                    {u === 'WITHIN_WEEK' && 'This week'}
-                    {u === 'NON_URGENT' && 'No time pressure'}
-                  </span>
-                </button>
-              ))}
+            <div className="report-field">
+              <label className="label-lg field-label">SITUATIONAL DESCRIPTION</label>
+              <textarea
+                className="editorial-textarea"
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                placeholder="Detailed ground-level observations (min 30 chars)"
+              />
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Step 4: Review */}
-      {step === 4 && (
-        <div className="report-step animate-fade-in">
-          <div className="report-review-section">
-            <span className="label-sm text-muted">REPORT TYPE</span>
-            <span className="title-md">{reportType.replace('_', ' ')}</span>
-          </div>
-          <div className="report-review-section">
-            <span className="label-sm text-muted">TITLE</span>
-            <span className="title-md">{title}</span>
-          </div>
-          <div className="report-review-section">
-            <span className="label-sm text-muted">DESCRIPTION</span>
-            <p className="body-md">{description}</p>
-          </div>
-          {selectedTags.length > 0 && (
-            <div className="report-review-section">
-              <span className="label-sm text-muted">TAGS</span>
-              <div className="profile-chips">
-                {selectedTags.map(t => <span key={t} className="chip active">{t}</span>)}
+            <div className="report-field">
+              <label className="label-lg field-label">CONTEXTUAL TAGS</label>
+              <div className="chip-row">
+                {DOCUMENT_TAGS.map(tag => (
+                  <button
+                    key={tag}
+                    className={`filter-chip ${selectedTags.includes(tag) ? 'active' : ''}`}
+                    onClick={() => toggleTag(tag)}
+                  >{tag}</button>
+                ))}
               </div>
             </div>
-          )}
-          <div className="report-review-section">
-            <span className="label-sm text-muted">LOCATION</span>
-            <span className="body-md">Connaught Place, New Delhi</span>
           </div>
-          <div className="report-review-section">
-            <span className="label-sm text-muted">MEDIA</span>
-            <span className="body-md">{attachedMedia.length} file{attachedMedia.length !== 1 ? 's' : ''} attached</span>
-          </div>
-          <div className="report-review-row">
-            <div className="report-review-section" style={{ flex: 1 }}>
-              <span className="label-sm text-muted">SEVERITY</span>
-              <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>
-            </div>
-            <div className="report-review-section" style={{ flex: 1 }}>
-              <span className="label-sm text-muted">URGENCY</span>
-              <span className="title-md">{urgency.replace(/_/g, ' ')}</span>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Navigation */}
-      <div className="report-nav">
+        {step === 1 && (
+          <div className="report-step-view">
+            <div className="report-field">
+              <label className="label-lg field-label">GEOSPATIAL COORDINATES</label>
+              <button className="location-action-card">
+                <div className="loc-icon-bubble"><MapPin size={24} /></div>
+                <div className="loc-text">
+                  <span className="title-md serif">Calibrate GPS</span>
+                  <span className="body-sm text-muted">Initialize high-accuracy tracking</span>
+                </div>
+              </button>
+              <div className="location-status-bar">
+                <MapPin size={12} className="text-primary" />
+                <span className="label-lg">LAT: 28.6304 / LNG: 77.2177</span>
+              </div>
+            </div>
+            <div className="report-map-container" style={{ height: '250px', borderRadius: '16px', overflow: 'hidden', marginTop: '16px' }}>
+              <iframe
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=28.6304,77.2177`}
+              ></iframe>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="report-step-view">
+            <div className="report-field">
+              <label className="label-lg field-label">MULTIMEDIA EVIDENCE</label>
+              <div className="media-capture-grid">
+                <button className="capture-card" onClick={() => addMedia('audio')}>
+                  <Mic size={24} />
+                  <span className="label-lg">AUDIO REPORT</span>
+                </button>
+                <button className="capture-card" onClick={() => addMedia('image')}>
+                  <Image size={24} />
+                  <span className="label-lg">PHOTOGRAPHY</span>
+                </button>
+                <button className="capture-card" onClick={() => addMedia('video')}>
+                  <Video size={24} />
+                  <span className="label-lg">VIDEO FEED</span>
+                </button>
+              </div>
+            </div>
+
+            {attachedMedia.length > 0 && (
+              <div className="attached-inventory">
+                <label className="label-lg field-label">ATTACHED ASSETS ({attachedMedia.length})</label>
+                <div className="inventory-grid">
+                  {attachedMedia.map(m => (
+                    <div key={m.id} className="inventory-item">
+                      {m.type === 'audio' && <Mic size={18} />}
+                      {m.type === 'image' && <Image size={18} />}
+                      {m.type === 'video' && <Video size={18} />}
+                      <span className="label-sm">{m.type.toUpperCase()}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="report-step-view">
+            <div className="report-field">
+              <label className="label-lg field-label">SEVERITY INDEX</label>
+              <div className="severity-selection-list">
+                {SEVERITY_LEVELS.map(s => (
+                  <button
+                    key={s}
+                    className={`severity-btn-editorial sev-${s.toLowerCase()} ${severity === s ? 'active' : ''}`}
+                    onClick={() => setSeverity(s)}
+                  >
+                    <span className="label-lg">{s}</span>
+                    {severity === s && <CheckCircle2 size={16} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="report-field">
+              <label className="label-lg field-label">URGENCY PRIORITY</label>
+              <div className="urgency-selection-stack">
+                {URGENCY_LEVELS.map(u => (
+                  <button
+                    key={u}
+                    className={`urgency-card-editorial ${urgency === u ? 'active' : ''}`}
+                    onClick={() => setUrgency(u)}
+                  >
+                    <div className="urgency-info">
+                      <span className="serif title-md">{u.replace(/_/g, ' ')}</span>
+                      <span className="body-sm opacity-50">
+                        {u === 'IMMEDIATE' && 'Action required within 6 hours'}
+                        {u === 'SAME_DAY' && 'Action required within 24 hours'}
+                        {u === 'WITHIN_WEEK' && 'Routine monitoring scheduled'}
+                        {u === 'NON_URGENT' && 'Informational / Low priority'}
+                      </span>
+                    </div>
+                    {urgency === u && <CheckCircle2 size={20} className="text-primary" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="report-step-view">
+            <div className="review-summary-card">
+              <div className="review-header">
+                <h3 className="title-md serif">Final Verification</h3>
+                <span className="match-tag">DRAFT MODE</span>
+              </div>
+              <div className="review-details">
+                <div className="review-row">
+                  <span className="label-lg opacity-40">CATEGORY</span>
+                  <span className="label-lg">{reportType.replace('_', ' ')}</span>
+                </div>
+                <div className="review-row">
+                  <span className="label-lg opacity-40">IDENTIFIER</span>
+                  <span className="label-lg">{title}</span>
+                </div>
+                <div className="review-row vertical">
+                  <span className="label-lg opacity-40">DESCRIPTION</span>
+                  <p className="body-md editorial-para">{description}</p>
+                </div>
+                <div className="review-row">
+                  <span className="label-lg opacity-40">GEO-LOCATION</span>
+                  <span className="label-lg">CONNAUGHT PLACE, NEW DELHI</span>
+                </div>
+                <div className="review-row">
+                  <span className="label-lg opacity-40">SEVERITY</span>
+                  <span className={`severity-tag severity-${severity.toLowerCase()}`}>{severity}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="report-action-bar">
         {step < STEPS.length - 1 ? (
           <button
-            className="btn-primary"
+            className="submit-btn-editorial"
             onClick={() => setStep(step + 1)}
             disabled={!canNext()}
           >
-            <span>Continue</span>
+            <span>CONTINUE TO {STEPS[step + 1].toUpperCase()}</span>
             <ArrowRight size={18} />
           </button>
         ) : (
-          <button className="btn-primary" onClick={handleSubmit} id="submit-report">
+          <button className="submit-btn-editorial" onClick={handleSubmit}>
             <CheckCircle2 size={18} />
-            <span>Submit Report</span>
+            <span>TRANSMIT REPORT</span>
           </button>
         )}
       </div>

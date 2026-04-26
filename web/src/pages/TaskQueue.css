@@ -1,6 +1,6 @@
 /* ===== Task Queue Page ===== */
 .task-queue-page {
-  max-width: 1400px;
+  width: 100%;
 }
 
 .task-filters {
@@ -9,9 +9,21 @@
   justify-content: space-between;
   gap: var(--space-4);
   margin-bottom: var(--space-6);
-  padding: var(--space-4) var(--space-5);
+  padding: var(--space-4) var(--space-6);
   background: var(--surface-container-low);
   border-radius: var(--radius-xl);
+}
+
+@media (max-width: 768px) {
+  .task-filters {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-6);
+  }
+  
+  .task-filter-group {
+    flex-wrap: wrap;
+  }
 }
 
 .task-filter-search {
@@ -32,7 +44,9 @@
   outline: none;
 }
 
-.task-filter-search input::placeholder { color: var(--outline); }
+.task-filter-search input::placeholder {
+  color: var(--outline);
+}
 
 .task-filter-group {
   display: flex;
@@ -55,25 +69,24 @@
 /* Task Cards Grid */
 .task-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-5);
 }
 
 .task-card {
-  background: var(--surface-container);
+  background: var(--surface-container-lowest);
   border-radius: var(--radius-xl);
   padding: var(--space-6);
   cursor: pointer;
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .task-card:hover {
-  background: var(--surface-container-high);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: var(--surface-container-low);
+  transform: translateY(-4px);
 }
 
 .task-card-top {
@@ -82,7 +95,9 @@
   align-items: center;
 }
 
-.task-card h3 { line-height: 1.35; }
+.task-card h3 {
+  line-height: 1.35;
+}
 
 .task-card-desc {
   display: -webkit-box;
@@ -122,13 +137,17 @@
 }
 
 .task-card-ai-summary {
-  background: var(--surface-container-high);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  margin-top: var(--space-1);
+  background: var(--surface-container-low);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-top: var(--space-2);
+  line-height: 1.6;
 }
 
-.task-card-ai-summary .label-sm { margin-bottom: var(--space-1); display: block; }
+.task-card-ai-summary .label-sm {
+  margin-bottom: var(--space-1);
+  display: block;
+}
 
 .empty-state {
   text-align: center;
