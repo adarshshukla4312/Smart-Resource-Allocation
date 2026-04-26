@@ -26,7 +26,7 @@ export default function SubmitProof() {
           <p className="body-md text-muted">
             Your proof of participation has been submitted. NGO management will review it shortly.
           </p>
-          <button className="btn-primary" onClick={() => navigate('/applications')} style={{ marginTop: '24px' }}>
+          <button className="btn-primary" onClick={() => navigate('/volunteer/applications')} style={{ marginTop: '24px' }}>
             Back to My Tasks
           </button>
         </div>
@@ -38,7 +38,7 @@ export default function SubmitProof() {
     <div className="proof-page">
       {/* Header */}
       <div className="proof-header">
-        <button className="task-view-back" onClick={() => navigate('/applications')} aria-label="Back">
+        <button className="task-view-back" onClick={() => navigate('/volunteer/applications')} aria-label="Back">
           <ArrowLeft size={20} />
         </button>
         <span className="title-md">Submit Proof</span>

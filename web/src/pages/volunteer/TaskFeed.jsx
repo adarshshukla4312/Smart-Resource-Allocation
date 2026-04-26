@@ -4,7 +4,8 @@ import {
   MapPin, Sparkles, Clock, Users, Filter,
   Award, ChevronRight, Map, List, Search
 } from 'lucide-react';
-import { mockActiveTasks, CATEGORIES, SEVERITY_LEVELS } from '../../data/mockData';
+import { mockActiveTasks, CATEGORIES, SEVERITY_LEVELS, currentVolunteerProfile, myApplications } from '../../data/mockData';
+import TaskDetailModal from '../../components/volunteer/TaskDetailModal';
 import './TaskFeed.css';
 
 function SeverityBadge({ severity }) {
@@ -25,11 +26,45 @@ function timeAgo(dateStr) {
 
 export default function TaskFeed() {
   const navigate = useNavigate();
+  
+  // Volunteer Level Logic
+  const completedTasksCount = myApplications.filter(app => app.status === 'ACCEPTED').length + 9; // mock completed tasks base = 9 + accepted apps
+  const totalHours = completedTasksCount * 3.5; // dummy hours
+  let level = 'Newcomer';
+  let nextLevelThreshold = 6;
+  let progress = 0;
+
+  if (completedTasksCount <= 5) {
+    level = 'Newcomer';
+    nextLevelThreshold = 6;
+    progress = (completedTasksCount / 6) * 100;
+  } else if (completedTasksCount <= 15) {
+    level = 'Rising Helper';
+    nextLevelThreshold = 16;
+    progress = ((completedTasksCount - 5) / 11) * 100;
+  } else if (completedTasksCount <= 30) {
+    level = 'Active Contributor';
+    nextLevelThreshold = 31;
+    progress = ((completedTasksCount - 15) / 15) * 100;
+  } else {
+    level = 'Community Hero';
+    nextLevelThreshold = completedTasksCount;
+    progress = 100;
+  }
   const [viewMode, setViewMode] = useState('list');
   const [showFilters, setShowFilters] = useState(false);
   const [filterCategory, setFilterCategory] = useState('ALL');
   const [filterSeverity, setFilterSeverity] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+  const handleTaskClick = (taskId) => {
+    if (window.innerWidth > 768) {
+      setSelectedTaskId(taskId);
+    } else {
+      navigate(`/volunteer/feed/${taskId}`);
+    }
+  };
 
   const filteredTasks = mockActiveTasks
     .filter(task => {
@@ -44,6 +79,49 @@ export default function TaskFeed() {
 
   return (
     <div className="task-feed-page">
+      {/* Volunteer Overview Card */}
+      <div className="volunteer-overview-card animate-fade-in" style={{ 
+        background: 'rgba(255, 255, 255, 0.05)', 
+        borderRadius: '12px', 
+        padding: '16px', 
+        marginBottom: '20px',
+        border: '1px solid var(--outline)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+          <div className="profile-avatar" style={{ width: '56px', height: '56px', fontSize: '24px' }}>
+            {currentVolunteerProfile?.displayName?.charAt(0) || 'V'}
+          </div>
+          <div>
+            <h2 className="title-lg">{currentVolunteerProfile?.displayName || 'Volunteer'}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary)' }}>
+              <Award size={14} />
+              <span className="label-md">{level}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+            <span className="display-sm">{completedTasksCount}</span>
+            <div className="label-sm text-muted">Tasks Completed</div>
+          </div>
+          <div style={{ background: 'rgba(0,0,0,0.2)', padding: '10px', borderRadius: '8px', textAlign: 'center' }}>
+            <span className="display-sm">{totalHours.toFixed(1)}</span>
+            <div className="label-sm text-muted">Hours Served</div>
+          </div>
+        </div>
+
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span className="label-sm text-muted">Progress to next level</span>
+            <span className="label-sm">{completedTasksCount} / {nextLevelThreshold}</span>
+          </div>
+          <div className="feed-match-bar" style={{ background: 'rgba(255,255,255,0.1)', height: '6px' }}>
+            <div className="feed-match-fill" style={{ width: `${progress}%`, background: 'var(--primary)', height: '100%', borderRadius: '4px' }}></div>
+          </div>
+        </div>
+      </div>
+
       {/* Search Bar */}
       <div className="feed-search-bar">
         <div className="feed-search-input-wrap">
@@ -134,7 +212,7 @@ export default function TaskFeed() {
                 key={task.id}
                 className="feed-task-card animate-slide-up"
                 style={{ animationDelay: `${i * 60}ms` }}
-                onClick={() => navigate(`/feed/${task.id}`)}
+                onClick={() => handleTaskClick(task.id)}
                 role="button"
                 tabIndex={0}
                 id={`feed-card-${task.id}`}
@@ -210,7 +288,7 @@ export default function TaskFeed() {
                   left: `${15 + (i * 18)}%`,
                   animationDelay: `${i * 200}ms`,
                 }}
-                onClick={() => navigate(`/feed/${task.id}`)}
+                onClick={() => handleTaskClick(task.id)}
               >
                 <MapPin size={24} />
                 <span className="feed-map-pin-label label-sm">
@@ -236,6 +314,12 @@ export default function TaskFeed() {
           <p className="body-md text-muted">Try adjusting the category or severity</p>
         </div>
       )}
+
+      <TaskDetailModal 
+        taskId={selectedTaskId} 
+        isOpen={!!selectedTaskId} 
+        onClose={() => setSelectedTaskId(null)} 
+      />
     </div>
   );
 }

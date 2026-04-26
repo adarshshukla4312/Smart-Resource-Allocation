@@ -332,3 +332,94 @@ a:hover {
 .gradient-surface {
   background: linear-gradient(180deg, var(--surface-container-low), var(--surface));
 }
+
+/* ===== Buttons ===== */
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-5);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(6, 78, 59, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 6px 16px rgba(6, 78, 59, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(6, 78, 59, 0.2);
+}
+
+.btn-primary:disabled {
+  background: var(--surface-container-highest);
+  color: var(--on-surface-variant);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.btn-secondary {
+  background: var(--surface-container);
+  color: var(--on-surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-5);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-container-high);
+  border-color: var(--outline);
+}
+
+.btn-secondary:active {
+  background: var(--surface-container-highest);
+  transform: scale(0.98);
+}
+
+.btn-danger {
+  background: rgba(255, 84, 73, 0.1);
+  color: #ff5449;
+  border: 1px solid rgba(255, 84, 73, 0.2);
+  border-radius: var(--radius-full);
+  padding: var(--space-3) var(--space-5);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--transition-fast);
+}
+
+.btn-danger:hover {
+  background: rgba(255, 84, 73, 0.2);
+  border-color: rgba(255, 84, 73, 0.3);
+}
+
+.btn-danger:active {
+  transform: scale(0.98);
+}

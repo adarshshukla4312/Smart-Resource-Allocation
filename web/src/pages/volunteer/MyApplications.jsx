@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CheckCircle2, XCircle, HourglassIcon,
-  Camera, ChevronRight
+  Camera, ChevronRight, ClipboardList
 } from 'lucide-react';
 import { myApplications } from '../../data/mockData';
+import TaskDetailModal from '../../components/volunteer/TaskDetailModal';
+import { useState } from 'react';
 import './MyApplications.css';
 
 function SeverityBadge({ severity }) {
@@ -38,6 +40,15 @@ function timeAgo(dateStr) {
 
 export default function MyApplications() {
   const navigate = useNavigate();
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+
+  const handleTaskClick = (app) => {
+    if (window.innerWidth > 768) {
+      setSelectedTaskId(app.taskId);
+    } else {
+      navigate(`/volunteer/feed/${app.taskId}`);
+    }
+  };
 
   const accepted = myApplications.filter(a => a.status === 'ACCEPTED');
   const pending = myApplications.filter(a => a.status === 'APPLIED');
@@ -48,7 +59,7 @@ export default function MyApplications() {
       key={app.id}
       className="app-card mobile-card animate-fade-in"
       style={{ animationDelay: `${i * 60}ms` }}
-      onClick={() => app.status === 'ACCEPTED' ? navigate(`/applications/${app.taskId}/proof`) : navigate(`/feed/${app.taskId}`)}
+      onClick={() => handleTaskClick(app)}
       role="button"
       tabIndex={0}
     >
@@ -68,7 +79,7 @@ export default function MyApplications() {
           <span className="label-lg text-primary">{Math.round(app.matchScore * 100)}%</span>
         </div>
         {app.status === 'ACCEPTED' && (
-          <div className="app-card-proof-cta">
+          <div className="app-card-proof-cta" onClick={(e) => { e.stopPropagation(); navigate(`/volunteer/proof/${app.taskId}`); }}>
             <Camera size={14} />
             <span className="label-md">Submit Proof</span>
           </div>
@@ -121,6 +132,12 @@ export default function MyApplications() {
           <p className="body-md text-muted">Browse the task feed and apply to volunteer!</p>
         </div>
       )}
+
+      <TaskDetailModal 
+        taskId={selectedTaskId} 
+        isOpen={!!selectedTaskId} 
+        onClose={() => setSelectedTaskId(null)} 
+      />
     </div>
   );
 }

@@ -52,7 +52,7 @@ export default function VolunteerLayout({ user, onLogout }) {
       </header>
 
       <main className="volunteer-main">
-        <Outlet />
+        <Outlet context={{ user, onLogout }} />
       </main>
     </div>
   );
