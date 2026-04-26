@@ -124,7 +124,7 @@ Local NGOs and social groups operate in data-rich but insight-poor environments.
 
 | Layer | Google Product / Service | Purpose |
 |---|---|---|
-| Mobile App | Flutter (Dart) | Single codebase → Android + iOS native apps |
+| Mobile App | React + Capacitor | Single codebase → Android + iOS native apps |
 | Web Dashboard | React + Firebase Hosting | Multi-persona web interface (Management, Volunteer, Employee), analytics, reporting |
 | Offline Sync | Firebase Firestore (offline mode) | Local-first storage with automatic background sync and conflict resolution |
 | Authentication | Firebase Authentication | Simple Role-based auth: **Unique Username + Password**. Roles: Volunteer / NGO Employee / NGO Management / Admin. |
@@ -147,7 +147,7 @@ The system follows an **offline-first, event-driven architecture**. Client apps 
 ```
 ┌───────────────────────────────────────────────────────────────────┐
 │  CLIENT LAYER                                                     │
-│  Flutter Mobile App (Android/iOS)    React Web Dashboard (All Roles) │
+│  React + Capacitor App (Android/iOS) React Web Dashboard (All Roles) │
 └─────────────────┬───────────────────────────┬─────────────────────┘
                   │ Firebase Auth              │ Firebase Auth + 2FA
        ┌──────────▼────────────────────────────▼──────────┐
@@ -175,7 +175,7 @@ The system follows an **offline-first, event-driven architecture**. Client apps 
 
 ### 5.1 NGO Field Employee — Reporting Module
 
-The reporting module is the **primary data entry interface** of the system. It runs on the Flutter mobile app and is fully functional offline. All data is saved locally (Firestore offline cache) and queued for sync when connectivity returns.
+The reporting module is the **primary data entry interface** of the system. It runs on the React + Capacitor mobile app and is fully functional offline. All data is saved locally (Firestore offline cache) and queued for sync when connectivity returns.
 
 ---
 
