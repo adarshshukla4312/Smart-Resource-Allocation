@@ -379,13 +379,15 @@ export default function TaskDetail() {
           <section className="detail-section animate-slide-right" style={{ animationDelay: '400ms' }}>
             <h2 className="headline-sm">Location</h2>
             <div className="detail-map">
-              <div className="detail-map-mock">
-                <MapPin size={28} className="text-primary" />
-                <span className="body-sm">{task.location?.address || 'Unknown location'}</span>
-                <span className="label-sm text-muted">
-                  {task.location?.lat?.toFixed(4)}, {task.location?.lng?.toFixed(4)}
-                </span>
-              </div>
+              <iframe
+                width="100%"
+                height="300"
+                style={{ border: 0, borderRadius: '12px' }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${task.location?.lat},${task.location?.lng}`}
+              ></iframe>
             </div>
           </section>
 

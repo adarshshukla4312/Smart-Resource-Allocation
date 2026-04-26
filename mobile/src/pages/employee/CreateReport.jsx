@@ -169,10 +169,16 @@ export default function CreateReport() {
               <span className="body-sm">Connaught Place, New Delhi — 28.6304, 77.2177</span>
             </div>
           </div>
-          <div className="report-map-placeholder">
-            <MapPin size={32} className="text-primary" />
-            <span className="label-md">Google Maps Picker</span>
-            <span className="label-sm text-muted">Tap to adjust location manually</span>
+          <div className="report-map-container" style={{ height: '250px', borderRadius: '16px', overflow: 'hidden', marginTop: '16px' }}>
+            <iframe
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=28.6304,77.2177`}
+            ></iframe>
           </div>
         </div>
       )}

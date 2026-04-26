@@ -241,17 +241,16 @@ export default function DashboardOverview() {
           <div className="section-card-header">
             <h2 className="headline-sm">Live Task Map</h2>
           </div>
-          <div className="map-container">
-            <div className="map-mock">
-              <MapPin size={24} className="map-pin pin-1" />
-              <MapPin size={24} className="map-pin pin-2" />
-              <MapPin size={24} className="map-pin pin-3" />
-              <MapPin size={20} className="map-pin pin-4" />
-              <div className="map-overlay-text">
-                <span className="label-md">Google Maps integration</span>
-                <span className="label-sm text-muted">Connect API key to enable</span>
-              </div>
-            </div>
+          <div className="map-container" style={{ height: '400px', padding: '0' }}>
+            <iframe
+              width="100%"
+              height="100%"
+              style={{ border: 0, borderRadius: '12px' }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/search?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=emergency+relief+centers+near+Delhi`}
+            ></iframe>
           </div>
         </div>
       </div>
