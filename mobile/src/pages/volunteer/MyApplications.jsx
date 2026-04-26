@@ -1,28 +1,23 @@
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Clock, CheckCircle2, XCircle, HourglassIcon,
-  Camera, ChevronRight
+  Camera, ChevronRight, ClipboardList
 } from 'lucide-react';
 import { myApplications } from '../../data/mockData';
 import './MyApplications.css';
 
-function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
-}
-
 function AppStatusBadge({ status }) {
   const map = {
-    APPLIED: { cls: 'applied', label: 'Pending', icon: HourglassIcon },
-    ACCEPTED: { cls: 'accepted', label: 'Accepted', icon: CheckCircle2 },
-    REJECTED: { cls: 'rejected', label: 'Rejected', icon: XCircle },
-    PROOF_SUBMITTED: { cls: 'proof_submitted', label: 'Proof Sent', icon: Camera },
-    COMPLETED: { cls: 'completed', label: 'Completed', icon: CheckCircle2 },
+    APPLIED: { label: 'PENDING REVIEW', type: 'pending' },
+    ACCEPTED: { label: 'MISSION ACTIVE', type: 'active' },
+    REJECTED: { label: 'DECLINED', type: 'rejected' },
+    PROOF_SUBMITTED: { label: 'EVIDENCE FILED', type: 'filed' },
+    COMPLETED: { label: 'COMPLETED', type: 'completed' },
   };
-  const s = map[status] || { cls: 'applied', label: status, icon: HourglassIcon };
-  const Icon = s.icon;
+  const s = map[status] || { label: status, type: 'pending' };
   return (
-    <span className={`status-badge status-${s.cls}`}>
-      <Icon size={10} /> {s.label}
+    <span className={`editorial-status-pill status-${s.type}`}>
+      {s.label}
     </span>
   );
 }
@@ -39,88 +34,86 @@ function timeAgo(dateStr) {
 export default function MyApplications() {
   const navigate = useNavigate();
 
-  const accepted = myApplications.filter(a => a.status === 'ACCEPTED');
-  const pending = myApplications.filter(a => a.status === 'APPLIED');
-  const others = myApplications.filter(a => !['ACCEPTED', 'APPLIED'].includes(a.status));
+  const active = myApplications.filter(a => ['ACCEPTED', 'APPLIED'].includes(a.status));
+  const history = myApplications.filter(a => !['ACCEPTED', 'APPLIED'].includes(a.status));
 
   const renderCard = (app, i) => (
     <div
       key={app.id}
-      className="app-card mobile-card animate-fade-in"
+      className={`editorial-app-card severity-${app.taskSeverity.toLowerCase()} animate-fade-in`}
       style={{ animationDelay: `${i * 60}ms` }}
       onClick={() => app.status === 'ACCEPTED' ? navigate(`/applications/${app.taskId}/proof`) : navigate(`/feed/${app.taskId}`)}
-      role="button"
-      tabIndex={0}
     >
-      <div className="app-card-top">
+      <div className="app-card-header">
         <AppStatusBadge status={app.status} />
-        <span className="label-md text-muted">Applied {timeAgo(app.appliedAt)}</span>
+        <span className="label-sm opacity-40">{timeAgo(app.appliedAt).toUpperCase()}</span>
       </div>
-      <h3 className="title-md">{app.taskTitle}</h3>
+      
+      <h3 className="title-md serif app-title">{app.taskTitle}</h3>
+      
       <div className="app-card-meta">
-        <span className="body-sm text-muted"><MapPin size={12} /> {app.distance} km</span>
-        <SeverityBadge severity={app.taskSeverity} />
-        <span className="category-badge">{app.taskCategory}</span>
-      </div>
-      <div className="app-card-bottom">
-        <div className="app-card-match">
-          <span className="label-md text-muted">Match</span>
-          <span className="label-lg text-primary">{Math.round(app.matchScore * 100)}%</span>
+        <div className="meta-item">
+          <MapPin size={12} />
+          <span className="label-sm">{app.distance} KM</span>
         </div>
-        {app.status === 'ACCEPTED' && (
-          <div className="app-card-proof-cta">
-            <Camera size={14} />
-            <span className="label-md">Submit Proof</span>
-          </div>
-        )}
-        <ChevronRight size={16} className="app-card-arrow" />
+        <div className="meta-item">
+          <span className="match-tag-mini">{Math.round(app.matchScore * 100)}% MATCH</span>
+        </div>
       </div>
+
+      {app.status === 'ACCEPTED' && (
+        <div className="app-card-action-highlight">
+          <Camera size={14} />
+          <span className="label-sm">TRANSMIT FIELD PROOF</span>
+        </div>
+      )}
     </div>
   );
 
   return (
-    <div className="my-applications-page">
-      {/* Accepted / Active */}
-      {accepted.length > 0 && (
-        <div className="app-section">
-          <div className="app-section-header">
-            <span className="headline-sm">Active</span>
-            <span className="label-md text-primary">{accepted.length}</span>
-          </div>
-          {accepted.map((app, i) => renderCard(app, i))}
-        </div>
-      )}
+    <div className="my-applications-page animate-fade-in">
+      <div className="applications-hero">
+        <h1 className="display-sm serif">Engagement</h1>
+        <p className="body-md text-muted editorial-para">Track your active deployments and historical humanitarian contributions.</p>
+      </div>
 
-      {/* Pending */}
-      {pending.length > 0 && (
-        <div className="app-section">
-          <div className="app-section-header">
-            <span className="headline-sm">Pending Review</span>
-            <span className="label-md text-muted">{pending.length}</span>
+      <div className="applications-content">
+        {active.length > 0 && (
+          <div className="app-section">
+            <div className="section-header-editorial">
+              <span className="label-lg">ACTIVE MISSIONS</span>
+              <div className="count-pill">{active.length}</div>
+            </div>
+            <div className="app-grid">
+              {active.map((app, i) => renderCard(app, i))}
+            </div>
           </div>
-          {pending.map((app, i) => renderCard(app, i + accepted.length))}
-        </div>
-      )}
+        )}
 
-      {/* Others */}
-      {others.length > 0 && (
-        <div className="app-section">
-          <div className="app-section-header">
-            <span className="headline-sm">History</span>
+        {history.length > 0 && (
+          <div className="app-section">
+            <div className="section-header-editorial">
+              <span className="label-lg">MISSION HISTORY</span>
+            </div>
+            <div className="app-grid">
+              {history.map((app, i) => renderCard(app, i + active.length))}
+            </div>
           </div>
-          {others.map((app, i) => renderCard(app, i + accepted.length + pending.length))}
-        </div>
-      )}
+        )}
 
-      {myApplications.length === 0 && (
-        <div className="empty-state">
-          <div className="empty-state-icon">
-            <ClipboardList size={28} />
+        {myApplications.length === 0 && (
+          <div className="editorial-empty-state">
+            <div className="empty-icon-bubble">
+              <ClipboardList size={32} />
+            </div>
+            <h3 className="title-md serif">No Active Deployments</h3>
+            <p className="body-sm text-muted">Initialize your first application from the mission feed.</p>
+            <button className="submit-btn-editorial" onClick={() => navigate('/feed')}>
+              Browse Mission Feed
+            </button>
           </div>
-          <p className="headline-sm text-muted">No applications yet</p>
-          <p className="body-md text-muted">Browse the task feed and apply to volunteer!</p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

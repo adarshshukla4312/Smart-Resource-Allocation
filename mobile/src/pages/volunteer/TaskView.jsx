@@ -7,10 +7,6 @@ import {
 import { mockActiveTasks } from '../../data/mockData';
 import './TaskView.css';
 
-function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
-}
-
 export default function TaskView() {
   const { taskId } = useParams();
   const navigate = useNavigate();
@@ -21,8 +17,8 @@ export default function TaskView() {
   if (!task) {
     return (
       <div className="empty-state">
-        <p className="headline-sm text-muted">Task not found</p>
-        <button className="btn-secondary" onClick={() => navigate('/feed')}>Back to Feed</button>
+        <p className="display-sm serif text-muted">Task not found</p>
+        <button className="logout-btn-editorial" onClick={() => navigate('/feed')}>Back to Feed</button>
       </div>
     );
   }
@@ -40,176 +36,149 @@ export default function TaskView() {
   };
 
   return (
-    <div className="task-view-page">
-      {/* Header */}
-      <div className="task-view-header animate-fade-in">
-        <button className="task-view-back" onClick={() => navigate('/feed')} aria-label="Back">
+    <div className="task-view-page animate-fade-in">
+      <div className="task-view-header">
+        <button className="icon-btn-minimal" onClick={() => navigate('/feed')}>
           <ArrowLeft size={20} />
         </button>
-        <button className="task-view-share" aria-label="Share">
-          <Share2 size={18} />
+        <button className="icon-btn-minimal">
+          <Share2 size={20} />
         </button>
       </div>
 
-      {/* Hero Section */}
-      <div className="task-view-hero animate-fade-in" style={{ animationDelay: '100ms' }}>
-        <div className="task-view-badges">
+      <div className="task-view-hero">
+        <div className="hero-badge-row">
           {isGreatMatch && (
-            <span className="great-match-badge">
-              <Award size={10} /> Great Match
+            <span className="match-tag">
+              <Award size={10} /> GREAT MATCH
             </span>
           )}
-          <span className="category-badge">{cat}</span>
-          <SeverityBadge severity={sev} />
+          <span className="category-tag">{cat.toUpperCase()}</span>
+          <span className={`severity-tag severity-${sev.toLowerCase()}`}>{sev}</span>
         </div>
-        <h1 className="headline-lg">{task.title}</h1>
-        <div className="task-view-meta">
-          <span className="body-sm text-muted"><MapPin size={13} /> {task.location.address}</span>
-          <span className="body-sm text-muted"><Clock size={13} /> {urg.replace('_', ' ')}</span>
-          <span className="body-sm text-muted"><Users size={13} /> {task.acceptedCount}/{task.maxVolunteers || '∞'} volunteers</span>
-        </div>
-      </div>
-
-      {/* Match Score */}
-      <div className="task-view-match animate-fade-in" style={{ animationDelay: '200ms' }}>
-        <div className="task-view-match-header">
-          <span className="title-md">Your Match Score</span>
-          <span className="display-sm text-primary">{Math.round(task.matchScore * 100)}%</span>
-        </div>
-        <div className="task-view-match-bar">
-          <div className="task-view-match-fill" style={{ width: `${Math.round(task.matchScore * 100)}%` }}></div>
-        </div>
-        <div className="task-view-match-details">
-          <div className="match-detail-item">
-            <span className="body-sm text-muted">Distance</span>
-            <span className="label-lg">{task.distance} km</span>
+        <h1 className="display-sm serif task-hero-title">{task.title}</h1>
+        <div className="hero-meta-list">
+          <div className="meta-item">
+            <MapPin size={14} />
+            <span className="label-lg">{task.location.address}</span>
           </div>
-          <div className="match-detail-item">
-            <span className="body-sm text-muted">Slots Left</span>
-            <span className="label-lg">{slotsLeft !== null ? slotsLeft : '∞'}</span>
+          <div className="meta-item">
+            <Clock size={14} />
+            <span className="label-lg">{urg.replace('_', ' ')}</span>
           </div>
-          <div className="match-detail-item">
-            <span className="body-sm text-muted">Affected</span>
-            <span className="label-lg">{ai.estimatedAffected?.toLocaleString()}</span>
+          <div className="meta-item">
+            <Users size={14} />
+            <span className="label-lg">{task.acceptedCount}/{task.maxVolunteers || '∞'} VOLUNTEERS</span>
           </div>
         </div>
       </div>
 
-      {/* AI Summary */}
-      <div className="task-view-section animate-fade-in" style={{ animationDelay: '300ms' }}>
-        <div className="task-view-section-header">
-          <Sparkles size={16} className="text-primary" />
-          <span className="title-md">AI Situation Analysis</span>
+      <div className="match-score-section">
+        <div className="match-header">
+          <span className="label-lg">QUALIFICATION SCORE</span>
+          <div className="match-score-pill">
+            <div className="match-fill" style={{ width: `${Math.round(task.matchScore * 100)}%` }}></div>
+            <span className="label-lg">{Math.round(task.matchScore * 100)}% MATCH</span>
+          </div>
         </div>
-        <p className="body-md">{ai.situationSummary}</p>
+        <div className="match-grid">
+          <div className="match-item">
+            <span className="label-lg text-muted">DISTANCE</span>
+            <span className="serif title-md">{task.distance} km</span>
+          </div>
+          <div className="match-item">
+            <span className="label-lg text-muted">OPEN SLOTS</span>
+            <span className="serif title-md">{slotsLeft !== null ? slotsLeft : '∞'}</span>
+          </div>
+          <div className="match-item">
+            <span className="label-lg text-muted">IMPACT</span>
+            <span className="serif title-md">{ai.estimatedAffected?.toLocaleString()}</span>
+          </div>
+        </div>
       </div>
 
-      {/* Key Observations */}
-      <div className="task-view-section animate-fade-in" style={{ animationDelay: '400ms' }}>
-        <span className="title-md">Key Observations</span>
-        <ul className="task-view-observations">
+      <div className="task-detail-section ai-analysis-card">
+        <div className="section-header-row">
+          <div className="ai-icon-bubble"><Sparkles size={16} /></div>
+          <h2 className="title-md serif">AI Situation Analysis</h2>
+        </div>
+        <p className="body-md editorial-text">{ai.situationSummary}</p>
+      </div>
+
+      <div className="task-detail-section">
+        <h2 className="label-lg section-label">KEY OBSERVATIONS</h2>
+        <div className="observations-list">
           {ai.keyObservations.map((obs, i) => (
-            <li key={i}>
-              <AlertTriangle size={13} className="text-primary" />
-              <span className="body-sm">{obs}</span>
-            </li>
+            <div key={i} className="observation-item">
+              <div className="obs-dot"></div>
+              <span className="body-md">{obs}</span>
+            </div>
           ))}
-        </ul>
-      </div>
-
-      {/* Media */}
-      {(task.mediaCount.images > 0 || task.mediaCount.audio > 0 || task.mediaCount.shortVideos + task.mediaCount.longVideos > 0) && (
-        <div className="task-view-section animate-fade-in" style={{ animationDelay: '500ms' }}>
-          <span className="title-md">Media Attachments</span>
-          <div className="task-view-media-grid">
-            {Array.from({ length: Math.min(task.mediaCount.images, 4) }).map((_, i) => (
-              <div key={`img-${i}`} className="task-view-media-thumb">
-                <Image size={20} />
-                <span className="label-sm">Image {i + 1}</span>
-              </div>
-            ))}
-            {task.mediaCount.audio > 0 && (
-              <div className="task-view-media-thumb audio">
-                <Mic size={20} />
-                <span className="label-sm">{task.mediaCount.audio} Audio</span>
-              </div>
-            )}
-            {(task.mediaCount.shortVideos + task.mediaCount.longVideos) > 0 && (
-              <div className="task-view-media-thumb video">
-                <Video size={20} />
-                <span className="label-sm">{task.mediaCount.shortVideos + task.mediaCount.longVideos} Video</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Location */}
-      <div className="task-view-section animate-fade-in" style={{ animationDelay: '600ms' }}>
-        <span className="title-md">Location</span>
-        <div className="task-view-map-placeholder">
-          <MapPin size={28} className="text-primary" />
-          <span className="body-sm">{task.location.address}</span>
-          <span className="label-sm text-muted">
-            {task.location.lat.toFixed(4)}, {task.location.lng.toFixed(4)}
-          </span>
         </div>
       </div>
 
-      {/* Skills Required */}
-      {task.requiredSkills.length > 0 && (
-        <div className="task-view-section animate-fade-in" style={{ animationDelay: '700ms' }}>
-          <span className="title-md">Required Skills</span>
-          <div className="task-view-skills">
-            {task.requiredSkills.map(skill => (
-              <span key={skill} className="chip active">{skill}</span>
-            ))}
+      <div className="task-detail-section">
+        <h2 className="label-lg section-label">LOCATION & MEDIA</h2>
+        <div className="media-preview-strip">
+          {Array.from({ length: Math.min(task.mediaCount.images, 3) }).map((_, i) => (
+            <div key={i} className="media-placeholder">
+              <Image size={20} />
+            </div>
+          ))}
+          {task.mediaCount.audio > 0 && (
+            <div className="media-placeholder audio">
+              <Mic size={20} />
+            </div>
+          )}
+        </div>
+        <div className="location-card-mini">
+          <MapPin size={16} />
+          <div className="location-info">
+            <span className="label-lg">{task.location.address}</span>
+            <span className="body-sm opacity-50">{task.location.lat.toFixed(4)}, {task.location.lng.toFixed(4)}</span>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Apply Button */}
-      <div className="task-view-apply-area">
+      <div className="apply-action-bar">
         {hasApplied ? (
-          <div className="task-view-applied animate-scale-in">
-            <CheckCircle2 size={20} />
-            <span className="title-md">Application Submitted!</span>
-            <p className="body-sm text-muted">You'll be notified when management reviews your application.</p>
+          <div className="application-status-card animate-scale-in">
+            <CheckCircle2 size={24} />
+            <div className="status-text">
+              <span className="label-lg">APPLICATION SUBMITTED</span>
+              <span className="body-sm">Awaiting NGO Management review</span>
+            </div>
           </div>
         ) : (
           <button
-            className="btn-primary task-view-apply-btn"
+            className="submit-btn-editorial"
             onClick={() => setShowApplySheet(true)}
-            id="apply-task"
           >
-            Apply to Volunteer
+            Apply to Task Console
           </button>
         )}
       </div>
 
-      {/* Apply Bottom Sheet */}
       {showApplySheet && (
-        <>
-          <div className="bottom-sheet-overlay" onClick={() => setShowApplySheet(false)} />
-          <div className="bottom-sheet animate-slide-up">
-            <div className="bottom-sheet-handle"></div>
-            <h3 className="headline-sm">Confirm Application</h3>
-            <p className="body-md text-muted" style={{ marginTop: '8px', marginBottom: '16px' }}>
-              You're applying to volunteer for:
-            </p>
-            <div className="apply-sheet-task-info">
-              <span className="title-md">{task.title}</span>
-              <div className="apply-sheet-meta">
-                <span className="body-sm text-muted"><MapPin size={12} /> {task.distance} km away</span>
-                <SeverityBadge severity={sev} />
+        <div className="editorial-sheet-overlay animate-fade-in">
+          <div className="editorial-sheet animate-slide-up">
+            <div className="sheet-header">
+              <div className="sheet-handle"></div>
+              <h3 className="title-md serif">Confirm Application</h3>
+            </div>
+            <div className="sheet-content">
+              <p className="body-md">You are requesting deployment to the following mission:</p>
+              <div className="sheet-task-brief">
+                <span className="serif title-md">{task.title}</span>
+                <span className="label-lg text-muted">{task.location.address}</span>
+              </div>
+              <div className="sheet-actions">
+                <button className="submit-btn-editorial" onClick={handleApply}>Confirm Deployment</button>
+                <button className="logout-btn-editorial" onClick={() => setShowApplySheet(false)}>Cancel</button>
               </div>
             </div>
-            <div className="apply-sheet-actions">
-              <button className="btn-primary" onClick={handleApply}>Confirm Application</button>
-              <button className="btn-secondary" onClick={() => setShowApplySheet(false)}>Cancel</button>
-            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

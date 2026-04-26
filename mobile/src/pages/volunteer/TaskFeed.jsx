@@ -2,18 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   MapPin, Sparkles, Clock, Users, Filter,
-  Award, ChevronRight, Map, List, Search
+  Award, Search, Calendar
 } from 'lucide-react';
 import { mockActiveTasks, CATEGORIES, SEVERITY_LEVELS } from '../../data/mockData';
 import './TaskFeed.css';
-
-function SeverityBadge({ severity }) {
-  return <span className={`severity-badge severity-${severity.toLowerCase()}`}>{severity}</span>;
-}
-
-function CategoryBadge({ category }) {
-  return <span className="category-badge">{category}</span>;
-}
 
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -25,7 +17,6 @@ function timeAgo(dateStr) {
 
 export default function TaskFeed() {
   const navigate = useNavigate();
-  const [viewMode, setViewMode] = useState('list');
   const [showFilters, setShowFilters] = useState(false);
   const [filterCategory, setFilterCategory] = useState('ALL');
   const [filterSeverity, setFilterSeverity] = useState('ALL');
@@ -43,58 +34,61 @@ export default function TaskFeed() {
     .sort((a, b) => b.matchScore - a.matchScore);
 
   return (
-    <div className="task-feed-page">
-      {/* Search Bar */}
-      <div className="feed-search-bar">
-        <div className="feed-search-input-wrap">
-          <Search size={16} />
+    <div className="task-feed-page animate-fade-in">
+      <div className="feed-header">
+        <h1 className="display-sm">Task Board</h1>
+        <p className="label-lg" style={{ opacity: 0.6 }}>Find operations near your location</p>
+      </div>
+
+      <div className="feed-controls">
+        <div className="feed-search-wrap">
+          <Search size={18} />
           <input
             type="text"
-            placeholder="Search tasks near you..."
+            className="mobile-input"
+            placeholder="Search tasks..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            id="feed-search"
           />
         </div>
         <button
-          className={`feed-filter-btn ${showFilters ? 'active' : ''}`}
+          className={`filter-toggle-btn ${showFilters ? 'active' : ''}`}
           onClick={() => setShowFilters(!showFilters)}
-          aria-label="Toggle filters"
         >
           <Filter size={18} />
+          <span className="label-lg">Filters</span>
         </button>
       </div>
 
-      {/* Filters */}
       {showFilters && (
-        <div className="feed-filters animate-fade-in">
-          <div className="feed-filter-row">
-            <span className="label-md text-muted">Category</span>
-            <div className="feed-chip-row">
+        <div className="feed-filters-drawer animate-slide-down">
+          <div className="filter-group">
+            <div className="label-lg filter-label">Category</div>
+            <div className="chip-row">
               <button
-                className={`chip ${filterCategory === 'ALL' ? 'active' : ''}`}
+                className={`filter-chip ${filterCategory === 'ALL' ? 'active' : ''}`}
                 onClick={() => setFilterCategory('ALL')}
               >All</button>
               {CATEGORIES.map(c => (
                 <button
                   key={c}
-                  className={`chip ${filterCategory === c ? 'active' : ''}`}
+                  className={`filter-chip ${filterCategory === c ? 'active' : ''}`}
                   onClick={() => setFilterCategory(c)}
                 >{c}</button>
               ))}
             </div>
           </div>
-          <div className="feed-filter-row">
-            <span className="label-md text-muted">Severity</span>
-            <div className="feed-chip-row">
+          <div className="filter-group">
+            <div className="label-lg filter-label">Priority</div>
+            <div className="chip-row">
               <button
-                className={`chip ${filterSeverity === 'ALL' ? 'active' : ''}`}
+                className={`filter-chip ${filterSeverity === 'ALL' ? 'active' : ''}`}
                 onClick={() => setFilterSeverity('ALL')}
               >All</button>
               {SEVERITY_LEVELS.map(s => (
                 <button
                   key={s}
-                  className={`chip ${filterSeverity === s ? 'active' : ''}`}
+                  className={`filter-chip ${filterSeverity === s ? 'active' : ''}`}
                   onClick={() => setFilterSeverity(s)}
                 >{s}</button>
               ))}
@@ -103,137 +97,63 @@ export default function TaskFeed() {
         </div>
       )}
 
-      {/* View Toggle */}
-      <div className="feed-view-toggle">
-        <span className="label-lg">{filteredTasks.length} tasks near you</span>
-        <div className="feed-view-btns">
-          <button
-            className={`feed-view-btn ${viewMode === 'list' ? 'active' : ''}`}
-            onClick={() => setViewMode('list')}
-            aria-label="List view"
-          ><List size={16} /></button>
-          <button
-            className={`feed-view-btn ${viewMode === 'map' ? 'active' : ''}`}
-            onClick={() => setViewMode('map')}
-            aria-label="Map view"
-          ><Map size={16} /></button>
-        </div>
-      </div>
+      <div className="feed-task-list">
+        {filteredTasks.map((task, i) => {
+          const sev = task.managementOverride?.severity || task.aiAnalysis.severity;
+          const isGreatMatch = task.matchScore > 0.7;
 
-      {viewMode === 'list' ? (
-        /* Task Cards */
-        <div className="feed-task-list">
-          {filteredTasks.map((task, i) => {
-            const sev = task.managementOverride?.severity || task.aiAnalysis.severity;
-            const cat = task.managementOverride?.category || task.aiAnalysis.category;
-            const isGreatMatch = task.matchScore > 0.7;
-            const slotsLeft = task.maxVolunteers ? task.maxVolunteers - task.acceptedCount : null;
-
-            return (
-              <div
-                key={task.id}
-                className="feed-task-card animate-slide-up"
-                style={{ animationDelay: `${i * 60}ms` }}
-                onClick={() => navigate(`/feed/${task.id}`)}
-                role="button"
-                tabIndex={0}
-                id={`feed-card-${task.id}`}
-              >
-                {/* Top Row: Match Badge + Time */}
-                <div className="feed-card-topline">
-                  <div className="feed-card-badges">
-                    {isGreatMatch && (
-                      <span className="great-match-badge">
-                        <Award size={10} /> Great Match
-                      </span>
-                    )}
-                    <CategoryBadge category={cat} />
-                  </div>
-                  <span className="label-md text-muted">{timeAgo(task.createdAt)}</span>
-                </div>
-
-                {/* Title */}
-                <h3 className="title-lg feed-card-title">{task.title}</h3>
-
-                {/* AI Summary */}
-                <div className="feed-ai-snippet">
-                  <Sparkles size={12} className="feed-ai-icon" />
-                  <p className="body-sm text-muted">
-                    {task.aiAnalysis.situationSummary.substring(0, 120)}…
-                  </p>
-                </div>
-
-                {/* Meta Row */}
-                <div className="feed-card-meta">
-                  <div className="feed-meta-item">
-                    <MapPin size={13} />
-                    <span className="body-sm">{task.distance} km</span>
-                  </div>
-                  <SeverityBadge severity={sev} />
-                  <div className="feed-meta-item">
-                    <Users size={13} />
-                    <span className="body-sm">
-                      {slotsLeft !== null ? `${slotsLeft} slots left` : 'Open'}
+          return (
+            <div
+              key={task.id}
+              className={`task-feed-card severity-${sev.toLowerCase()}`}
+              onClick={() => navigate(`/feed/${task.id}`)}
+              style={{ animationDelay: `${i * 50}ms` }}
+            >
+              <div className="feed-card-header">
+                <div className="feed-card-tags">
+                  {isGreatMatch && (
+                    <span className="match-tag">
+                      <Award size={10} /> Recommended
                     </span>
-                  </div>
-                  <div className="feed-meta-item feed-meta-affected">
-                    <span className="body-sm">{task.aiAnalysis.estimatedAffected} affected</span>
-                  </div>
+                  )}
+                  <span className="label-lg category-tag">{task.aiAnalysis.category}</span>
                 </div>
+                <span className="label-lg text-muted">{timeAgo(task.createdAt)}</span>
+              </div>
 
-                {/* Match Score Bar */}
-                <div className="feed-match-row">
-                  <span className="label-md text-muted">Match</span>
-                  <div className="feed-match-bar">
-                    <div
-                      className="feed-match-fill"
-                      style={{ width: `${Math.round(task.matchScore * 100)}%` }}
-                    ></div>
+              <h3 className="task-title serif">{task.title}</h3>
+
+              <div className="task-ai-summary">
+                <Sparkles size={14} />
+                <p className="body-sm">{task.aiAnalysis.situationSummary}</p>
+              </div>
+
+              <div className="task-meta-row">
+                <div className="meta-item">
+                  <MapPin size={12} />
+                  <span>{task.distance} km away</span>
+                </div>
+                <div className="meta-item">
+                  <Users size={12} />
+                  <span>{task.acceptedCount}/{task.maxVolunteers} slots</span>
+                </div>
+                <div className="meta-item">
+                  <div className="match-score-pill">
+                    <div className="match-fill" style={{ width: `${task.matchScore * 100}%` }}></div>
+                    <span className="label-lg">{Math.round(task.matchScore * 100)}% Match</span>
                   </div>
-                  <span className="label-lg text-primary">{Math.round(task.matchScore * 100)}%</span>
-                  <ChevronRight size={16} className="feed-card-arrow" />
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        /* Map View Placeholder */
-        <div className="feed-map-view">
-          <div className="feed-map-placeholder">
-            {filteredTasks.map((task, i) => (
-              <div
-                key={task.id}
-                className="feed-map-pin"
-                style={{
-                  top: `${20 + (i * 15)}%`,
-                  left: `${15 + (i * 18)}%`,
-                  animationDelay: `${i * 200}ms`,
-                }}
-                onClick={() => navigate(`/feed/${task.id}`)}
-              >
-                <MapPin size={24} />
-                <span className="feed-map-pin-label label-sm">
-                  {task.title.split('—')[0].trim()}
-                </span>
-              </div>
-            ))}
-            <div className="feed-map-overlay">
-              <Map size={32} />
-              <span className="label-md">Google Maps integration</span>
-              <span className="label-sm text-muted">Connect API key to enable</span>
             </div>
-          </div>
-        </div>
-      )}
+          );
+        })}
+      </div>
 
       {filteredTasks.length === 0 && (
         <div className="empty-state">
-          <div className="empty-state-icon">
-            <Search size={28} />
-          </div>
-          <p className="headline-sm text-muted">No tasks match your filters</p>
-          <p className="body-md text-muted">Try adjusting the category or severity</p>
+          <Search size={48} style={{ opacity: 0.1, marginBottom: 16 }} />
+          <h3 className="title-md serif">No matches found</h3>
+          <p className="body-md text-muted">Try adjusting your filters or location</p>
         </div>
       )}
     </div>
