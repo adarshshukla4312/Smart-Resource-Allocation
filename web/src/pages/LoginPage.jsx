@@ -28,8 +28,20 @@ export default function LoginPage({ onLogin }) {
           role: 'NGO_MANAGEMENT',
           uid: 'mgr-001'
         });
+      } else if (username === 'volunteer' && password === 'volunteer') {
+        onLogin({ 
+          displayName: 'Volunteer Alex', 
+          role: 'VOLUNTEER',
+          uid: 'vol-001'
+        });
+      } else if (username === 'employee' && password === 'employee') {
+        onLogin({ 
+          displayName: 'Field Rep Raj', 
+          role: 'FIELD_EMPLOYEE',
+          uid: 'emp-001'
+        });
       } else {
-        setError('Invalid credentials. Try admin / admin for demo.');
+        setError('Invalid credentials. Try admin/admin, volunteer/volunteer, or employee/employee.');
       }
       setIsLoading(false);
     }, 800);
