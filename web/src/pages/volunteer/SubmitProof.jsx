@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   ArrowLeft, Camera, Video, Upload, CheckCircle2, Info
 } from 'lucide-react';
@@ -12,15 +12,62 @@ export default function SubmitProof() {
   const [files, setFiles] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files).map(f => ({
+        type: f.type.startsWith('video/') ? 'video' : 'image',
+        id: Date.now() + Math.random(),
+        file: f,
+        name: f.name,
+        previewUrl: f.type.startsWith('image/') ? URL.createObjectURL(f) : null
+      }));
+      setFiles([...files, ...newFiles]);
+    }
+  };
+
+  const triggerFileInput = (accept) => {
+    if (fileInputRef.current) {
+      fileInputRef.current.accept = accept;
+      fileInputRef.current.click();
+    }
+  };
+
+  const compressImage = (file) => new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 400;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = () => resolve(null);
+    };
+    reader.onerror = () => resolve(null);
+  });
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
-      // In MVP, we just send a mock structure to the API
-      // Real implementation would upload files to Storage first and pass URLs
-      const proofMedia = files.map(f => ({
-        type: f.type.toUpperCase(),
-        url: `https://mock.storage/proof-${f.id}.jpg`
+      const proofMedia = await Promise.all(files.map(async f => {
+        let url = `https://mock.storage/proof-${f.id}.jpg`;
+        if (f.file && f.type.toUpperCase() === 'IMAGE') {
+          const compressed = await compressImage(f.file);
+          if (compressed) url = compressed;
+        }
+        return {
+          type: f.type.toUpperCase(),
+          url: url
+        };
       }));
       
       const { collection, query, where, getDocs, updateDoc, serverTimestamp, db, auth } = await import('../../firebase.js');
@@ -105,18 +152,25 @@ export default function SubmitProof() {
 
       {/* Upload Area */}
       <div className="proof-upload-area animate-fade-in" style={{ animationDelay: '200ms' }}>
-        <div className="proof-upload-zone">
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          style={{ display: 'none' }} 
+          multiple 
+          onChange={handleFileChange} 
+        />
+        <div className="proof-upload-zone" onClick={() => triggerFileInput('image/*,video/*')} style={{ cursor: 'pointer' }}>
           <Upload size={32} />
           <span className="title-md">Tap to add photos or video</span>
           <span className="body-sm text-muted">Images, short video (≤45s), or long video</span>
         </div>
 
         <div className="proof-upload-btns">
-          <button className="proof-upload-btn" onClick={() => setFiles([...files, { type: 'image', id: Date.now() }])}>
+          <button className="proof-upload-btn" onClick={() => triggerFileInput('image/*')}>
             <Camera size={20} />
             <span className="label-md">Photo</span>
           </button>
-          <button className="proof-upload-btn" onClick={() => setFiles([...files, { type: 'video', id: Date.now() }])}>
+          <button className="proof-upload-btn" onClick={() => triggerFileInput('video/*')}>
             <Video size={20} />
             <span className="label-md">Video</span>
           </button>
@@ -129,9 +183,15 @@ export default function SubmitProof() {
           <span className="label-lg">{files.length} file{files.length > 1 ? 's' : ''} attached</span>
           <div className="proof-files-grid">
             {files.map((f) => (
-              <div key={f.id} className="proof-file-thumb">
-                {f.type === 'image' ? <Camera size={20} /> : <Video size={20} />}
-                <span className="label-sm">{f.type === 'image' ? 'Photo' : 'Video'}</span>
+              <div key={f.id} className="proof-file-thumb" title={f.name} style={{ position: 'relative', overflow: 'hidden' }}>
+                {f.previewUrl ? (
+                   <img src={f.previewUrl} alt={f.name} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0 }} />
+                ) : (
+                   <>
+                     {f.type === 'image' ? <Camera size={20} /> : <Video size={20} />}
+                     <span className="label-sm">{f.name ? (f.name.length > 10 ? f.name.substring(0, 10) + '...' : f.name) : (f.type === 'image' ? 'Photo' : 'Video')}</span>
+                   </>
+                )}
               </div>
             ))}
           </div>

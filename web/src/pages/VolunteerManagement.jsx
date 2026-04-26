@@ -72,6 +72,8 @@ export default function VolunteerManagement() {
   const { data: applicationsData, loading: aLoading } = useTaskApplications(taskId);
   const [expandedScore, setExpandedScore] = useState(null);
   const [processingId, setProcessingId] = useState(null);
+  const [selectedAppForGallery, setSelectedAppForGallery] = useState(null);
+  const [galleryIndex, setGalleryIndex] = useState(0);
 
   if (tLoading || aLoading) {
     return <div className="loading-screen">Loading applications...</div>;
@@ -273,9 +275,20 @@ export default function VolunteerManagement() {
           <div className="proof-grid">
             {proofApps.map((app) => (
               <div key={app.id} className="proof-card">
-                <div className="proof-media-placeholder">
-                  {app.proofMedia?.[0]?.type === 'IMAGE' ? <Image size={32} /> : <Image size={32} />}
-                  <span className="label-sm text-muted">Proof Attached</span>
+                <div 
+                  className="proof-media-placeholder" 
+                  style={{ padding: 0, overflow: 'hidden', cursor: 'pointer' }}
+                  onClick={() => { setGalleryIndex(0); setSelectedAppForGallery(app); }}
+                  title="Click to view full size"
+                >
+                  {app.proofMedia?.[0]?.url && !app.proofMedia[0].url.includes('mock.storage') ? (
+                    <img src={app.proofMedia[0].url} alt="Proof" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <>
+                      {app.proofMedia?.[0]?.type === 'IMAGE' ? <Image size={32} /> : <Image size={32} />}
+                      <span className="label-sm text-muted">Proof Attached</span>
+                    </>
+                  )}
                 </div>
                 <div className="proof-info">
                   <span className="title-md">{app.volunteerName || 'Volunteer'}</span>
@@ -302,6 +315,43 @@ export default function VolunteerManagement() {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Gallery Modal */}
+      {selectedAppForGallery && (
+        <div className="gallery-modal-overlay" onClick={() => setSelectedAppForGallery(null)}>
+          <div className="gallery-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="gallery-close" onClick={() => setSelectedAppForGallery(null)}>
+              <XCircle size={36} />
+            </button>
+            
+            <div className="gallery-image-container">
+               {selectedAppForGallery.proofMedia?.[galleryIndex]?.url && !selectedAppForGallery.proofMedia[galleryIndex].url.includes('mock.storage') ? (
+                  <img src={selectedAppForGallery.proofMedia[galleryIndex].url} alt={`Proof ${galleryIndex + 1}`} />
+               ) : (
+                  <div style={{ padding: '60px', background: 'var(--surface-container-highest)', borderRadius: '12px', color: 'var(--on-surface)' }}>
+                    No Valid Image URL
+                  </div>
+               )}
+            </div>
+            
+            {selectedAppForGallery.proofMedia?.length > 1 && (
+              <div className="gallery-navigation">
+                <button 
+                  className="gallery-nav-btn"
+                  disabled={galleryIndex === 0} 
+                  onClick={() => setGalleryIndex(prev => prev - 1)}
+                >Previous</button>
+                <span className="label-md">{galleryIndex + 1} / {selectedAppForGallery.proofMedia.length}</span>
+                <button 
+                  className="gallery-nav-btn"
+                  disabled={galleryIndex === selectedAppForGallery.proofMedia.length - 1} 
+                  onClick={() => setGalleryIndex(prev => prev + 1)}
+                >Next</button>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );
