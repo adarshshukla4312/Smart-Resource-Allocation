@@ -96,6 +96,8 @@
   justify-content: center;
   padding: var(--space-12);
   background: var(--surface);
+  position: relative;
+  z-index: 10;
 }
 
 .login-form-container {
@@ -215,19 +217,26 @@
 
 .login-field label {
   color: var(--on-surface-variant);
+  position: relative;
+  z-index: 11;
+  pointer-events: auto;
 }
 
 .login-field input {
   width: 100%;
   padding: var(--space-4) var(--space-5);
   background: var(--surface-container-low);
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-lg);
   color: var(--on-surface);
   font-family: var(--font-family);
   font-size: 1rem;
-  transition: all var(--transition-base);
+  transition: all var(--transition-fast);
   outline: none;
+  position: relative;
+  z-index: 11;
+  pointer-events: auto;
+  cursor: text;
 }
 
 .login-field input:focus {
@@ -259,6 +268,7 @@
   padding: var(--space-1);
   border-radius: var(--radius-sm);
   transition: color var(--transition-fast);
+  z-index: 12;
 }
 
 .login-password-toggle:hover {
