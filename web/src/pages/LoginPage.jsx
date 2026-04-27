@@ -65,11 +65,11 @@ export default function LoginPage() {
             <Shield size={18} />
             <span>Secure Access Portal</span>
           </div>
-          
+
           <h1 className="login-hero-title">
-            The Flow of<br/>Resource
+            The Flow of<br />Resource
           </h1>
-          
+
           <p className="login-hero-tagline body-lg">
             An editorial approach to resource allocation and impact management.
           </p>
@@ -89,7 +89,7 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="login-hero-gradient-orb login-hero-orb-1"></div>
         <div className="login-hero-gradient-orb login-hero-orb-2"></div>
         <div className="login-hero-gradient-orb login-hero-orb-3"></div>
@@ -165,8 +165,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="login-submit-btn"
               disabled={isLoading}
               id="login-submit"
