@@ -6,7 +6,7 @@ import {
 import {
   getFirestore, collection, doc, deleteDoc, getDoc, getDocs, addDoc, updateDoc, setDoc,
   query, where, orderBy, limit, onSnapshot, serverTimestamp, increment,
-  arrayUnion
+  arrayUnion, enableIndexedDbPersistence
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
@@ -22,6 +22,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Enable offline persistence
+enableIndexedDbPersistence(db).catch((err) => {
+  if (err.code == 'failed-precondition') {
+    console.warn('Firebase persistence failed: multiple tabs open');
+  } else if (err.code == 'unimplemented') {
+    console.warn('Firebase persistence not supported by current browser');
+  }
+});
+
 const storage = getStorage(app);
 
 export {

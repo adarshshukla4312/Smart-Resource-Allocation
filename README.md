@@ -2,118 +2,91 @@
 
 ### *Data-Driven Volunteer Coordination for Social Impact*
 
-[![Status](https://img.shields.io/badge/Status-In--Progress-orange?style=for-the-badge)](https://github.com/your-repo-link)
-[![Tech Stack](https://img.shields.io/badge/Tech--Stack-React%20%7C%20Capacitor%20%7C%20Firebase-blue?style=for-the-badge)](https://github.com/your-repo-link)
-[![AI](https://img.shields.io/badge/AI-Gemini%201.5%20Pro-purple?style=for-the-badge)](https://github.com/your-repo-link)
+[![Status](https://img.shields.io/badge/Status-Live-success?style=for-the-badge)](https://team-ro-ko-hackathon-project.web.app)
+[![Tech Stack](https://img.shields.io/badge/Tech--Stack-React%20%7C%20Capacitor%20%7C%20Firebase-blue?style=for-the-badge)]()
+[![AI](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-purple?style=for-the-badge)]()
 
 ---
 
 ## 🌟 Vision
-**Smart Resource Allocation (SRA)** is a next-generation platform designed to turn fragmented field observations into actionable priorities. By leveraging Google Cloud's AI suite, SRA empowers NGOs to capture high-fidelity data in low-connectivity environments and instantly connect community needs with the most qualified volunteers.
+**Smart Resource Allocation (SRA)** is a next-generation platform designed to turn fragmented field observations into actionable priorities. By leveraging Google's Gemini AI suite, SRA empowers NGOs to capture high-fidelity data in low-connectivity environments, analyze media and documents instantly, and connect community needs with the most qualified volunteers through a location-aware matching engine.
 
 ---
 
 ## 🛠️ Key Features
 
-### 1. AI-Augmented Reporting (Mobile)
-*   **Multimodal Capture**: NGO Field Employees can record audio interviews, capture images, and shoot short videos to document community needs.
-*   **Offline Resilience**: Full support for offline data entry with automatic background sync when connectivity returns.
-*   **AI Transcription & Cleanup**: Automated conversion of field audio (Hindi/English) into clean, summarized reports using **Google Cloud Speech-to-Text** and **Gemini 1.5 Pro**.
+### 1. AI-Augmented Field Reporting
+*   **Quick vs Detailed Reports**: NGO Field Employees can submit fully-structured detailed reports or rapid Quick Reports containing just images/audio, which AI structures into actionable data.
+*   **Offline-First Architecture**: Built-in **IndexedDB Persistence** caches all data locally. The app includes a dynamic `NetworkBanner` that informs users when they drop offline, queueing all their writes for background sync when connectivity returns.
 
-### 2. NGO Management Dashboard (Web)
-*   **Consolidated AI Briefing**: A unified view of all field reports with AI-generated situational summaries, urgency labels, and severity assessments.
-*   **Governance & Review**: Management can override AI predictions, manage volunteer assignments, and monitor overall program health.
-*   **Role-Based Access**: Secure data isolation between different NGOs and user personas.
+### 2. On-Demand Multimodal AI Analysis (Admin Dashboard)
+*   **Intelligent Media Previews**: Management can click to instantly generate AI summaries for images, audio, or video attachments using `gemini-2.5-flash` vision/multimodal capabilities.
+*   **Deep Document Analysis**: PDF documents feature a dual-tab interface:
+    *   **AI Summary**: High-level overview of document type and key findings.
+    *   **Content Analysis**: Deep section-by-section extraction of headers, critical data points, action items, and structural assessment.
 
-### 3. Smart Volunteer Matching
-*   **Personalized Ranking**: A weighted matching engine ranks tasks for volunteers based on a multi-factor scoring algorithm.
-*   **Direct Communication**: Seamless coordination between accepted volunteers and NGO employees via shared contact details.
-*   **Proof of Participation**: Volunteers submit media-rich proof of their work for management verification.
-
-#### 🧠 Matching Engine Logic
-The "Match Score" determines the order of tasks in a volunteer's feed. It is calculated using a weighted formula:
-$$MatchScore = 0.40(P) + 0.25(I) + 0.20(A) + 0.15(S)$$
+### 3. Smart Volunteer Matching Engine
+*   **Location-Aware Feeding**: Tasks are sorted and displayed to volunteers based on live GPS calculations and proximity formulas.
+*   **Weighted Matching Algorithm**:
+    *   $$MatchScore = 0.35(P) + 0.25(Se) + 0.20(I) + 0.20(Sk)$$
 
 | Component | Weight | Description |
 | :--- | :--- | :--- |
-| **Proximity (P)** | 40% | Exponential decay based on distance: $e^{(-0.05 \times distance\_km)}$. |
-| **Interest (I)** | 25% | Alignment between task category and volunteer's selected interests. |
-| **Availability (A)** | 20% | Recency of platform activity to prioritize active users. |
-| **Skill Level (S)** | 15% | Matching between required task skills and volunteer's expertise levels. |
+| **Proximity (P)** | 35% | Exponential decay based on live GPS distance: $e^{(-0.05 \times distance\_km)}$. |
+| **Severity (Se)** | 25% | Prioritizes critical/high-severity tasks based on AI or management assessment. |
+| **Interest (I)** | 20% | Alignment between the task's category and the volunteer's selected interests. |
+| **Skill (Sk)** | 20% | Ratio of matching skills the volunteer possesses versus the task requirements. |
 
+*   **Digital Proofing**: Volunteers can upload proof of task completion for NGO management verification.
+
+### 4. WisprFlow Design System
+*   **Premium UX/UI**: The entire application is built on custom **WisprFlow** CSS principles featuring Glassmorphism, deep purple/warm cream palettes, and editorial typography (Outfit/Inter).
+*   **Brand Loaders**: Dynamic CSS-driven spinning loaders and micro-animations replace generic loading screens to establish a premium brand feel.
 
 ---
 
 ## 💻 Technology Stack
 
-### **Web Dashboard**
+### **Web & Mobile Interface**
 *   **Core**: React 19 + Vite
-*   **Routing**: React Router 7
-*   **Styling**: Vanilla CSS (Premium Custom Design)
+*   **Cross-Platform Shell**: Capacitor v6 (Android APK compiled and bundled)
+*   **Styling**: Vanilla CSS (WisprFlow Design Tokens)
 *   **Icons**: Lucide React
+*   **Hosting**: Firebase Hosting (Live at `team-ro-ko-hackathon-project.web.app`)
 
-### **Mobile Application**
-*   **Core**: React + Capacitor (Cross-platform Android/iOS)
-*   **Native Features**: GPS Location, Camera, Audio Recording
-*   **Persistence**: Firebase Firestore (Offline-First)
-
-### **Backend & AI Layer**
-*   **Cloud Provider**: Google Cloud Platform (GCP)
-*   **Backend**: Node.js (Express) on Firebase Functions
-*   **Database**: Firestore + Cloud SQL (PostGIS for spatial matching)
-*   **AI Services**: 
-    *   **Vertex AI**: Gemini 1.5 Pro for summarization and analysis.
-    *   **Cloud Speech-to-Text v2**: Multilingual transcription.
-    *   **Cloud Vision API**: Image labeling and safe-search.
-    *   **Video Intelligence API**: Shot change and object tracking.
+### **Backend & AI Infrastructure**
+*   **Database**: Firebase Firestore (Realtime & Offline-enabled)
+*   **Storage**: Firebase Cloud Storage (Images, Audio, PDFs)
+*   **AI Services**: `@google/generative-ai` (`gemini-2.5-flash`) integrated directly into the Firebase data flow.
 
 ---
 
-## 📈 Future Roadmap
+## 📱 Mobile App (APK) Setup
+SRA supports Android deployment via Capacitor by wrapping the optimized production web build.
 
-The following features are planned for future development cycles:
-
-*   **[ ] QR Check-in System**: Individual, time-bound QR codes for secure, digital attendance tracking.
-*   **[ ] Gamification Engine**: Advanced level-up mechanics (+1 per task), achievement badges, and category expert statuses.
-*   **[ ] Digital Certificates**: Automated generation of NGO-issued PDF certificates for top contributors.
-*   **[ ] Global Leaderboards**: Category-wise rankings to drive engagement and recognize community leaders.
-*   **[ ] In-App Messaging**: Real-time chat between volunteers and NGO management to eliminate reliance on external apps.
-*   **[ ] AI Document Verification**: Automated verification of NGO registration certificates (80G/FCRA) during onboarding.
-*   **[ ] Dual-Role Switcher**: Enhanced UI for users who serve as both Volunteers and NGO Employees.
+**To build the APK locally:**
+1. Generate the web production build:
+   ```bash
+   cd web && npm run build
+   ```
+2. Copy the build to the Capacitor shell:
+   ```bash
+   xcopy /E /I /Y "..\web\dist" "dist" # (Windows)
+   ```
+3. Sync and build using Gradle:
+   ```bash
+   cd mobile
+   npx cap sync android
+   cd android
+   .\gradlew assembleDebug
+   ```
+The compiled APK will be located at `mobile/android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ---
 
 ## 🔒 Compliance & Security
-*   **GDPR / DPDPA 2023**: Adheres to the Digital Personal Data Protection Act of India.
-*   **Role-Gated Data**: Sensitive management comments and internal assessments are physically isolated from volunteer views via Firestore Security Rules.
-*   **Safe-Search**: Automated AI screening of all uploaded media for inappropriate content.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-*   Node.js (v18+)
-*   Firebase CLI
-*   GCP Service Account Key (for AI features)
-
-### Installation
-1.  **Clone the repo**:
-    ```bash
-    git clone https://github.com/your-username/smart-resource-allocation.git
-    ```
-2.  **Web Dashboard**:
-    ```bash
-    cd web && npm install && npm run dev
-    ```
-3.  **Mobile App**:
-    ```bash
-    cd mobile && npm install && npm run dev
-    ```
-4.  **Backend Functions**:
-    ```bash
-    cd functions && npm install && npm run build
-    ```
+*   **Role-Gated Views**: Strict routing and Firestore Security Rules isolate Administrative management views, Employee reporting tools, and Volunteer task feeds.
+*   **Cached AI**: AI analysis results are persisted in Firestore subcollections to minimize redundant API calls and save tokens.
 
 ---
 

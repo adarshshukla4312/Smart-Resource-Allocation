@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import LoginPage from './pages/LoginPage';
+import BrandLoader from './components/BrandLoader';
+import NetworkBanner from './components/NetworkBanner';
 
 // Layouts
 import DashboardLayout from './layouts/DashboardLayout';
@@ -31,13 +33,13 @@ import './App.css';
 function ProtectedRoute({ allowedRoles, children }) {
   const { isAuthenticated, userProfile, loading } = useAuth();
 
-  if (loading) return <div className="loading-screen">Loading...</div>;
+  if (loading) return <BrandLoader message="Authenticating..." />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (allowedRoles && !allowedRoles.includes(userProfile?.role)) {
     if (userProfile?.role === 'VOLUNTEER') return <Navigate to="/volunteer" replace />;
     if (userProfile?.role === 'NGO_EMPLOYEE') return <Navigate to="/employee" replace />;
     if (userProfile?.role === 'NGO_MANAGEMENT') return <Navigate to="/admin" replace />;
-    return <div className="loading-screen">Setting up profile...</div>;
+    return <BrandLoader message="Setting up profile..." />;
   }
   return children;
 }
@@ -53,7 +55,7 @@ function App() {
   };
 
   if (loading) {
-    return <div className="loading-screen">Loading...</div>;
+    return <BrandLoader message="Loading workspace..." />;
   }
 
   // Build user object for layouts (backward compatible with existing layout props)
@@ -64,8 +66,10 @@ function App() {
   } : null;
 
   return (
-    <Router>
-      <Routes>
+    <>
+      <NetworkBanner />
+      <Router>
+        <Routes>
         <Route 
           path="/login" 
           element={
@@ -129,7 +133,8 @@ function App() {
 
         <Route path="*" element={<Navigate to={getHomeRoute()} replace />} />
       </Routes>
-    </Router>
+      </Router>
+    </>
   );
 }
 

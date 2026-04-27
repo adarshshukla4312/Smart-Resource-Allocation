@@ -1,5 +1,12 @@
 {
   "appId": "com.sra.mobile",
-  "appName": "SRA Mobile",
-  "webDir": "dist"
+  "appName": "Smart Resource Allocation",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": ["*.googleapis.com", "*.google.com", "*.firebaseapp.com", "*.web.app"]
+  },
+  "android": {
+    "allowMixedContent": true
+  }
 }
