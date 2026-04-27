@@ -165,3 +165,32 @@ export function useDashboardStats() {
 
   return { stats, loading };
 }
+
+/**
+ * Hook for task media subcollection — real-time listener.
+ * Queries tasks/{taskId}/media for all uploaded media items.
+ */
+export function useTaskMedia(taskId) {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!taskId) { setLoading(false); return; }
+
+    const mediaRef = collection(db, 'tasks', taskId, 'media');
+    const q = query(mediaRef, orderBy('uploadedAt', 'asc'));
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      setData(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    }, () => {
+      // If subcollection doesn't exist yet, just return empty
+      setData([]);
+      setLoading(false);
+    });
+
+    return () => unsub();
+  }, [taskId]);
+
+  return { data, loading };
+}

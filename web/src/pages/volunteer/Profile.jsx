@@ -26,12 +26,17 @@ export default function Profile() {
   const [travelRadius, setTravelRadius] = useState(10);
   const [resumeName, setResumeName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
+  const [isLocating, setIsLocating] = useState(false);
 
   useEffect(() => {
     if (userProfile) {
       setEditedName(userProfile.displayName || userProfile.name || '');
       setEditedPhone(userProfile.phone || '');
       setEditedAddress(userProfile.homeLocation?.address || '');
+      setLat(userProfile.homeLocation?.lat || 0);
+      setLng(userProfile.homeLocation?.lng || 0);
       setSelectedSkills(userProfile.skills || []);
       setSelectedInterests(userProfile.interests || []);
       setAvailability(userProfile.availability || []);
@@ -44,6 +49,26 @@ export default function Profile() {
     setArr(arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item]);
   };
 
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLat(position.coords.latitude);
+        setLng(position.coords.longitude);
+        if (!editedAddress) setEditedAddress(`Lat: ${position.coords.latitude.toFixed(4)}, Lng: ${position.coords.longitude.toFixed(4)}`);
+        setIsLocating(false);
+      },
+      (error) => {
+        alert("Unable to retrieve your location");
+        setIsLocating(false);
+      }
+    );
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -52,8 +77,8 @@ export default function Profile() {
         phone: editedPhone,
         homeLocation: {
           address: editedAddress,
-          lat: userProfile?.homeLocation?.lat || 0,
-          lng: userProfile?.homeLocation?.lng || 0
+          lat: lat,
+          lng: lng
         },
         skills: selectedSkills,
         interests: selectedInterests,
@@ -99,12 +124,23 @@ export default function Profile() {
           <div className="profile-location">
             <MapPin size={14} />
             {editMode ? (
-              <input 
-                className="body-sm text-muted" 
-                style={{ background: 'transparent', border: '1px solid var(--outline)', borderRadius: '4px', padding: '2px', width: '100%' }} 
-                value={editedAddress} 
-                onChange={e => setEditedAddress(e.target.value)} 
-              />
+              <div style={{ display: 'flex', gap: '8px', width: '100%', alignItems: 'center' }}>
+                <input 
+                  className="body-sm text-muted" 
+                  style={{ background: 'transparent', border: '1px solid var(--outline)', borderRadius: '4px', padding: '4px', width: '100%', flex: 1 }} 
+                  value={editedAddress} 
+                  onChange={e => setEditedAddress(e.target.value)} 
+                  placeholder="Address or detect location"
+                />
+                <button 
+                  className="btn-secondary btn-sm"
+                  onClick={detectLocation}
+                  disabled={isLocating}
+                  style={{ whiteSpace: 'nowrap', padding: '4px 8px' }}
+                >
+                  {isLocating ? 'Locating...' : 'Detect'}
+                </button>
+              </div>
             ) : (
               <span className="body-sm text-muted">{editedAddress || 'No location set'}</span>
             )}

@@ -38,9 +38,9 @@ When a merge conflict arises, the agent resolves it by treating the PRD as the r
 
 If in case any MCP is not available in user's device then move forward wihout it. 
 
-**Stitch MCP** — used for all UI work. Before implementing any screen, fetch design context from the Stitch project first. Never design from scratch.
+**UI Design** — used for all UI work. Before implementing any screen or component, refer to `wisprflow.ai-DESIGN.md` for this app's UI design guidance. Never design from scratch.
 
-**Context7 MCP** — used before writing any integration  code. Always fetch current docs for the library before touching it. APIs change; training data does not update.
+**Context7 MCP** — used before writing any integration code. Always fetch current docs for the library before touching it. APIs change; training data does not update.
 
 **gcloud CLI** — used for all infrastructure. No resource is created by clicking the console. Everything goes through the terminal so it is reproducible.
 
@@ -49,7 +49,7 @@ If in case any MCP is not available in user's device then move forward wihout it
 ## Thought Pattern for Every Task
 
 1. Read the PRD section that governs this task.
-2. Fetch Stitch design context if the task involves UI.
+2. Read `wisprflow.ai-DESIGN.md` if the task involves UI.
 3. Fetch Context7 docs if the task involves an external library or API.
 4. Implement strictly what the PRD describes.
 5. If something feels like a good addition, check whether it is in scope. If not in PRD, do not build it.

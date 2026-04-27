@@ -29,7 +29,7 @@ function haversineDistance(
 }
 
 export function computeMatchScore(volunteer: any, task: any): MatchResult {
-  // 1. Proximity Score (weight: 0.40) — Exponential decay: e^(-0.05 × distance_km)
+  // 1. Proximity Score (weight: 0.35) — Exponential decay: e^(-0.05 × distance_km)
   const vLat = volunteer.homeLocation?.lat || 0;
   const vLng = volunteer.homeLocation?.lng || 0;
   const tLat = task.location?.lat || 0;
@@ -37,7 +37,14 @@ export function computeMatchScore(volunteer: any, task: any): MatchResult {
   const distance = haversineDistance(vLat, vLng, tLat, tLng);
   const proximityScore = Math.exp(-0.05 * distance);
 
-  // 2. Interest Score (weight: 0.25) — 1.0 if category matches interests
+  // 2. Severity Score (weight: 0.25) — Critical = 1.0, High = 0.8, Medium = 0.5, Low = 0.2
+  const taskSeverity = task.managementOverride?.severity || task.aiAnalysis?.severity || task.employeeAssessment?.severity || "LOW";
+  let severityScore = 0.2;
+  if (taskSeverity === "CRITICAL") severityScore = 1.0;
+  else if (taskSeverity === "HIGH") severityScore = 0.8;
+  else if (taskSeverity === "MEDIUM") severityScore = 0.5;
+
+  // 3. Interest Score (weight: 0.20) — 1.0 if category matches interests
   const taskCategory = task.managementOverride?.category || task.aiAnalysis?.category || "";
   const interests: string[] = volunteer.interests || [];
   let interestScore = 0.5; // default if no interests set
@@ -45,7 +52,7 @@ export function computeMatchScore(volunteer: any, task: any): MatchResult {
     interestScore = interests.includes(taskCategory) ? 1.0 : 0.0;
   }
 
-  // 3. Availability Score (weight: 0.20) — based on lastActiveAt
+  // 4. Availability Score (weight: 0.10) — based on lastActiveAt
   let availabilityScore = 0.2;
   if (volunteer.lastActiveAt) {
     const lastActive = typeof volunteer.lastActiveAt === "string"
@@ -57,7 +64,7 @@ export function computeMatchScore(volunteer: any, task: any): MatchResult {
     else availabilityScore = 0.2;
   }
 
-  // 4. Skill Score (weight: 0.15) — matching skills / required skills
+  // 5. Skill Score (weight: 0.10) — matching skills / required skills
   const requiredSkills: string[] = task.requiredSkills || [];
   const volunteerSkills: string[] = volunteer.skills || [];
   let skillScore = 1.0; // default for tasks with no requirements
@@ -68,17 +75,18 @@ export function computeMatchScore(volunteer: any, task: any): MatchResult {
 
   // Weighted total
   const total = parseFloat(
-    (0.40 * proximityScore + 0.25 * interestScore + 0.20 * availabilityScore + 0.15 * skillScore).toFixed(2)
+    (0.35 * proximityScore + 0.25 * severityScore + 0.20 * interestScore + 0.10 * availabilityScore + 0.10 * skillScore).toFixed(2)
   );
 
   return {
     total,
     distance: parseFloat(distance.toFixed(1)),
     breakdown: {
-      proximity: parseFloat((0.40 * proximityScore).toFixed(2)),
-      interest: parseFloat((0.25 * interestScore).toFixed(2)),
-      availability: parseFloat((0.20 * availabilityScore).toFixed(2)),
-      skill: parseFloat((0.15 * skillScore).toFixed(2)),
+      proximity: parseFloat((0.35 * proximityScore).toFixed(2)),
+      severity: parseFloat((0.25 * severityScore).toFixed(2)),
+      interest: parseFloat((0.20 * interestScore).toFixed(2)),
+      availability: parseFloat((0.10 * availabilityScore).toFixed(2)),
+      skill: parseFloat((0.10 * skillScore).toFixed(2)),
     },
   };
 }

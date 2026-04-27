@@ -57,6 +57,7 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
       
       await addDoc(collection(db, 'applications'), {
         taskId,
+        taskTitle: task.title,
         volunteerId: auth.currentUser?.uid,
         volunteerName: auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || 'Unknown',
         status: 'APPLIED',

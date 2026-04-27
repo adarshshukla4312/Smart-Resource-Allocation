@@ -2,11 +2,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import {
   ChevronRight, MapPin, AlertTriangle, Clock, Users,
-  Shield, Eye, MessageSquare, CheckCircle2, XCircle, Image, Mic, Video
+  Shield, Eye, MessageSquare, CheckCircle2, XCircle, Image, Mic, Video,
+  Sparkles, Loader2, Save, FileText
 } from 'lucide-react';
-import { useDocument } from '../hooks/useFirestoreData';
+import { useDocument, useTaskMedia } from '../hooks/useFirestoreData';
 import { adminApi } from '../api';
-import { SEVERITY_LEVELS, URGENCY_LEVELS, CATEGORIES } from '../data/mockData'; // For dropdowns
+import { SEVERITY_LEVELS, URGENCY_LEVELS, CATEGORIES } from '../data/mockData';
+import { runAiAnalysis } from '../services/aiAnalysis';
+import MediaPreviewModal from '../components/MediaPreviewModal';
 import './TaskDetail.css';
 
 function SeverityBadge({ severity }) {
@@ -36,6 +39,15 @@ export default function TaskDetail() {
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [overrideSaving, setOverrideSaving] = useState(false);
+  const [overrideSaved, setOverrideSaved] = useState(false);
+  const [mediaModalOpen, setMediaModalOpen] = useState(false);
+  const [mediaModalIndex, setMediaModalIndex] = useState(0);
+  const [modalMediaItems, setModalMediaItems] = useState(null);
+
+  // Real media from subcollection
+  const { data: mediaItems, loading: mediaLoading } = useTaskMedia(taskId);
 
   useEffect(() => {
     if (task) {
@@ -71,9 +83,9 @@ export default function TaskDetail() {
       
       if (overrideCategory || overrideSeverity || overrideUrgency) {
         updates.managementOverride = {
-          category: overrideCategory || undefined,
-          severity: overrideSeverity || undefined,
-          urgency: overrideUrgency || undefined,
+          category: overrideCategory || null,
+          severity: overrideSeverity || null,
+          urgency: overrideUrgency || null,
         };
       }
       
@@ -124,6 +136,51 @@ export default function TaskDetail() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleRunAI = async () => {
+    setAiLoading(true);
+    try {
+      const analysis = await runAiAnalysis(task);
+      const { doc: docRef, updateDoc: updateFn, db: fireDb, serverTimestamp: sTs } = await import('../firebase.js');
+      await updateFn(docRef(fireDb, 'tasks', taskId), {
+        aiAnalysis: analysis,
+        updatedAt: sTs()
+      });
+    } catch (err) {
+      alert('AI Analysis failed: ' + err.message);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleUpdateOverride = async () => {
+    if (!overrideCategory && !overrideSeverity && !overrideUrgency) return;
+    setOverrideSaving(true);
+    setOverrideSaved(false);
+    try {
+      const { doc: docRef, updateDoc: updateFn, db: fireDb, serverTimestamp: sTs } = await import('../firebase.js');
+      await updateFn(docRef(fireDb, 'tasks', taskId), {
+        managementOverride: {
+          category: overrideCategory || null,
+          severity: overrideSeverity || null,
+          urgency: overrideUrgency || null,
+        },
+        updatedAt: sTs()
+      });
+      setOverrideSaved(true);
+      setTimeout(() => setOverrideSaved(false), 3000);
+    } catch (err) {
+      alert('Failed to save override: ' + err.message);
+    } finally {
+      setOverrideSaving(false);
+    }
+  };
+
+  const openMediaModal = (index, items = mediaItems) => {
+    setModalMediaItems(items);
+    setMediaModalIndex(index);
+    setMediaModalOpen(true);
   };
 
   const ai = task.aiAnalysis || {
@@ -180,9 +237,21 @@ export default function TaskDetail() {
               <h2 className="headline-sm">
                 <Eye size={20} /> AI Situation Analysis
               </h2>
-              <span className={`ai-status ai-${ai.processingStatus?.toLowerCase() || 'pending'}`}>
-                {ai.processingStatus === 'DONE' ? '✓ Analysis Complete' : '⏳ Processing'}
-              </span>
+              <div className="ai-header-actions">
+                <span className={`ai-status ai-${ai.processingStatus?.toLowerCase() || 'pending'}`}>
+                  {ai.processingStatus === 'DONE' ? '✓ Analysis Complete' : '⏳ Processing'}
+                </span>
+                <button
+                  className="btn-run-ai"
+                  onClick={handleRunAI}
+                  disabled={aiLoading}
+                  id="run-ai-analysis"
+                  title="Run AI analysis using Gemini"
+                >
+                  {aiLoading ? <Loader2 size={14} className="spin-icon" /> : <Sparkles size={14} />}
+                  <span>{aiLoading ? 'Analyzing...' : 'Run AI Analysis'}</span>
+                </button>
+              </div>
             </div>
             <p className="body-lg">{ai.situationSummary}</p>
           </section>
@@ -193,7 +262,14 @@ export default function TaskDetail() {
             <div className="assessment-grid">
               <div className="assessment-card">
                 <span className="label-sm text-muted">Category</span>
-                <span className="title-md">{ai.category}</span>
+                {task.managementOverride?.category ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span className="title-md">{task.managementOverride.category}</span>
+                    <span className="status-badge" style={{ padding: '2px 6px', fontSize: '10px' }} title="Overridden"><Shield size={10} /> Override</span>
+                  </div>
+                ) : (
+                  <span className="title-md">{ai.category}</span>
+                )}
               </div>
               <div className="assessment-card">
                 <span className="label-sm text-muted">Est. Affected</span>
@@ -225,12 +301,20 @@ export default function TaskDetail() {
                 <div className="comparison-row">
                   <div className="comparison-item">
                     <span className="label-md">Employee</span>
-                    <span className="urgency-value">{employeeAssessment.urgency.replace('_', ' ')}</span>
+                    <span className="urgency-value">{employeeAssessment.urgency.replace(/_/g, ' ')}</span>
                   </div>
                   <div className="comparison-item">
                     <span className="label-md">AI</span>
-                    <span className="urgency-value">{ai.urgency.replace('_', ' ')}</span>
+                    <span className="urgency-value">{ai.urgency.replace(/_/g, ' ')}</span>
                   </div>
+                  {task.managementOverride?.urgency && (
+                    <div className="comparison-item override">
+                      <span className="label-md">
+                        <Shield size={12} /> Override
+                      </span>
+                      <span className="urgency-value">{task.managementOverride.urgency.replace(/_/g, ' ')}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -281,6 +365,15 @@ export default function TaskDetail() {
                 </select>
               </div>
             </div>
+            <button
+              className="btn-update-override"
+              onClick={handleUpdateOverride}
+              disabled={overrideSaving || (!overrideCategory && !overrideSeverity && !overrideUrgency)}
+              id="update-override"
+            >
+              {overrideSaving ? <Loader2 size={14} className="spin-icon" /> : overrideSaved ? <CheckCircle2 size={14} /> : <Save size={14} />}
+              <span>{overrideSaving ? 'Saving...' : overrideSaved ? 'Override Saved!' : 'Update Override'}</span>
+            </button>
           </section>
 
           {/* Internal Comments */}
@@ -329,51 +422,67 @@ export default function TaskDetail() {
           <section className="detail-section animate-slide-right" style={{ animationDelay: '200ms' }}>
             <h2 className="headline-sm">Media Attachments</h2>
             <div className="media-gallery">
-              {Array.from({ length: task.mediaCount?.images || 0 }).map((_, i) => (
-                <div key={`img-${i}`} className="media-thumb">
-                  <div className="media-thumb-placeholder">
-                    <Image size={24} />
-                    <span className="label-sm">Image {i + 1}</span>
+              {(() => {
+                const displayItems = mediaItems.length > 0 ? mediaItems : [];
+                if (displayItems.length === 0 && task.mediaCount) {
+                  for (let i = 0; i < (task.mediaCount.images || 0); i++) displayItems.push({ id: `fallback-img-${i}`, type: 'IMAGE', fileName: `Image ${i + 1}` });
+                  for (let i = 0; i < (task.mediaCount.audio || 0); i++) displayItems.push({ id: `fallback-aud-${i}`, type: 'AUDIO', fileName: `Audio ${i + 1}` });
+                  for (let i = 0; i < ((task.mediaCount.shortVideos || 0) + (task.mediaCount.longVideos || 0)); i++) displayItems.push({ id: `fallback-vid-${i}`, type: 'VIDEO', fileName: `Video ${i + 1}` });
+                }
+
+                if (displayItems.length === 0) {
+                  return <p className="body-sm text-muted">No media attached.</p>;
+                }
+
+                return displayItems.map((media, i) => (
+                  <div key={media.id} className={`media-thumb ${(media.type || '').toLowerCase()}`} onClick={() => openMediaModal(i, displayItems)}>
+                    {media.type === 'IMAGE' && media.downloadURL ? (
+                      <img src={media.downloadURL} alt={media.aiCaption || `Image ${i+1}`} className="media-thumb-img" />
+                    ) : (
+                      <div className="media-thumb-placeholder">
+                        {media.type === 'AUDIO' && <Mic size={24} />}
+                        {(media.type === 'SHORT_VIDEO' || media.type === 'LONG_VIDEO' || media.type === 'VIDEO') && <Video size={24} />}
+                        {media.type === 'IMAGE' && <Image size={24} />}
+                        <span className="label-sm">{media.type?.replace('_', ' ') || 'File'} {i + 1}</span>
+                      </div>
+                    )}
+                    <div className="media-ai-caption">
+                      <span className="label-sm text-primary">
+                        {media.processingStatus === 'DONE' ? '✓ AI Analyzed' : '⏳ Pending'}
+                      </span>
+                      <span className="body-sm text-muted">
+                        {media.aiCaption ? media.aiCaption.substring(0, 60) + '...' : 'Click to view'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="media-ai-caption">
-                    <span className="label-sm text-primary">AI Caption</span>
-                    <span className="body-sm text-muted">Analysis available after processing</span>
-                  </div>
-                </div>
-              ))}
-              {Array.from({ length: task.mediaCount?.audio || 0 }).map((_, i) => (
-                <div key={`aud-${i}`} className="media-thumb audio">
-                  <div className="media-thumb-placeholder">
-                    <Mic size={24} />
-                    <span className="label-sm">Audio {i + 1}</span>
-                  </div>
-                </div>
-              ))}
-              {Array.from({ length: (task.mediaCount?.shortVideos || 0) + (task.mediaCount?.longVideos || 0) }).map((_, i) => (
-                <div key={`vid-${i}`} className="media-thumb video">
-                  <div className="media-thumb-placeholder">
-                    <Video size={24} />
-                    <span className="label-sm">Video {i + 1}</span>
-                  </div>
-                </div>
-              ))}
-              {(!task.mediaCount || (task.mediaCount.images === 0 && task.mediaCount.audio === 0 && task.mediaCount.shortVideos === 0 && task.mediaCount.longVideos === 0)) && (
-                <p className="body-sm text-muted">No media attached.</p>
-              )}
+                ));
+              })()}
             </div>
           </section>
 
-          {/* Transcript */}
+          {/* Employee Description */}
           <section className="detail-section animate-slide-right" style={{ animationDelay: '300ms' }}>
-            <h2 className="headline-sm">Audio Transcript</h2>
+            <h2 className="headline-sm"><FileText size={20} /> Employee Description</h2>
             <div className="transcript-box">
-              <p className="body-md">
-                "{task.description} — Field officer report recorded on-site. 
-                Immediate attention required for {ai.category.toLowerCase()} response."
-              </p>
-              <span className="label-sm text-primary">Cleaned by Gemini 1.5 Pro · Temp 0.1</span>
+              <p className="body-md">"{task.description}"</p>
+              <span className="label-sm text-muted">Submitted by {task.employeeName || 'Field Officer'}</span>
             </div>
           </section>
+
+          {/* Audio Transcripts (from real media) */}
+          {mediaItems.filter(m => m.type === 'AUDIO' && (m.cleanTranscript || m.transcript)).length > 0 && (
+            <section className="detail-section animate-slide-right" style={{ animationDelay: '350ms' }}>
+              <h2 className="headline-sm"><Mic size={20} /> Audio Transcripts</h2>
+              {mediaItems.filter(m => m.type === 'AUDIO' && (m.cleanTranscript || m.transcript)).map((media, i) => (
+                <div key={media.id} className="transcript-box" style={{ marginBottom: i < mediaItems.length - 1 ? '12px' : 0 }}>
+                  <p className="body-md">"{media.cleanTranscript || media.transcript}"</p>
+                  <span className="label-sm text-primary">
+                    {media.cleanTranscript ? 'Cleaned by Gemini · Audio ' + (i + 1) : 'Raw Transcript · Audio ' + (i + 1)}
+                  </span>
+                </div>
+              ))}
+            </section>
+          )}
 
           {/* Location Map */}
           <section className="detail-section animate-slide-right" style={{ animationDelay: '400ms' }}>
@@ -465,6 +574,14 @@ export default function TaskDetail() {
           </div>
         </div>
       )}
+
+      {/* Media Preview Modal */}
+      <MediaPreviewModal
+        isOpen={mediaModalOpen}
+        onClose={() => setMediaModalOpen(false)}
+        mediaItems={modalMediaItems || mediaItems}
+        initialIndex={mediaModalIndex}
+      />
     </div>
   );
 }

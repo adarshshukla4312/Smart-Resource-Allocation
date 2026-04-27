@@ -171,7 +171,8 @@ export default function VolunteerManagement() {
             <thead>
               <tr>
                 <th>Volunteer</th>
-                <th>Distance</th>
+                <th>Task</th>
+                <th>Location</th>
                 <th>Skills</th>
                 <th>Interests</th>
                 <th>Match Score</th>
@@ -196,9 +197,12 @@ export default function VolunteerManagement() {
                     </div>
                   </td>
                   <td>
+                    <span className="body-md">{app.taskTitle || task?.title || 'Unknown Task'}</span>
+                  </td>
+                  <td>
                     <div className="vol-distance">
                       <MapPin size={14} />
-                      <span className="body-md">{app.distance || '?'} km</span>
+                      <span className="body-md">{app.volunteerLocation || app.locationText || 'Unknown location'}</span>
                     </div>
                   </td>
                   <td>
