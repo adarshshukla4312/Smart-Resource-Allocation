@@ -187,12 +187,16 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
       {task.location && (
         <div className="task-view-section animate-fade-in" style={{ animationDelay: '600ms' }}>
           <span className="title-md">Location</span>
-          <div className="task-view-map-placeholder">
-            <MapPin size={28} className="text-primary" />
-            <span className="body-sm">{task.location.address}</span>
-            <span className="label-sm text-muted">
-              {task.location.lat?.toFixed(4)}, {task.location.lng?.toFixed(4)}
-            </span>
+          <div className="task-view-map">
+            <iframe
+              width="100%"
+              height="200"
+              style={{ border: 0, borderRadius: '16px' }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=${task.location.lat},${task.location.lng}`}
+            ></iframe>
           </div>
         </div>
       )}

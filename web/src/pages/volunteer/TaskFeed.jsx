@@ -302,30 +302,15 @@ export default function TaskFeed() {
       ) : (
         /* Map View Placeholder */
         <div className="feed-map-view">
-          <div className="feed-map-placeholder">
-            {filteredTasks.map((task, i) => (
-              <div
-                key={task.id}
-                className="feed-map-pin"
-                style={{
-                  top: `${20 + (i * 15)}%`,
-                  left: `${15 + (i * 18)}%`,
-                  animationDelay: `${i * 200}ms`,
-                }}
-                onClick={() => handleTaskClick(task.id)}
-              >
-                <MapPin size={24} />
-                <span className="feed-map-pin-label label-sm">
-                  {task.title?.split('—')[0].trim() || 'Task'}
-                </span>
-              </div>
-            ))}
-            <div className="feed-map-overlay">
-              <Map size={32} />
-              <span className="label-md">Google Maps integration</span>
-              <span className="label-sm text-muted">Connect API key to enable</span>
-            </div>
-          </div>
+          <iframe
+            width="100%"
+            height="100%"
+            style={{ border: 0, borderRadius: '24px', minHeight: '500px' }}
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            src={`https://www.google.com/maps/embed/v1/view?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&center=28.6139,77.2090&zoom=11`}
+          ></iframe>
         </div>
       )}
 
