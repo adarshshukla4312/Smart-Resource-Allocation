@@ -23,6 +23,7 @@ import SubmitProof from './pages/volunteer/SubmitProof';
 // Employee Pages
 import CreateReport from './pages/employee/CreateReport';
 import MyReports from './pages/employee/MyReports';
+import QuickReport from './pages/employee/QuickReport';
 
 import './App.css';
 
@@ -122,6 +123,7 @@ function App() {
         >
           <Route index element={<Navigate to="/employee/reports" replace />} />
           <Route path="create-report" element={<CreateReport />} />
+          <Route path="quick-report" element={<QuickReport />} />
           <Route path="reports" element={<MyReports />} />
         </Route>
 

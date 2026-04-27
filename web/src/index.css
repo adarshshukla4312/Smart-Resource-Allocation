@@ -525,3 +525,71 @@ a:hover {
 .btn-danger:active {
   transform: scale(0.98);
 }
+
+/* ===== Common Employee UI Components ===== */
+
+.mr-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.qr-chip {
+  padding: 6px 14px;
+  background: var(--surface-container);
+  border: 1.5px solid var(--outline-variant);
+  border-radius: var(--radius-full);
+  color: var(--on-surface-variant);
+  font-family: var(--font-family);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--surface-container-low);
+}
+
+.qr-chip.active {
+  background: var(--primary-container);
+  border-color: var(--primary);
+  color: var(--on-primary-container);
+}
+
+/* Status & Severity Badges */
+.severity-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.severity-low { background: var(--severity-low-bg); color: var(--severity-low); }
+.severity-medium { background: var(--severity-medium-bg); color: var(--severity-medium); }
+.severity-high { background: var(--severity-high-bg); color: var(--severity-high); }
+.severity-critical { background: var(--severity-critical-bg); color: var(--severity-critical); }
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-md);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-submitted { background: var(--primary-container); color: var(--primary); }
+.status-active { background: var(--secondary-container); color: var(--secondary); }
+.status-draft { background: var(--surface-container-high); color: var(--on-surface-variant); }
+.status-completed { background: var(--severity-low-bg); color: var(--severity-low); }

@@ -489,15 +489,26 @@ export default function TaskDetail() {
                         {media.type === 'AUDIO' && <Mic size={24} />}
                         {(media.type === 'SHORT_VIDEO' || media.type === 'LONG_VIDEO' || media.type === 'VIDEO') && <Video size={24} />}
                         {media.type === 'IMAGE' && <Image size={24} />}
-                        <span className="label-sm">{media.type?.replace('_', ' ') || 'File'} {i + 1}</span>
+                        {(media.type === 'PDF' || media.type === 'DOCUMENT') && <FileText size={24} />}
+                        <span className="label-sm">{media.metadata?.originalName || media.type?.replace('_', ' ') || 'File'}</span>
                       </div>
                     )}
                     <div className="media-ai-caption">
-                      <span className="label-sm text-primary">
-                        {media.processingStatus === 'DONE' ? '✓ AI Analyzed' : '⏳ Pending'}
-                      </span>
+                      {media.aiSummary || media.processingStatus === 'DONE' ? (
+                        <span className="label-sm" style={{ color: 'var(--severity-low)' }}>
+                          ✓ AI Analyzed
+                        </span>
+                      ) : (
+                        <span className="label-sm text-primary">
+                          <Sparkles size={10} /> Click to Analyze
+                        </span>
+                      )}
                       <span className="body-sm text-muted">
-                        {media.aiCaption ? media.aiCaption.substring(0, 60) + '...' : 'Click to view'}
+                        {media.aiSummary
+                          ? media.aiSummary.substring(0, 60) + '...'
+                          : media.aiCaption
+                          ? media.aiCaption.substring(0, 60) + '...'
+                          : 'Generate AI summary'}
                       </span>
                     </div>
                   </div>
@@ -672,6 +683,7 @@ export default function TaskDetail() {
         onClose={() => setMediaModalOpen(false)}
         mediaItems={modalMediaItems || mediaItems}
         initialIndex={mediaModalIndex}
+        taskId={taskId}
       />
     </div>
   );

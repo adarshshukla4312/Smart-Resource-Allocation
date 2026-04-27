@@ -253,14 +253,20 @@ export default function CreateReport() {
         <span className="label-md text-muted">{step + 1}/{STEPS.length}</span>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar & Indicators */}
       <div className="report-progress">
-        {STEPS.map((_, i) => (
-          <div key={i} className={`report-progress-dot ${i <= step ? 'active' : ''} ${i === step ? 'current' : ''}`} />
+        <div className="report-progress-fill" style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }}></div>
+      </div>
+      
+      <div className="report-step-indicators">
+        {STEPS.map((label, i) => (
+          <div key={i} className={`report-step-dot ${i < step ? 'completed' : ''} ${i === step ? 'current' : ''} ${i <= step ? 'active' : ''}`}>
+            <div className="report-step-dot-circle">
+              {i < step ? <CheckCircle2 size={14} /> : i + 1}
+            </div>
+            <span className="report-step-dot-label">{label}</span>
+          </div>
         ))}
-        <div className="report-progress-line">
-          <div className="report-progress-fill" style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }}></div>
-        </div>
       </div>
 
       {/* Step 0: Type & Info */}
@@ -314,11 +320,11 @@ export default function CreateReport() {
             <label className="label-lg">
               <Tag size={14} /> Document Tags
             </label>
-            <div className="profile-chips">
+            <div className="mr-chip-grid">
               {DOCUMENT_TAGS.map(tag => (
                 <button
                   key={tag}
-                  className={`chip ${selectedTags.includes(tag) ? 'active' : ''}`}
+                  className={`qr-chip ${selectedTags.includes(tag) ? 'active' : ''}`}
                   onClick={() => toggleTag(tag)}
                 >{tag}</button>
               ))}
@@ -451,19 +457,19 @@ export default function CreateReport() {
               <span className="label-lg">{attachedMedia.length} file{attachedMedia.length > 1 ? 's' : ''} attached</span>
               <div className="report-attached-grid">
                 {attachedMedia.map(m => (
-                  <div key={m.id} className="report-attached-item" style={{ position: 'relative', overflow: 'hidden' }}>
+                  <div key={m.id} className="report-attached-item">
                     {m.type === 'image' && m.previewUrl ? (
-                      <img src={m.previewUrl} alt="preview" style={{ width: '100%', height: '100px', objectFit: 'cover', borderRadius: '8px' }} />
+                      <img src={m.previewUrl} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <div className="report-attached-info">
                         {m.type === 'audio' && <Mic size={24} />}
                         {m.type === 'video' && <Video size={24} />}
-                        <span className="label-sm" style={{ textAlign: 'center', wordBreak: 'break-all' }}>{m.name}</span>
+                        <span className="label-sm">{m.name}</span>
                       </div>
                     )}
                     <button 
+                      className="media-remove-btn"
                       onClick={() => removeMedia(m.id)}
-                      style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', color: 'white' }}
                     >
                       <Trash2 size={14} />
                     </button>
@@ -528,11 +534,11 @@ export default function CreateReport() {
             <p className="body-sm text-muted" style={{ marginBottom: '12px' }}>
               Select specific skills volunteers should have to assist with this task.
             </p>
-            <div className="profile-chips">
+            <div className="mr-chip-grid">
               {SKILLS.map(skill => (
                 <button
                   key={skill}
-                  className={`chip ${requiredSkills.includes(skill) ? 'active' : ''}`}
+                  className={`qr-chip ${requiredSkills.includes(skill) ? 'active' : ''}`}
                   onClick={() => {
                     setRequiredSkills(prev => 
                       prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
@@ -563,8 +569,8 @@ export default function CreateReport() {
           {selectedTags.length > 0 && (
             <div className="report-review-section">
               <span className="label-sm text-muted">TAGS</span>
-              <div className="profile-chips">
-                {selectedTags.map(t => <span key={t} className="chip active">{t}</span>)}
+              <div className="mr-chip-grid">
+                {selectedTags.map(t => <span key={t} className="qr-chip active">{t}</span>)}
               </div>
             </div>
           )}

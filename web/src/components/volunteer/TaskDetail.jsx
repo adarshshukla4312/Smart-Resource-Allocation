@@ -203,17 +203,19 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
               >
-                {item.type?.startsWith('image') ? (
-                  <img src={item.url} alt="Task Media" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : item.type?.startsWith('video') ? (
+                {(item.type === 'IMAGE' || item.type?.toLowerCase() === 'image') && item.downloadURL ? (
+                  <img src={item.downloadURL} alt={item.aiCaption || 'Task Media'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                ) : (item.type === 'VIDEO' || item.type === 'SHORT_VIDEO' || item.type === 'LONG_VIDEO' || item.type?.toLowerCase() === 'video') && item.downloadURL ? (
                   <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                    <video src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', padding: '4px', borderRadius: '50%' }}>
-                      <Video size={24} color="white" />
+                    <video src={item.downloadURL} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', padding: '8px', borderRadius: '50%' }}>
+                      <Video size={20} color="white" />
                     </div>
                   </div>
+                ) : (item.type === 'AUDIO' || item.type?.toLowerCase() === 'audio') ? (
+                  <Mic size={24} style={{ color: 'var(--primary)' }} />
                 ) : (
-                  <Mic size={24} />
+                  <Image size={24} style={{ color: 'var(--on-surface-variant)' }} />
                 )}
               </div>
             ))}
@@ -306,6 +308,7 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
         onClose={() => setMediaModalOpen(false)}
         mediaItems={mediaItems || []}
         initialIndex={mediaModalIndex}
+        taskId={taskId}
       />
     </div>
   );

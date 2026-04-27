@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Clock, PlusCircle, Image, Mic, Video, Wifi, WifiOff, ChevronRight } from 'lucide-react';
+import {
+  MapPin, Clock, PlusCircle, Image, Mic, Video, Wifi, WifiOff,
+  ChevronRight, Zap, Sparkles, FileText, BarChart3, Send, CheckCircle2
+} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useMyReports } from '../../hooks/useFirestoreData';
 import './MyReports.css';
@@ -10,7 +13,10 @@ function SeverityBadge({ severity }) {
 }
 
 function StatusBadge({ status }) {
-  const labels = { DRAFT: 'Draft', SUBMITTED: 'Submitted', UNDER_REVIEW: 'Under Review', ACTIVE: 'Active', CLOSED: 'Closed', COMPLETED: 'Completed', REJECTED: 'Rejected' };
+  const labels = {
+    DRAFT: 'Draft', SUBMITTED: 'Submitted', UNDER_REVIEW: 'Under Review',
+    ACTIVE: 'Active', CLOSED: 'Closed', COMPLETED: 'Completed', REJECTED: 'Rejected'
+  };
   return <span className={`status-badge status-${(status || '').toLowerCase()}`}>{labels[status] || status}</span>;
 }
 
@@ -34,95 +40,194 @@ export default function MyReports() {
   }
 
   const myReports = reportsData || [];
-
   const drafts = myReports.filter(r => r.status === 'DRAFT');
   const submitted = myReports.filter(r => r.status !== 'DRAFT');
 
+  // Quick stats
+  const totalReports = myReports.length;
+  const activeCount = myReports.filter(r => r.status === 'ACTIVE').length;
+  const pendingCount = myReports.filter(r => ['SUBMITTED', 'UNDER_REVIEW'].includes(r.status)).length;
+
   return (
     <div className="my-reports-page">
-      {/* Sync Status Bar */}
-      <div className="sync-status-bar animate-fade-in">
-        <div className="sync-status-indicator synced">
-          <Wifi size={14} />
-          <span className="label-md">All synced</span>
+      {/* Welcome Section */}
+      <div className="mr-welcome animate-fade-in">
+        <div className="mr-welcome-text">
+          <h1 className="headline-md">
+            Welcome back, {userProfile?.displayName?.split(' ')[0] || 'Officer'}
+          </h1>
+          <p className="body-sm text-muted">Your field reports dashboard</p>
         </div>
-        <span className="label-md text-muted">{myReports.length} reports</span>
+        <div className="mr-stats-row">
+          <div className="mr-stat">
+            <span className="mr-stat-value">{totalReports}</span>
+            <span className="mr-stat-label">Total</span>
+          </div>
+          <div className="mr-stat-divider" />
+          <div className="mr-stat">
+            <span className="mr-stat-value">{pendingCount}</span>
+            <span className="mr-stat-label">Pending</span>
+          </div>
+          <div className="mr-stat-divider" />
+          <div className="mr-stat">
+            <span className="mr-stat-value">{activeCount}</span>
+            <span className="mr-stat-label">Active</span>
+          </div>
+        </div>
       </div>
 
-      {/* New Report FAB */}
-      <button className="new-report-btn animate-fade-in" onClick={() => navigate('/employee/create-report')} id="new-report">
-        <PlusCircle size={20} />
-        <span className="title-md">Create New Report</span>
-      </button>
+      {/* Action Cards */}
+      <div className="mr-actions animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <button
+          className="mr-action-card mr-action-detailed"
+          onClick={() => navigate('/employee/create-report')}
+          id="new-report"
+        >
+          <div className="mr-action-icon">
+            <PlusCircle size={24} />
+          </div>
+          <div className="mr-action-info">
+            <span className="title-md">Detailed Report</span>
+            <span className="body-sm text-muted">Step-by-step with full control</span>
+          </div>
+          <ChevronRight size={18} className="mr-action-arrow" />
+        </button>
+
+        <button
+          className="mr-action-card mr-action-quick"
+          onClick={() => navigate('/employee/quick-report')}
+          id="quick-report"
+        >
+          <div className="mr-action-icon mr-action-icon-ai">
+            <Zap size={22} />
+          </div>
+          <div className="mr-action-info">
+            <span className="title-md">Quick Report</span>
+            <span className="body-sm">Upload data → AI generates the report</span>
+          </div>
+          <span className="mr-ai-tag">
+            <Sparkles size={10} /> AI
+          </span>
+          <ChevronRight size={18} className="mr-action-arrow" />
+        </button>
+      </div>
 
       {/* Drafts */}
       {drafts.length > 0 && (
-        <div className="reports-section">
-          <div className="reports-section-header">
-            <span className="headline-sm">Drafts</span>
-            <span className="label-md text-muted">{drafts.length}</span>
+        <div className="mr-section animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <div className="mr-section-header">
+            <span className="mr-section-title">
+              <FileText size={16} /> Drafts
+            </span>
+            <span className="mr-section-count">{drafts.length}</span>
           </div>
           {drafts.map((report, i) => (
-            <div key={report.id} className="report-card mobile-card animate-fade-in" style={{ animationDelay: `${i * 60}ms` }}>
-              <div className="report-card-top">
+            <div
+              key={report.id}
+              className="mr-report-card animate-fade-in"
+              style={{ animationDelay: `${(i + 3) * 60}ms` }}
+            >
+              <div className="mr-card-top">
                 <StatusBadge status={report.status} />
-                <div className="report-sync-chip">
-                  {report.syncStatus === 'synced' ? <Wifi size={12} /> : <WifiOff size={12} />}
-                  <span className="label-sm">{report.syncStatus === 'synced' ? 'Synced' : 'Pending'}</span>
+                <div className="mr-sync-chip">
+                  {report.syncStatus === 'synced' ? <Wifi size={11} /> : <WifiOff size={11} />}
+                  <span>{report.syncStatus === 'synced' ? 'Synced' : 'Pending'}</span>
                 </div>
               </div>
-              <h3 className="title-md">{report.title}</h3>
-              <div className="report-card-meta">
-                <span className="body-sm text-muted"><MapPin size={12} /> {report.location?.address || 'Unknown'}</span>
-                <span className="body-sm text-muted"><Clock size={12} /> {timeAgo(report.createdAt)}</span>
+              <h3 className="mr-card-title">{report.title}</h3>
+              <div className="mr-card-meta">
+                <span><MapPin size={12} /> {report.location?.address || 'Unknown'}</span>
+                <span><Clock size={12} /> {timeAgo(report.createdAt)}</span>
               </div>
-              <div className="report-card-bottom">
+              <div className="mr-card-bottom">
                 <SeverityBadge severity={report.employeeAssessment?.severity} />
-                <div className="report-card-media">
-                  {report.mediaCount?.images > 0 && <span className="report-media-chip"><Image size={10} /> {report.mediaCount.images}</span>}
-                  {report.mediaCount?.audio > 0 && <span className="report-media-chip"><Mic size={10} /> {report.mediaCount.audio}</span>}
-                  {(report.mediaCount?.shortVideos + report.mediaCount?.longVideos) > 0 && <span className="report-media-chip"><Video size={10} /> {report.mediaCount.shortVideos + report.mediaCount.longVideos}</span>}
+                <div className="mr-card-media">
+                  {report.mediaCount?.images > 0 && (
+                    <span className="mr-media-chip"><Image size={10} /> {report.mediaCount.images}</span>
+                  )}
+                  {report.mediaCount?.audio > 0 && (
+                    <span className="mr-media-chip"><Mic size={10} /> {report.mediaCount.audio}</span>
+                  )}
+                  {(report.mediaCount?.shortVideos + report.mediaCount?.longVideos) > 0 && (
+                    <span className="mr-media-chip">
+                      <Video size={10} /> {report.mediaCount.shortVideos + report.mediaCount.longVideos}
+                    </span>
+                  )}
                 </div>
-                <ChevronRight size={16} className="report-card-arrow" />
+                {report.quickReport && (
+                  <span className="mr-ai-generated"><Sparkles size={10} /> AI</span>
+                )}
+                <ChevronRight size={16} className="mr-card-arrow" />
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Submitted */}
-      <div className="reports-section">
-        <div className="reports-section-header">
-          <span className="headline-sm">Submitted</span>
-          <span className="label-md text-muted">{submitted.length}</span>
+      {/* Submitted Reports */}
+      <div className="mr-section animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <div className="mr-section-header">
+          <span className="mr-section-title">
+            <Send size={16} /> Submitted
+          </span>
+          <span className="mr-section-count">{submitted.length}</span>
         </div>
         {submitted.map((report, i) => (
-          <div key={report.id} className="report-card mobile-card animate-fade-in" style={{ animationDelay: `${(i + drafts.length) * 60}ms` }}>
-            <div className="report-card-top">
+          <div
+            key={report.id}
+            className="mr-report-card animate-fade-in"
+            style={{ animationDelay: `${(i + drafts.length + 3) * 60}ms` }}
+          >
+            <div className="mr-card-top">
               <StatusBadge status={report.status} />
-              <div className="report-sync-chip synced">
-                <Wifi size={12} />
-                <span className="label-sm">Synced</span>
+              <div className="mr-sync-chip synced">
+                <Wifi size={11} />
+                <span>Synced</span>
               </div>
             </div>
-            <h3 className="title-md">{report.title}</h3>
-            <div className="report-card-meta">
-              <span className="body-sm text-muted"><MapPin size={12} /> {report.location?.address || 'Unknown'}</span>
-              <span className="body-sm text-muted"><Clock size={12} /> {timeAgo(report.createdAt)}</span>
+            <h3 className="mr-card-title">{report.title}</h3>
+            <div className="mr-card-meta">
+              <span><MapPin size={12} /> {report.location?.address || 'Unknown'}</span>
+              <span><Clock size={12} /> {timeAgo(report.createdAt)}</span>
             </div>
-            <div className="report-card-bottom">
+            <div className="mr-card-bottom">
               <SeverityBadge severity={report.employeeAssessment?.severity || report.aiAnalysis?.severity} />
-              <div className="report-card-media">
-                {report.mediaCount?.images > 0 && <span className="report-media-chip"><Image size={10} /> {report.mediaCount.images}</span>}
-                {report.mediaCount?.audio > 0 && <span className="report-media-chip"><Mic size={10} /> {report.mediaCount.audio}</span>}
-                {(report.mediaCount?.shortVideos + report.mediaCount?.longVideos) > 0 && <span className="report-media-chip"><Video size={10} /> {report.mediaCount.shortVideos + report.mediaCount.longVideos}</span>}
+              <div className="mr-card-media">
+                {report.mediaCount?.images > 0 && (
+                  <span className="mr-media-chip"><Image size={10} /> {report.mediaCount.images}</span>
+                )}
+                {report.mediaCount?.audio > 0 && (
+                  <span className="mr-media-chip"><Mic size={10} /> {report.mediaCount.audio}</span>
+                )}
+                {(report.mediaCount?.shortVideos + report.mediaCount?.longVideos) > 0 && (
+                  <span className="mr-media-chip">
+                    <Video size={10} /> {report.mediaCount.shortVideos + report.mediaCount.longVideos}
+                  </span>
+                )}
               </div>
-              <ChevronRight size={16} className="report-card-arrow" />
+              {report.quickReport && (
+                <span className="mr-ai-generated"><Sparkles size={10} /> AI</span>
+              )}
+              <ChevronRight size={16} className="mr-card-arrow" />
             </div>
           </div>
         ))}
         {submitted.length === 0 && drafts.length === 0 && (
-          <p className="body-md text-muted" style={{ padding: '16px' }}>No reports created yet.</p>
+          <div className="mr-empty-state">
+            <div className="mr-empty-icon">
+              <FileText size={36} />
+            </div>
+            <p className="headline-sm">No reports yet</p>
+            <p className="body-sm text-muted">Create your first field report to get started</p>
+            <div className="mr-empty-actions">
+              <button className="btn-primary" onClick={() => navigate('/employee/create-report')}>
+                <PlusCircle size={16} /> Detailed Report
+              </button>
+              <button className="btn-secondary" onClick={() => navigate('/employee/quick-report')}>
+                <Zap size={16} /> Quick Report
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>

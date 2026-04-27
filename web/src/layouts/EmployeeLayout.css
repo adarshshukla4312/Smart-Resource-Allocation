@@ -1,60 +1,117 @@
+/* ===== Employee Layout — WisprFlow Design System ===== */
 .employee-layout {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--bg-default);
+  background-color: var(--surface);
 }
 
+/* ─── Top Bar ─── */
 .employee-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
   padding: 0 24px;
-  background-color: var(--surface-default);
-  border-bottom: 1px solid var(--border-default);
-  position: relative;
-  z-index: 10;
+  background: var(--surface-container-low);
+  border-bottom: 1px solid var(--outline-variant);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
+/* Logo */
 .employee-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 200px;
+  gap: 10px;
+  min-width: 160px;
+}
+.emp-logo-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+  color: var(--on-primary);
+  border-radius: 10px;
+}
+.emp-logo-text {
+  display: flex; flex-direction: column;
+  line-height: 1.2;
+}
+.emp-logo-name {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  letter-spacing: -0.01em;
+}
+.emp-logo-sub {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface-variant);
 }
 
+/* Navigation */
 .employee-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .emp-nav-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   padding: 8px 16px;
-  border-radius: var(--radius-md);
-  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  color: var(--on-surface-variant);
   text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
 }
 
 .emp-nav-item:hover {
-  background-color: var(--surface-hover);
-  color: var(--text-default);
+  background: var(--surface-container);
+  color: var(--on-surface);
 }
 
 .emp-nav-item.active {
-  background-color: rgba(var(--secondary-rgb), 0.1);
-  color: var(--secondary-default);
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+  border-color: var(--primary);
 }
 
+/* Quick Report nav item special styling */
+.emp-nav-quick {
+  position: relative;
+}
+.emp-nav-quick::after {
+  content: 'AI';
+  position: absolute;
+  top: -4px; right: -4px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  background: var(--primary);
+  color: var(--on-primary);
+  border-radius: var(--radius-full);
+  letter-spacing: 0.05em;
+}
+.emp-nav-quick.active::after {
+  background: var(--on-primary-container);
+  color: var(--primary-container);
+}
+
+/* User Menu */
 .employee-user-menu {
   position: relative;
-  min-width: 200px;
+  min-width: 160px;
   display: flex;
   justify-content: flex-end;
 }
@@ -62,96 +119,174 @@
 .emp-user-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   background: none;
-  border: none;
+  border: 1.5px solid transparent;
   cursor: pointer;
-  padding: 4px;
+  padding: 5px 10px 5px 5px;
   border-radius: var(--radius-full);
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  color: var(--on-surface);
 }
 
 .emp-user-btn:hover {
-  background-color: var(--surface-hover);
+  background: var(--surface-container);
+  border-color: var(--outline-variant);
 }
 
 .emp-avatar {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-full);
-  background-color: var(--secondary-default);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 14px;
+  flex-shrink: 0;
+}
+
+.emp-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+/* Dropdown */
+.emp-dropdown-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 99;
 }
 
 .emp-dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 8px);
   right: 0;
-  margin-top: 8px;
-  width: 200px;
-  border-radius: var(--radius-lg);
+  width: 240px;
+  border-radius: 16px;
   padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--border-light);
+  background: var(--surface-container-lowest);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--outline-variant);
+  z-index: 100;
+}
+
+.emp-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+.emp-dropdown-header > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.emp-dropdown-divider {
+  height: 1px;
+  background: var(--outline-variant);
+  margin: 4px 8px;
 }
 
 .emp-dropdown-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  color: var(--text-default);
+  border-radius: 10px;
+  color: var(--on-surface);
   text-decoration: none;
   background: none;
   border: none;
   cursor: pointer;
   text-align: left;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-family);
   transition: background-color 0.2s;
+  width: 100%;
 }
 
 .emp-dropdown-item:hover {
-  background-color: var(--surface-hover);
+  background: var(--surface-container);
 }
 
+.emp-dropdown-logout {
+  color: var(--error);
+}
+.emp-dropdown-logout:hover {
+  background: var(--error-container);
+}
+
+/* Main Content */
 .employee-main {
   flex: 1;
   overflow-y: auto;
   position: relative;
+  background: var(--surface);
 }
 
+/* ─── Responsive ─── */
 @media (max-width: 768px) {
   .hidden-mobile {
     display: none;
   }
+
+  .employee-topbar {
+    padding: 0 16px;
+  }
+
+  .emp-logo-text {
+    display: none;
+  }
+
   .employee-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--surface-default);
-    border-top: 1px solid var(--border-default);
+    background: var(--surface-container-lowest);
+    border-top: 1px solid var(--outline-variant);
     justify-content: space-around;
-    padding: 8px;
+    padding: 6px 8px;
     z-index: 100;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
+
   .emp-nav-item {
     flex-direction: column;
-    gap: 4px;
-    font-size: 11px;
-    padding: 8px;
+    gap: 3px;
+    font-size: 0.65rem;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
   }
+
+  .emp-nav-item.active {
+    border: none;
+  }
+
+  .emp-nav-quick::after {
+    top: 2px; right: 2px;
+    font-size: 0.45rem;
+    padding: 0px 3px;
+  }
+
   .employee-main {
-    padding-bottom: 60px; /* Space for bottom nav */
+    padding-bottom: 72px;
+  }
+
+  .employee-user-menu {
+    min-width: auto;
+  }
+
+  .emp-user-btn {
+    padding: 4px;
   }
 }
