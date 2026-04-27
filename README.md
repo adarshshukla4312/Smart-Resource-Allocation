@@ -26,9 +26,21 @@
 *   **Role-Based Access**: Secure data isolation between different NGOs and user personas.
 
 ### 3. Smart Volunteer Matching
-*   **Personalized Ranking**: A weighted matching engine ranks tasks for volunteers based on **Proximity**, **Interests**, **Availability**, and **Skill Levels**.
+*   **Personalized Ranking**: A weighted matching engine ranks tasks for volunteers based on a multi-factor scoring algorithm.
 *   **Direct Communication**: Seamless coordination between accepted volunteers and NGO employees via shared contact details.
 *   **Proof of Participation**: Volunteers submit media-rich proof of their work for management verification.
+
+#### 🧠 Matching Engine Logic
+The "Match Score" determines the order of tasks in a volunteer's feed. It is calculated using a weighted formula:
+$$MatchScore = 0.40(P) + 0.25(I) + 0.20(A) + 0.15(S)$$
+
+| Component | Weight | Description |
+| :--- | :--- | :--- |
+| **Proximity (P)** | 40% | Exponential decay based on distance: $e^{(-0.05 \times distance\_km)}$. |
+| **Interest (I)** | 25% | Alignment between task category and volunteer's selected interests. |
+| **Availability (A)** | 20% | Recency of platform activity to prioritize active users. |
+| **Skill Level (S)** | 15% | Matching between required task skills and volunteer's expertise levels. |
+
 
 ---
 
