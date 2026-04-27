@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   MapPin, Clock, Users, AlertTriangle,
   Sparkles, Award, CheckCircle2, Share2, Image, Mic, Video, X
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useDocument, useMyApplications } from '../../hooks/useFirestoreData';
+import { useDocument, useMyApplications, useTaskMedia } from '../../hooks/useFirestoreData';
 import { tasksApi } from '../../api';
+import { computeMatchScore } from '../../utils/matching';
+import MediaPreviewModal from '../MediaPreviewModal';
 import '../../pages/volunteer/TaskView.css';
 
 function SeverityBadge({ severity }) {
@@ -17,9 +19,27 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
   const { userProfile } = useAuth();
   const { data: task, loading: tLoading } = useDocument('tasks', taskId);
   const { data: myAppsData, loading: aLoading } = useMyApplications(userProfile?.uid);
+  const { data: mediaItems } = useTaskMedia(taskId);
   
   const [showApplySheet, setShowApplySheet] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+  const [mediaModalOpen, setMediaModalOpen] = useState(false);
+  const [mediaModalIndex, setMediaModalIndex] = useState(0);
+
+  const [liveLat, setLiveLat] = useState(null);
+  const [liveLng, setLiveLng] = useState(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setLiveLat(pos.coords.latitude);
+          setLiveLng(pos.coords.longitude);
+        },
+        () => {} // fallback to 0 proximity
+      );
+    }
+  }, []);
 
   if (tLoading || aLoading) {
     return (
@@ -45,9 +65,19 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
   const sev = task.managementOverride?.severity || ai.severity;
   const cat = task.managementOverride?.category || ai.category;
   const urg = task.managementOverride?.urgency || ai.urgency;
-  const matchScore = task.matchScore || 0;
+  
+  const match = computeMatchScore(userProfile || {}, task, liveLat, liveLng);
+  const matchScore = match.total || 0;
+  const liveDistance = match.distance;
   const isGreatMatch = matchScore > 0.7;
-  const slotsLeft = task.maxVolunteers ? task.maxVolunteers - (task.acceptedCount || 0) : null;
+
+  // Compute matched skills
+  const required = task.requiredSkills || [];
+  const volunteerSkills = userProfile?.skills || [];
+  const matchedSkillsCount = required.filter(s => volunteerSkills.includes(s)).length;
+  const skillsDisplay = required.length > 0 
+    ? `${matchedSkillsCount}/${required.length} Matched` 
+    : 'None required';
 
   const handleApply = async () => {
     setIsApplying(true);
@@ -63,7 +93,7 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
         status: 'APPLIED',
         appliedAt: serverTimestamp(),
         matchScore: matchScore || 0,
-        distance: task.distance || 0,
+        distance: liveDistance || 0,
       });
 
       setShowApplySheet(false);
@@ -120,15 +150,15 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
         <div className="task-view-match-details">
           <div className="match-detail-item">
             <span className="body-sm text-muted">Distance</span>
-            <span className="label-lg">{task.distance || '?'} km</span>
+            <span className="label-lg">{liveDistance === 999 ? 'Unknown' : `${liveDistance} km`}</span>
           </div>
           <div className="match-detail-item">
-            <span className="body-sm text-muted">Slots Left</span>
-            <span className="label-lg">{slotsLeft !== null ? slotsLeft : '∞'}</span>
+            <span className="body-sm text-muted">Skills Required</span>
+            <span className="label-lg">{skillsDisplay}</span>
           </div>
           <div className="match-detail-item">
-            <span className="body-sm text-muted">Affected</span>
-            <span className="label-lg">{ai.estimatedAffected?.toLocaleString() || '?'}</span>
+            <span className="body-sm text-muted">Severity</span>
+            <span className="label-lg" style={{ textTransform: 'capitalize' }}>{sev || 'LOW'}</span>
           </div>
         </div>
       </div>
@@ -158,28 +188,35 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
       )}
 
       {/* Media */}
-      {task.mediaCount && (task.mediaCount.images > 0 || task.mediaCount.audio > 0 || task.mediaCount.shortVideos + task.mediaCount.longVideos > 0) && (
+      {mediaItems && mediaItems.length > 0 && (
         <div className="task-view-section animate-fade-in" style={{ animationDelay: '500ms' }}>
           <span className="title-md">Media Attachments</span>
-          <div className="task-view-media-grid">
-            {Array.from({ length: Math.min(task.mediaCount.images, 4) }).map((_, i) => (
-              <div key={`img-${i}`} className="task-view-media-thumb">
-                <Image size={20} />
-                <span className="label-sm">Image {i + 1}</span>
+          <div className="task-view-media-grid" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '12px' }}>
+            {mediaItems.map((item, index) => (
+              <div 
+                key={item.id} 
+                className="task-view-media-thumb" 
+                onClick={() => { setMediaModalIndex(index); setMediaModalOpen(true); }}
+                style={{ 
+                  width: '100px', height: '100px', borderRadius: '8px', 
+                  background: 'rgba(255,255,255,0.05)', overflow: 'hidden',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                {item.type?.startsWith('image') ? (
+                  <img src={item.url} alt="Task Media" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : item.type?.startsWith('video') ? (
+                  <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                    <video src={item.url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', padding: '4px', borderRadius: '50%' }}>
+                      <Video size={24} color="white" />
+                    </div>
+                  </div>
+                ) : (
+                  <Mic size={24} />
+                )}
               </div>
             ))}
-            {task.mediaCount.audio > 0 && (
-              <div className="task-view-media-thumb audio">
-                <Mic size={20} />
-                <span className="label-sm">{task.mediaCount.audio} Audio</span>
-              </div>
-            )}
-            {(task.mediaCount.shortVideos + task.mediaCount.longVideos) > 0 && (
-              <div className="task-view-media-thumb video">
-                <Video size={20} />
-                <span className="label-sm">{task.mediaCount.shortVideos + task.mediaCount.longVideos} Video</span>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -250,7 +287,7 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
             <div className="apply-sheet-task-info">
               <span className="title-md">{task.title}</span>
               <div className="apply-sheet-meta">
-                <span className="body-sm text-muted"><MapPin size={12} /> {task.distance || '?'} km away</span>
+                <span className="body-sm text-muted"><MapPin size={12} /> {liveDistance === 999 ? 'Unknown' : liveDistance} km away</span>
                 <SeverityBadge severity={sev} />
               </div>
             </div>
@@ -263,6 +300,13 @@ export default function TaskDetail({ taskId, onApply, isModal = false, onClose }
           </div>
         </div>
       )}
+      {/* Media Preview Modal */}
+      <MediaPreviewModal
+        isOpen={mediaModalOpen}
+        onClose={() => setMediaModalOpen(false)}
+        mediaItems={mediaItems || []}
+        initialIndex={mediaModalIndex}
+      />
     </div>
   );
 }

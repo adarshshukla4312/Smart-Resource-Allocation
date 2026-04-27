@@ -4,6 +4,7 @@ import {
   Users, Image, Mic, Video, Sparkles, ChevronRight, ArrowUpRight
 } from 'lucide-react';
 import { useTaskQueue, useAllTasks, useDashboardStats } from '../hooks/useFirestoreData';
+import LiveTaskMap from '../components/LiveTaskMap';
 import './DashboardOverview.css';
 
 function StatCard({ stat, icon: Icon, delay }) {
@@ -242,15 +243,7 @@ export default function DashboardOverview() {
             <h2 className="headline-sm">Live Task Map</h2>
           </div>
           <div className="map-container" style={{ height: '400px', padding: '0' }}>
-            <iframe
-              width="100%"
-              height="100%"
-              style={{ border: 0, borderRadius: '12px' }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps/embed/v1/search?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=emergency+relief+centers+near+Delhi`}
-            ></iframe>
+            <LiveTaskMap tasks={allActive} />
           </div>
         </div>
       </div>

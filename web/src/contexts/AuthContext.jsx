@@ -6,7 +6,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import {
   auth, db, onAuthStateChanged, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, signOut,
-  doc, getDoc, onSnapshot
+  doc, getDoc, setDoc, updateDoc, onSnapshot
 } from '../firebase';
 
 const AuthContext = createContext(null);
@@ -82,6 +82,19 @@ export function AuthProvider({ children }) {
     setUserProfile(null);
   };
 
+  const updateProfile = async (updates) => {
+    if (!user) throw new Error('Not authenticated');
+    setError(null);
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, updates);
+      // The onSnapshot listener will automatically update the local state
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   const value = {
     user,
     userProfile,
@@ -91,6 +104,7 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
+    updateProfile,
   };
 
   return (

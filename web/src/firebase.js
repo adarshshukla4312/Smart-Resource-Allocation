@@ -4,7 +4,7 @@ import {
   signOut, onAuthStateChanged
 } from "firebase/auth";
 import {
-  getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, setDoc,
+  getFirestore, collection, doc, deleteDoc, getDoc, getDocs, addDoc, updateDoc, setDoc,
   query, where, orderBy, limit, onSnapshot, serverTimestamp, increment,
   arrayUnion
 } from "firebase/firestore";
@@ -27,7 +27,7 @@ const storage = getStorage(app);
 export {
   app, auth, db, storage,
   signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged,
-  collection, doc, getDoc, getDocs, addDoc, updateDoc, setDoc,
+  collection, doc, deleteDoc, getDoc, getDocs, addDoc, updateDoc, setDoc,
   query, where, orderBy, limit, onSnapshot, serverTimestamp, increment, arrayUnion,
   ref, uploadBytesResumable, getDownloadURL,
 };

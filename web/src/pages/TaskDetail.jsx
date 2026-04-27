@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useDocument, useTaskMedia } from '../hooks/useFirestoreData';
 import { adminApi } from '../api';
-import { SEVERITY_LEVELS, URGENCY_LEVELS, CATEGORIES } from '../data/mockData';
+import { SEVERITY_LEVELS, URGENCY_LEVELS, CATEGORIES, SKILLS } from '../data/mockData';
 import { runAiAnalysis } from '../services/aiAnalysis';
 import MediaPreviewModal from '../components/MediaPreviewModal';
 import './TaskDetail.css';
@@ -34,10 +34,11 @@ export default function TaskDetail() {
   const [overrideSeverity, setOverrideSeverity] = useState('');
   const [overrideUrgency, setOverrideUrgency] = useState('');
   const [newComment, setNewComment] = useState('');
-  const [requiredSkills, setRequiredSkills] = useState('');
+  const [requiredSkills, setRequiredSkills] = useState([]);
   const [maxVol, setMaxVol] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [overrideSaving, setOverrideSaving] = useState(false);
@@ -54,7 +55,7 @@ export default function TaskDetail() {
       setOverrideCategory(task.managementOverride?.category || '');
       setOverrideSeverity(task.managementOverride?.severity || '');
       setOverrideUrgency(task.managementOverride?.urgency || '');
-      setRequiredSkills(task.requiredSkills?.join(', ') || '');
+      setRequiredSkills(task.requiredSkills || []);
       setMaxVol(task.maxVolunteers || '');
     }
   }, [task]);
@@ -78,7 +79,9 @@ export default function TaskDetail() {
       const { doc, updateDoc, db, serverTimestamp } = await import('../firebase.js');
       const updates = {
         status: 'ACTIVE',
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        requiredSkills: requiredSkills,
+        maxVolunteers: maxVol ? parseInt(maxVol, 10) : null
       };
       
       if (overrideCategory || overrideSeverity || overrideUrgency) {
@@ -111,6 +114,49 @@ export default function TaskDetail() {
       navigate('/admin/tasks');
     } catch (err) {
       alert('Error rejecting task: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleArchive = async () => {
+    setIsSubmitting(true);
+    try {
+      const { doc, updateDoc, db, serverTimestamp } = await import('../firebase.js');
+      await updateDoc(doc(db, 'tasks', taskId), {
+        status: 'ARCHIVED',
+        updatedAt: serverTimestamp()
+      });
+      navigate('/admin/tasks');
+    } catch (err) {
+      alert('Error archiving task: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsSubmitting(true);
+    try {
+      const { doc, deleteDoc, db, collection, getDocs } = await import('../firebase.js');
+      
+      // Delete media subcollection first
+      const mediaRef = collection(db, 'tasks', taskId, 'media');
+      const mediaSnap = await getDocs(mediaRef);
+      for (const mediaDoc of mediaSnap.docs) {
+        await deleteDoc(mediaDoc.ref);
+      }
+      
+      // We are skipping deleting actual files from Firebase Storage for this iteration 
+      // because the Firebase Client SDK doesn't have an easy "delete folder" function 
+      // and we don't have the storage reference stored directly in the DB.
+      // A backend cloud function is recommended for hard-deletion of storage files.
+
+      await deleteDoc(doc(db, 'tasks', taskId));
+      setShowDeleteModal(false);
+      navigate('/admin/tasks');
+    } catch (err) {
+      alert('Error deleting task: ' + err.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -504,15 +550,23 @@ export default function TaskDetail() {
           <section className="detail-section action-section animate-slide-right" style={{ animationDelay: '500ms' }}>
             <h2 className="headline-sm">Task Configuration</h2>
             <div className="config-fields">
-              <div className="config-field">
+              <div className="config-field" style={{ gridColumn: '1 / -1' }}>
                 <label className="label-md">Required Skills</label>
-                <input
-                  type="text"
-                  placeholder="First Aid, Construction, ..."
-                  value={requiredSkills}
-                  onChange={(e) => setRequiredSkills(e.target.value)}
-                  id="required-skills"
-                />
+                <div className="profile-chips" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
+                  {SKILLS.map(skill => (
+                    <button
+                      key={skill}
+                      className={`chip ${requiredSkills.includes(skill) ? 'active' : ''}`}
+                      onClick={() => {
+                        setRequiredSkills(prev => 
+                          prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]
+                        );
+                      }}
+                    >
+                      {skill}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="config-field">
                 <label className="label-md">Max Volunteers</label>
@@ -540,8 +594,27 @@ export default function TaskDetail() {
               </div>
             )}
 
+            <div className="action-buttons" style={{ marginTop: '12px' }}>
+              <button 
+                className="btn-secondary" 
+                onClick={handleArchive} 
+                disabled={isSubmitting || task.status === 'ARCHIVED'}
+              >
+                Archive Task
+              </button>
+              <button 
+                className="btn-reject" 
+                style={{ background: 'transparent', border: '1px solid var(--danger)' }}
+                onClick={() => setShowDeleteModal(true)} 
+                disabled={isSubmitting}
+              >
+                Delete Permanently
+              </button>
+            </div>
+
             <button 
               className="btn-secondary btn-full"
+              style={{ marginTop: '12px' }}
               onClick={() => navigate(`/admin/volunteers/${task.id}`)}
               id="view-volunteers"
             >
@@ -569,6 +642,24 @@ export default function TaskDetail() {
               <button className="btn-secondary" onClick={() => setShowRejectModal(false)} disabled={isSubmitting}>Cancel</button>
               <button className="btn-reject" disabled={!rejectionReason.trim() || isSubmitting} onClick={handleReject}>
                 Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="modal-content glass animate-fade-in" onClick={e => e.stopPropagation()}>
+            <h3 className="headline-sm" style={{ color: 'var(--danger)' }}>Delete Task?</h3>
+            <p className="body-md text-muted">
+              Are you sure you want to permanently delete this task? This will remove all associated media records and cannot be undone.
+            </p>
+            <div className="modal-actions" style={{ marginTop: '24px' }}>
+              <button className="btn-secondary" onClick={() => setShowDeleteModal(false)} disabled={isSubmitting}>Cancel</button>
+              <button className="btn-reject" disabled={isSubmitting} onClick={handleDelete}>
+                Yes, Delete
               </button>
             </div>
           </div>

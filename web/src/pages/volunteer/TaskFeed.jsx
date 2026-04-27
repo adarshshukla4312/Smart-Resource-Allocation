@@ -6,7 +6,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAllTasks, useMyApplications } from '../../hooks/useFirestoreData';
-import { CATEGORIES, SEVERITY_LEVELS } from '../../data/mockData'; // Just for dropdowns
+import { CATEGORIES, SEVERITY_LEVELS } from '../../data/mockData';
+import { computeMatchScore } from '../../utils/matching';
 import TaskDetailModal from '../../components/volunteer/TaskDetailModal';
 import './TaskFeed.css';
 
@@ -66,12 +67,40 @@ export default function TaskFeed() {
   const [filterSeverity, setFilterSeverity] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+  
+  // Location states
+  const [liveLat, setLiveLat] = useState(null);
+  const [liveLng, setLiveLng] = useState(null);
+  const [locationDenied, setLocationDenied] = useState(false);
+  const [locationLoaded, setLocationLoaded] = useState(false);
+
+  // Fetch location on mount
+  useState(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLiveLat(position.coords.latitude);
+          setLiveLng(position.coords.longitude);
+          setLocationLoaded(true);
+        },
+        (error) => {
+          console.warn('Location access denied or failed.', error);
+          setLocationDenied(true);
+          setLocationLoaded(true);
+        }
+      );
+    } else {
+      setLocationDenied(true);
+      setLocationLoaded(true);
+    }
+  }, []);
 
   if (tLoading || aLoading) {
     return <div className="loading-screen">Loading tasks...</div>;
   }
 
   const tasks = allActiveTasks || [];
+  const completedTaskIds = (myApps || []).filter(app => app.status === 'COMPLETED').map(app => app.taskId);
 
   const handleTaskClick = (taskId) => {
     if (window.innerWidth > 768) {
@@ -81,8 +110,22 @@ export default function TaskFeed() {
     }
   };
 
-  const filteredTasks = tasks
+  // 1. Process match scores live
+  const scoredTasks = tasks.map(task => {
+    const match = computeMatchScore(userProfile || {}, task, liveLat, liveLng);
+    return {
+      ...task,
+      liveMatchScore: match.total,
+      liveDistance: match.distance
+    };
+  });
+
+  // 2. Filter tasks
+  const filteredTasks = scoredTasks
     .filter(task => {
+      // Hide if already completed by this volunteer
+      if (completedTaskIds.includes(task.id)) return false;
+      
       const cat = task.managementOverride?.category || task.aiAnalysis?.category;
       const sev = task.managementOverride?.severity || task.aiAnalysis?.severity;
       if (filterCategory !== 'ALL' && cat !== filterCategory) return false;
@@ -90,10 +133,10 @@ export default function TaskFeed() {
       if (searchTerm && !task.title?.toLowerCase().includes(searchTerm.toLowerCase())) return false;
       return true;
     })
-    // In MVP, we sort by matchScore if computed from backend, else fallback to creation date
+    // 3. Sort by computed match score
     .sort((a, b) => {
-       const scoreA = a.matchScore || 0;
-       const scoreB = b.matchScore || 0;
+       const scoreA = a.liveMatchScore || 0;
+       const scoreB = b.liveMatchScore || 0;
        if (scoreA !== scoreB) return scoreB - scoreA;
        const timeA = a.createdAt?.seconds || 0;
        const timeB = b.createdAt?.seconds || 0;
@@ -144,6 +187,13 @@ export default function TaskFeed() {
           </div>
         </div>
       </div>
+
+      {locationDenied && (
+        <div className="location-warning-banner" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', padding: '12px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--danger)' }}>
+          <MapPin size={18} />
+          <span className="body-md">Please enable location for better functionality and accurate proximity matching.</span>
+        </div>
+      )}
 
       {/* Search Bar */}
       <div className="feed-search-bar">
@@ -227,7 +277,7 @@ export default function TaskFeed() {
           {filteredTasks.map((task, i) => {
             const sev = task.managementOverride?.severity || task.aiAnalysis?.severity;
             const cat = task.managementOverride?.category || task.aiAnalysis?.category;
-            const matchScore = task.matchScore || 0;
+            const matchScore = task.liveMatchScore || 0;
             const isGreatMatch = matchScore > 0.7;
             const slotsLeft = task.maxVolunteers ? task.maxVolunteers - (task.acceptedCount || 0) : null;
 
@@ -269,7 +319,7 @@ export default function TaskFeed() {
                 <div className="feed-card-meta">
                   <div className="feed-meta-item">
                     <MapPin size={13} />
-                    <span className="body-sm">{task.distance || '?'} km</span>
+                    <span className="body-sm">{task.liveDistance === 999 ? 'Unknown' : `${task.liveDistance} km`}</span>
                   </div>
                   <SeverityBadge severity={sev} />
                   <div className="feed-meta-item">
