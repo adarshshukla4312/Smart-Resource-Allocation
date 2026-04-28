@@ -92,14 +92,27 @@ export default function QuickReport() {
     e.target.value = '';
   };
 
-  const addFiles = (newFiles) => {
-    const processed = newFiles.map(file => ({
-      id: Date.now() + Math.random(),
-      file,
-      name: file.name,
-      size: file.size,
-      category: getFileCategory(file),
-      previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+  const addFiles = async (newFiles) => {
+    const { default: imageCompression } = await import('browser-image-compression');
+    const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true, initialQuality: 0.8 };
+    
+    const processed = await Promise.all(newFiles.map(async (file) => {
+      let finalFile = file;
+      if (file.type.startsWith('image/')) {
+        try {
+          finalFile = await imageCompression(file, options);
+        } catch (e) {
+          console.error("Compression error:", e);
+        }
+      }
+      return {
+        id: Date.now() + Math.random(),
+        file: finalFile,
+        name: finalFile.name,
+        size: finalFile.size,
+        category: getFileCategory(finalFile),
+        previewUrl: finalFile.type.startsWith('image/') ? URL.createObjectURL(finalFile) : null,
+      };
     }));
     setFiles(prev => [...prev, ...processed]);
   };

@@ -42,9 +42,9 @@ export default function SubmitProof() {
       img.src = e.target.result;
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 400;
-        const scaleSize = MAX_WIDTH / img.width;
-        canvas.width = MAX_WIDTH;
+        const MAX_WIDTH = 1920;
+        const scaleSize = Math.min(1, MAX_WIDTH / img.width);
+        canvas.width = img.width * scaleSize;
         canvas.height = img.height * scaleSize;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);

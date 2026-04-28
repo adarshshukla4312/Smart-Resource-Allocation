@@ -17,6 +17,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@react-google-maps/api": "^2.20.8",
+    "browser-image-compression": "^2.0.2",
     "firebase": "^12.12.1",
     "lucide-react": "^1.11.0",
     "react": "^19.2.5",

@@ -102,11 +102,35 @@ export default function CreateReport() {
     reverseGeocode(newLat, newLng);
   };
 
-  const handleMediaSelect = (e, type) => {
+  const handleMediaSelect = async (e, type) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
 
-    const newMedia = files.map(file => {
+    let processedFiles = files;
+    
+    if (type === 'image') {
+      try {
+        const { default: imageCompression } = await import('browser-image-compression');
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+          initialQuality: 0.8
+        };
+        processedFiles = await Promise.all(files.map(async (file) => {
+          try {
+            return await imageCompression(file, options);
+          } catch (err) {
+            console.error("Compression error:", err);
+            return file; // fallback to original
+          }
+        }));
+      } catch (err) {
+        console.error("Failed to load image compressor", err);
+      }
+    }
+
+    const newMedia = processedFiles.map(file => {
       // Create local preview URL
       const previewUrl = type === 'image' ? URL.createObjectURL(file) : null;
       return {
