@@ -231,7 +231,8 @@ export default function MediaPreviewModal({ isOpen, onClose, mediaItems, initial
           <p className="body-md">{aiText}</p>
         </div>
 
-        {findings.length > 0 && (
+        {/* Hide Key Findings & Detected Elements for images — only summary text is meaningful */}
+        {mediaType !== 'IMAGE' && findings.length > 0 && (
           <div className="media-summary-section">
             <h4><AlertTriangle size={14} /> Key Findings</h4>
             <ul className="media-findings-list">
@@ -242,7 +243,7 @@ export default function MediaPreviewModal({ isOpen, onClose, mediaItems, initial
           </div>
         )}
 
-        {elements.length > 0 && (
+        {mediaType !== 'IMAGE' && elements.length > 0 && (
           <div className="media-summary-section">
             <h4><Tag size={14} /> Detected Elements</h4>
             <div className="media-elements-grid">

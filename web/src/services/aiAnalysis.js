@@ -272,8 +272,11 @@ export async function analyzeMediaItem(taskId, mediaItem) {
   const contentParts = [];
   const mediaType = (mediaItem.type || '').toUpperCase();
 
-  // For images: send the actual image to Gemini vision
-  if (mediaType === 'IMAGE' && mediaItem.downloadURL) {
+  // For images: we MUST send the actual image to Gemini vision
+  if (mediaType === 'IMAGE') {
+    if (!mediaItem.downloadURL) {
+      throw new Error('Image has no download URL. The file may not have finished uploading.');
+    }
     try {
       const base64 = await urlToBase64(mediaItem.downloadURL);
       const mimeType = mediaItem.metadata?.contentType || 'image/jpeg';
@@ -281,7 +284,7 @@ export async function analyzeMediaItem(taskId, mediaItem) {
         inlineData: { data: base64, mimeType }
       });
     } catch (e) {
-      console.warn('Failed to fetch image for AI analysis:', e);
+      throw new Error('Failed to fetch image for AI analysis. The image may be inaccessible or too large. (' + e.message + ')');
     }
   }
 

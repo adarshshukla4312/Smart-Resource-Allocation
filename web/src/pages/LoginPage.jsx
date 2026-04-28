@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Eye, EyeOff, Shield, ArrowRight, User, Building2, Briefcase } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Eye, EyeOff, Shield, ArrowRight, User, Building2, Briefcase, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './LoginPage.css';
 
@@ -12,6 +12,15 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+
+  // Theme toggle
+  const [isDark, setIsDark] = useState(() => {
+    return document.documentElement.getAttribute('data-theme') === 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
 
   const roles = [
     { id: 'VOLUNTEER', label: 'Volunteer', icon: <User size={20} />, role: 'VOLUNTEER' },
@@ -51,13 +60,25 @@ export default function LoginPage() {
       }
     } catch (err) {
       setError(err.message || 'Authentication failed');
-    } finally {
       setIsLoading(false);
     }
+    // Note: We intentionally don't setIsLoading(false) on success
+    // because the AuthContext will pick up the auth state change and navigate away
   };
 
   return (
     <div className="login-page">
+      {/* Theme Toggle */}
+      <button
+        type="button"
+        className="login-theme-toggle"
+        onClick={() => setIsDark(!isDark)}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
+
       {/* Left Hero Panel */}
       <div className="login-hero">
         <div className="login-hero-content">
@@ -103,25 +124,28 @@ export default function LoginPage() {
             <h2 className="headline-md">{isRegistering ? 'Create Account' : 'Management Console'}</h2>
           </div>
 
-          <div className="role-selection-container">
-            <p className="label-md role-selection-title">Who are you joining as?</p>
-            <div className="role-options">
-              {roles.map((role) => (
-                <button
-                  key={role.id}
-                  type="button"
-                  className={`role-option ${selectedRole === role.id ? 'active' : ''}`}
-                  onClick={() => {
-                    setSelectedRole(role.id);
-                    setError('');
-                  }}
-                >
-                  <div className="role-icon">{role.icon}</div>
-                  <span className="role-label">{role.label}</span>
-                </button>
-              ))}
+          {/* Role Selection — only shown during registration */}
+          {isRegistering && (
+            <div className="role-selection-container animate-fade-in">
+              <p className="label-md role-selection-title">Who are you joining as?</p>
+              <div className="role-options">
+                {roles.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    className={`role-option ${selectedRole === role.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedRole(role.id);
+                      setError('');
+                    }}
+                  >
+                    <div className="role-icon">{role.icon}</div>
+                    <span className="role-label">{role.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <form className="login-form" onSubmit={handleSubmit}>
             {(error || authError) && (
@@ -185,7 +209,6 @@ export default function LoginPage() {
               type="button"
               className="login-toggle-mode"
               onClick={() => { setIsRegistering(!isRegistering); setError(''); }}
-              style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer', padding: '8px', fontSize: '14px', marginTop: '8px', textAlign: 'center', width: '100%' }}
             >
               {isRegistering ? 'Already have an account? Sign in' : "Don't have an account? Register"}
             </button>
